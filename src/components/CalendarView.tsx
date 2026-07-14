@@ -28,6 +28,32 @@ export const CalendarView = () => {
   const [showNewModal, setShowNewModal] = useState(false);
   const [conflictError, setConflictError] = useState<string | null>(null);
   
+  // Controle Dinâmico de Data
+  const [currentDate, setCurrentDate] = useState<Date>(new Date('2026-07-14')); // Inicia na data do mock
+
+  const formatarData = (date: Date): string => {
+    const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+    const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    
+    const diaSemana = diasSemana[date.getDay()];
+    const dia = date.getDate();
+    const mes = meses[date.getMonth()];
+    
+    return `${diaSemana}, ${dia} de ${mes}`;
+  };
+
+  const handlePrevDay = () => {
+    const nova = new Date(currentDate);
+    nova.setDate(nova.getDate() - 1);
+    setCurrentDate(nova);
+  };
+
+  const handleNextDay = () => {
+    const nova = new Date(currentDate);
+    nova.setDate(nova.getDate() + 1);
+    setCurrentDate(nova);
+  };
+
   // State do Form do Novo Agendamento
   const [newClient, setNewClient] = useState('');
   const [newService, setNewService] = useState('');
@@ -191,12 +217,16 @@ export const CalendarView = () => {
 
         {/* Data e Navegação */}
         <div className="date-navigator">
-          <button className="nav-btn"><ChevronLeft size={18} /></button>
+          <button className="nav-btn" onClick={handlePrevDay} title="Dia anterior">
+            <ChevronLeft size={18} />
+          </button>
           <div className="date-display">
             <CalendarIcon size={16} />
-            <span>Terça-feira, 14 de Julho</span>
+            <span>{formatarData(currentDate)}</span>
           </div>
-          <button className="nav-btn"><ChevronRight size={18} /></button>
+          <button className="nav-btn" onClick={handleNextDay} title="Próximo dia">
+            <ChevronRight size={18} />
+          </button>
         </div>
 
         <button className="btn-pill" onClick={() => setShowNewModal(true)}>
