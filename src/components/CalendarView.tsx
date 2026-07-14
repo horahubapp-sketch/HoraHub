@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Plus, 
   Clock, 
@@ -23,7 +23,7 @@ const ROW_HEIGHT = 65; // px para cada intervalo de 30 minutos
 
 export const CalendarView = () => {
   const [funcionarios] = useState<Funcionario[]>(FUNCIONARIOS_MOCK);
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>(AGENDAMENTOS_MOCK);
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [selectedAgendamento, setSelectedAgendamento] = useState<Agendamento | null>(null);
   const [showNewModal, setShowNewModal] = useState(false);
   const [conflictError, setConflictError] = useState<string | null>(null);
@@ -40,6 +40,51 @@ export const CalendarView = () => {
     const mes = meses[date.getMonth()];
     
     return `${diaSemana}, ${dia} de ${mes}`;
+  };
+
+  const obterDataKey = (date: Date): string => {
+    const ano = date.getFullYear();
+    const mes = String(date.getMonth() + 1).padStart(2, '0');
+    const dia = String(date.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+  };
+
+  // Carregar agendamentos do dia selecionado
+  useEffect(() => {
+    const dataKey = obterDataKey(currentDate);
+    const agendamentosSalvos = localStorage.getItem(`horahub_agendamentos_${dataKey}`);
+    
+    if (agendamentosSalvos) {
+      setAgendamentos(JSON.parse(agendamentosSalvos));
+    } else {
+      if (dataKey === '2026-07-14') {
+        setAgendamentos(AGENDAMENTOS_MOCK);
+        localStorage.setItem(`horahub_agendamentos_${dataKey}`, JSON.stringify(AGENDAMENTOS_MOCK));
+      } else {
+        // Almoço padrão para outros dias
+        const bloqueiosPadrao = funcionarios.map((f, index) => {
+          const horasAlmoco = [['12:00', '13:00'], ['13:00', '14:00'], ['12:30', '13:30'], ['12:00', '13:00']];
+          const [inicio, fim] = horasAlmoco[index % horasAlmoco.length];
+          return {
+            id: `bloqueio-almoco-${f.id}-${dataKey}`,
+            funcionarioId: f.id,
+            clienteNome: 'Almoço',
+            servicoNome: 'Intervalo',
+            horarioInicio: inicio,
+            horarioFim: fim,
+            status: 'bloqueio' as const
+          };
+        });
+        setAgendamentos(bloqueiosPadrao);
+        localStorage.setItem(`horahub_agendamentos_${dataKey}`, JSON.stringify(bloqueiosPadrao));
+      }
+    }
+  }, [currentDate, funcionarios]);
+
+  const salvarAgendamentosDaData = (novaLista: Agendamento[]) => {
+    const dataKey = obterDataKey(currentDate);
+    setAgendamentos(novaLista);
+    localStorage.setItem(`horahub_agendamentos_${dataKey}`, JSON.stringify(novaLista));
   };
 
   const handlePrevDay = () => {
@@ -82,9 +127,7 @@ export const CalendarView = () => {
     const startMins = timeToMinutes(horarioInicio);
     const endMins = timeToMinutes(horarioFim);
     
-    // Calculo do Topo relativo ao início do expediente (8h)
     const top = ((startMins - startDayMinutes) / 30) * ROW_HEIGHT;
-    // Calculo da altura
     const height = ((endMins - startMins) / 30) * ROW_HEIGHT;
     
     return { top, height };
@@ -108,12 +151,6 @@ export const CalendarView = () => {
   };
 
   // VALIDAÇÃO 2: Verifica sobreposição de intervalos para o mesmo profissional
-  // Lógica: dois intervalos [A, B) e [C, D) se sobrepõem quando A < D && C < B
-  // Cobre todos os cenários:
-  //   - Novo começa durante existente:  novoInicio ∈ [existInicio, existFim)
-  //   - Novo termina durante existente: novoFim    ∈ (existInicio, existFim]
-  //   - Novo engloba o existente:       novoInicio <= existInicio && novoFim >= existFim
-  //   - Existente engloba o novo:       existInicio <= novoInicio && existFim >= novoFim
   const verificarConflito = (funcionarioId: string, inicio: string, fim: string): Agendamento | null => {
     const novoInicio = timeToMinutes(inicio);
     const novoFim = timeToMinutes(fim);
@@ -125,11 +162,8 @@ export const CalendarView = () => {
       const existInicio = timeToMinutes(a.horarioInicio);
       const existFim = timeToMinutes(a.horarioFim);
 
-      // Ignorar agendamentos com dados inválidos (fim <= inicio) que
-      // possam ter sido criados antes desta validação existir
       if (existFim <= existInicio) return false;
 
-      // Sobreposição: novoInicio < existFim E existInicio < novoFim
       return novoInicio < existFim && existInicio < novoFim;
     }) || null;
 
@@ -141,14 +175,12 @@ export const CalendarView = () => {
     e.preventDefault();
     if (!newClient || !newService) return;
 
-    // TRAVA 1: Validar que hora de fim é posterior à hora de início
     const erroHorario = validarHorarios(newTimeStart, newTimeEnd);
     if (erroHorario) {
       setConflictError(erroHorario);
       return;
     }
 
-    // TRAVA 2: Verificar conflito com agendamentos existentes (double-booking)
     const conflito = verificarConflito(newFuncionario, newTimeStart, newTimeEnd);
     if (conflito) {
       const profNome = funcionarios.find(f => f.id === newFuncionario)?.nome || 'este profissional';
@@ -169,9 +201,8 @@ export const CalendarView = () => {
       preco: Number(newPrice)
     };
 
-    setAgendamentos([...agendamentos, newAgenda]);
+    salvarAgendamentosDaData([...agendamentos, newAgenda]);
     
-    // Reset Form
     setNewClient('');
     setNewService('');
     setNewPrice('50');
@@ -181,13 +212,15 @@ export const CalendarView = () => {
 
   // Alterar Status
   const handleToggleStatus = (id: string) => {
-    setAgendamentos(agendamentos.map(a => {
+    const novaLista = agendamentos.map(a => {
       if (a.id === id && a.status !== 'bloqueio') {
         const nextStatus: 'confirmado' | 'pendente' = a.status === 'confirmado' ? 'pendente' : 'confirmado';
         return { ...a, status: nextStatus };
       }
       return a;
-    }));
+    });
+    
+    salvarAgendamentosDaData(novaLista);
     
     if (selectedAgendamento && selectedAgendamento.id === id) {
       setSelectedAgendamento(prev => prev ? { 
@@ -199,7 +232,8 @@ export const CalendarView = () => {
 
   // Deletar
   const handleDeleteAgendamento = (id: string) => {
-    setAgendamentos(agendamentos.filter(a => a.id !== id));
+    const novaLista = agendamentos.filter(a => a.id !== id);
+    salvarAgendamentosDaData(novaLista);
     setSelectedAgendamento(null);
   };
 

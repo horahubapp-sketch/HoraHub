@@ -34,6 +34,9 @@ const DIAS_SEMANA_NOMES = [
   'Sábado'
 ];
 
+const LOCAL_STORAGE_KEY_FUNCS = 'horahub_funcionarios_demo';
+const LOCAL_STORAGE_KEY_SERVS = 'horahub_servicos_demo';
+
 export default function EquipePage() {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [todosServicos, setTodosServicos] = useState<Servico[]>([]);
@@ -54,11 +57,11 @@ export default function EquipePage() {
   // Seleção de Serviços do Profissional
   const [servicosSelecionados, setServicosSelecionados] = useState<string[]>([]);
 
-  // Configuração da Jornada (inicializado com padrão comercial)
+  // Configuração da Jornada
   const [jornada, setJornada] = useState<JornadaDia[]>(
     Array.from({ length: 7 }, (_, i) => ({
       dia_semana: i,
-      ativo: i >= 1 && i <= 5, // Ativo de segunda a sexta por padrão
+      ativo: i >= 1 && i <= 5,
       hora_inicio: '09:00',
       hora_fim: '18:00',
       almoco_inicio: '12:00',
@@ -66,7 +69,7 @@ export default function EquipePage() {
     }))
   );
 
-  // Carregar dados iniciais do Supabase
+  // Carregar dados (Supabase com fallback de LocalStorage)
   const loadDados = async () => {
     setLoading(true);
     setErrorMsg(null);
@@ -80,8 +83,11 @@ export default function EquipePage() {
 
       if (errFuncs) throw errFuncs;
       setFuncionarios(funcs || []);
+      if (funcs) {
+        localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(funcs));
+      }
 
-      // 2. Carregar todos os Serviços disponíveis do Tenant
+      // 2. Carregar todos os Serviços
       const { data: servs, error: errServs } = await supabase
         .from('servicos')
         .select('id, nome')
@@ -91,18 +97,28 @@ export default function EquipePage() {
       if (errServs) throw errServs;
       setTodosServicos(servs || []);
     } catch (err: any) {
-      console.warn('[HoraHub] Erro de banco ao carregar equipe. Ativando modo offline/demo:', err.message);
+      console.warn('[HoraHub] Erro ao carregar dados da equipe. Usando LocalStorage.');
       
-      // Fallbacks
-      if (funcionarios.length === 0) {
-        setFuncionarios([
+      // Carregar do LocalStorage
+      const localFuncs = localStorage.getItem(LOCAL_STORAGE_KEY_FUNCS);
+      const localServs = localStorage.getItem(LOCAL_STORAGE_KEY_SERVS);
+
+      if (localFuncs) {
+        setFuncionarios(JSON.parse(localFuncs));
+      } else {
+        const funcsMock = [
           { id: 'f-mock-1', nome: 'Bruno Silva', especialidade: 'Cabelo & Barba Sênior', comissao_percentual: 50 },
           { id: 'f-mock-2', nome: 'Lucas Nogueira', especialidade: 'Corte Moderno & Tintura', comissao_percentual: 40 },
           { id: 'f-mock-3', nome: 'Ana Costa', especialidade: 'Barba Clássica & Visagismo', comissao_percentual: 45 },
           { id: 'f-mock-4', nome: 'Mateus Santos', especialidade: 'Cortes Clássicos & Infantil', comissao_percentual: 50 }
-        ]);
+        ];
+        setFuncionarios(funcsMock);
+        localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(funcsMock));
       }
-      if (todosServicos.length === 0) {
+
+      if (localServs) {
+        setTodosServicos(JSON.parse(localServs));
+      } else {
         setTodosServicos([
           { id: 's-mock-1', nome: 'Corte Degradê' },
           { id: 's-mock-2', nome: 'Barboterapia' },
@@ -153,7 +169,6 @@ export default function EquipePage() {
     setActiveTab('dados');
     setErrorMsg(null);
 
-    // Estrutura padrão de jornada de folga
     const jornadaPadrao = Array.from({ length: 7 }, (_, i) => ({
       dia_semana: i,
       ativo: i >= 1 && i <= 5,
@@ -164,8 +179,9 @@ export default function EquipePage() {
     }));
 
     try {
-      // Se for id de mock/demo, não busca no Supabase
+      // Se for mock/demo, não busca no Supabase
       if (func.id.startsWith('f-mock')) {
+        // Carrega vínculos fictícios ou lê do LocalStorage se for estendido
         setServicosSelecionados(['s-mock-1', 's-mock-2']);
         setJornada(jornadaPadrao);
         setShowModal(true);
@@ -241,7 +257,7 @@ export default function EquipePage() {
     }));
   };
 
-  // Salvar alterações de forma coordenada (Funcionário + Jornada + Serviços)
+  // Salvar alterações
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -255,7 +271,7 @@ export default function EquipePage() {
       let funcId = editingFunc?.id;
 
       if (editingFunc) {
-        // 1. Atualizar dados básicos
+        // 1. Atualizar dados básicos no Supabase
         const { error: errFunc } = await supabase
           .from('funcionarios')
           .update({
@@ -266,14 +282,16 @@ export default function EquipePage() {
           .eq('id', editingFunc.id);
 
         if (errFunc) {
+          // Fallback para rede/API Key inválida
           if (errFunc.message.includes('API key') || errFunc.message.includes('JWT') || errFunc.message.includes('fetch')) {
-            // Modo demo/offline
-            setFuncionarios(funcionarios.map(f => f.id === editingFunc.id ? {
+            const novaLista = funcionarios.map(f => f.id === editingFunc.id ? {
               ...f,
               nome,
               especialidade,
               comissao_percentual: Number(comissao)
-            } : f));
+            } : f);
+            setFuncionarios(novaLista);
+            localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
             showSuccess('Modo Demo: Profissional atualizado localmente!');
             setShowModal(false);
             return;
@@ -281,7 +299,7 @@ export default function EquipePage() {
           throw errFunc;
         }
       } else {
-        // 2. Cadastrar novo funcionário
+        // 2. Cadastrar novo funcionário no Supabase
         const { data: newFunc, error: errFunc } = await supabase
           .from('funcionarios')
           .insert({
@@ -294,15 +312,17 @@ export default function EquipePage() {
           .single();
 
         if (errFunc) {
+          // Fallback para rede/API Key inválida
           if (errFunc.message.includes('API key') || errFunc.message.includes('JWT') || errFunc.message.includes('fetch')) {
-            // Modo demo/offline
             const novo = {
               id: `f-mock-${Date.now()}`,
               nome,
               especialidade,
               comissao_percentual: Number(comissao)
             };
-            setFuncionarios([...funcionarios, novo]);
+            const novaLista = [...funcionarios, novo];
+            setFuncionarios(novaLista);
+            localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
             showSuccess('Modo Demo: Profissional criado localmente!');
             setShowModal(false);
             return;
@@ -314,7 +334,7 @@ export default function EquipePage() {
 
       if (!funcId) throw new Error('ID do funcionário não foi localizado.');
 
-      // 3. Atualizar Jornadas de Trabalho (Remover antigas e inserir novas ativas)
+      // 3. Atualizar Jornadas de Trabalho (Supabase)
       const { error: errDeleteJornadas } = await supabase
         .from('jornadas_trabalho')
         .delete()
@@ -340,7 +360,7 @@ export default function EquipePage() {
         if (errInsertJornadas) throw errInsertJornadas;
       }
 
-      // 4. Atualizar Vínculos de Serviços (Remover antigos e inserir novos selecionados)
+      // 4. Atualizar Vínculos de Serviços (Supabase)
       const { error: errDeleteServicos } = await supabase
         .from('funcionario_servicos')
         .delete()
@@ -385,8 +405,11 @@ export default function EquipePage() {
         .eq('id', id);
 
       if (error) {
+        // Fallback para rede/API Key inválida
         if (error.message.includes('API key') || error.message.includes('JWT') || error.message.includes('fetch')) {
-          setFuncionarios(funcionarios.filter(f => f.id !== id));
+          const novaLista = funcionarios.filter(f => f.id !== id);
+          setFuncionarios(novaLista);
+          localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
           showSuccess('Modo Demo: Profissional removido localmente!');
           return;
         }

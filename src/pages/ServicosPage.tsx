@@ -11,6 +11,8 @@ interface Servico {
   preco: number;
 }
 
+const LOCAL_STORAGE_KEY = 'horahub_servicos_demo';
+
 export default function ServicosPage() {
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,9 +25,9 @@ export default function ServicosPage() {
   const [nome, setNome] = useState('');
   const [duracao, setDuracao] = useState(45);
   const [preparo, setPreparo] = useState(5);
-  const [preco, setPreco] = useState(50);
+  const [preco, setPreco] = useState('50,00'); // Armazena como string para permitir vírgula ou ponto no input
 
-  // Carregar serviços do Supabase
+  // Carregar serviços (Supabase com fallback para LocalStorage em modo demo)
   const loadServicos = async () => {
     setLoading(true);
     setErrorMsg(null);
@@ -37,18 +39,30 @@ export default function ServicosPage() {
         .order('nome', { ascending: true });
 
       if (error) throw error;
+      
       setServicos(data || []);
+      // Atualizar o localStorage para sincronia se o banco estiver ok
+      if (data) {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+      }
     } catch (err: any) {
-      console.warn('[HoraHub] Erro de banco de dados. Ativando modo offline/demo de serviços:', err.message);
-      // Fallback: carregar catálogo mockado se o estado estiver vazio
-      if (servicos.length === 0) {
-        setServicos([
+      console.warn('[HoraHub] Erro de rede ou chave de API inválida. Carregando dados do LocalStorage.');
+      
+      // Carregar do LocalStorage
+      const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (localData) {
+        setServicos(JSON.parse(localData));
+      } else {
+        // Dados estáticos iniciais caso não tenha nada salvo no navegador
+        const inicialMock = [
           { id: 's-mock-1', nome: 'Corte Degradê', duracao_minutos: 45, intervalo_preparo_minutos: 5, preco: 60.00 },
           { id: 's-mock-2', nome: 'Barboterapia', duracao_minutos: 30, intervalo_preparo_minutos: 5, preco: 40.00 },
           { id: 's-mock-3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, intervalo_preparo_minutos: 10, preco: 90.00 }
-        ]);
+        ];
+        setServicos(inicialMock);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(inicialMock));
       }
-      // Se for apenas erro de chave de API, não exibe erro na tela principal, apenas avisa no console
+
       if (!err.message?.includes('API key') && !err.message?.includes('JWT')) {
         setErrorMsg('Conexão instável. Operando em modo offline.');
       }
@@ -67,7 +81,7 @@ export default function ServicosPage() {
     setNome('');
     setDuracao(45);
     setPreparo(5);
-    setPreco(50);
+    setPreco('50,00');
     setErrorMsg(null);
     setShowModal(true);
   };
@@ -78,18 +92,26 @@ export default function ServicosPage() {
     setNome(servico.nome);
     setDuracao(servico.duracao_minutos);
     setPreparo(servico.intervalo_preparo_minutos);
-    setPreco(servico.preco);
+    // Formatar preco numérico para exibição amigável com vírgula
+    setPreco(Number(servico.preco).toFixed(2).replace('.', ','));
     setErrorMsg(null);
     setShowModal(true);
   };
 
-  // Cadastrar ou Editar no Supabase
+  // Cadastrar ou Editar
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
     if (!nome.trim()) {
       setErrorMsg('O nome do serviço é obrigatório.');
+      return;
+    }
+
+    // Tratar o preço de string ("30,00" ou "30.00") para número float
+    const precoNumerico = Number(preco.replace(',', '.'));
+    if (isNaN(precoNumerico) || precoNumerico < 0) {
+      setErrorMsg('Preço inválido. Digite um número positivo (Ex: 45,50).');
       return;
     }
 
@@ -102,20 +124,22 @@ export default function ServicosPage() {
             nome,
             duracao_minutos: Number(duracao),
             intervalo_preparo_minutos: Number(preparo),
-            preco: Number(preco)
+            preco: precoNumerico
           })
           .eq('id', editingServico.id);
 
         if (error) {
-          // Intercepta falha de API key
+          // Fallback para falha de rede/API key
           if (error.message.includes('API key') || error.message.includes('JWT') || error.message.includes('fetch')) {
-            setServicos(servicos.map(s => s.id === editingServico.id ? {
+            const novaLista = servicos.map(s => s.id === editingServico.id ? {
               ...s,
               nome,
               duracao_minutos: Number(duracao),
               intervalo_preparo_minutos: Number(preparo),
-              preco: Number(preco)
-            } : s));
+              preco: precoNumerico
+            } : s);
+            setServicos(novaLista);
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(novaLista));
             showSuccess('Modo Demo: Serviço atualizado localmente!');
             setShowModal(false);
             return;
@@ -132,21 +156,23 @@ export default function ServicosPage() {
             nome,
             duracao_minutos: Number(duracao),
             intervalo_preparo_minutos: Number(preparo),
-            preco: Number(preco)
+            preco: precoNumerico
           });
 
         if (error) {
-          // Intercepta falha de API key
+          // Fallback para falha de rede/API key
           if (error.message.includes('API key') || error.message.includes('JWT') || error.message.includes('fetch')) {
             const novo = {
               id: `s-mock-${Date.now()}`,
               nome,
               duracao_minutos: Number(duracao),
               intervalo_preparo_minutos: Number(preparo),
-              preco: Number(preco)
+              preco: precoNumerico
             };
-            setServicos([...servicos, novo]);
-            showSuccess('Modo Demo: Serviço criado localmente!');
+            const novaLista = [...servicos, novo];
+            setServicos(novaLista);
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(novaLista));
+            showSuccess('Modo Demo: Serviço cadastrado localmente!');
             setShowModal(false);
             return;
           }
@@ -177,9 +203,11 @@ export default function ServicosPage() {
         .eq('id', id);
 
       if (error) {
-        // Intercepta falha de API key
+        // Fallback para falha de rede/API key
         if (error.message.includes('API key') || error.message.includes('JWT') || error.message.includes('fetch')) {
-          setServicos(servicos.filter(s => s.id !== id));
+          const novaLista = servicos.filter(s => s.id !== id);
+          setServicos(novaLista);
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(novaLista));
           showSuccess('Modo Demo: Serviço removido localmente!');
           return;
         }
@@ -263,21 +291,24 @@ export default function ServicosPage() {
                   <td className="font-bold price-cell">
                     R$ {Number(servico.preco).toFixed(2)}
                   </td>
-                  <td className="text-right actions-cell">
-                    <button 
-                      className="btn-action edit" 
-                      onClick={() => handleEditClick(servico)}
-                      title="Editar serviço"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button 
-                      className="btn-action delete" 
-                      onClick={() => handleDelete(servico.id)}
-                      title="Excluir serviço"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                  {/* ALINHAMENTO CORRIGIDO: actions-cell dentro do td text-right */}
+                  <td className="text-right">
+                    <div className="actions-cell">
+                      <button 
+                        className="btn-action edit" 
+                        onClick={() => handleEditClick(servico)}
+                        title="Editar serviço"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button 
+                        className="btn-action delete" 
+                        onClick={() => handleDelete(servico.id)}
+                        title="Excluir serviço"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -335,12 +366,12 @@ export default function ServicosPage() {
 
               <div className="form-group">
                 <label>Preço Sugerido (R$)</label>
+                {/* CAMPO DE PREÇO CORRIGIDO: Permite pontuação correta */}
                 <input 
-                  type="number" 
-                  min="0"
-                  step="0.01"
+                  type="text" 
+                  placeholder="Ex: 50,00" 
                   value={preco}
-                  onChange={e => setPreco(Number(e.target.value))}
+                  onChange={e => setPreco(e.target.value)}
                   required
                 />
               </div>
