@@ -71,19 +71,39 @@ export const CalendarView = () => {
     .filter(a => a.status !== 'bloqueio')
     .reduce((sum, a) => sum + (a.preco || 0), 0);
 
-  // VALIDAÇÃO DE CONFLITO: Verifica se o novo agendamento sobrepõe algum existente
-  // Espelha a lógica da trigger PostgreSQL `verificar_conflito_agendamento`
-  // Intervalos semi-abertos [inicio, fim): aInicio < bFim && bInicio < aFim
+  // VALIDAÇÃO 1: Verifica se o horário do slot é válido (fim > inicio)
+  const validarHorarios = (inicio: string, fim: string): string | null => {
+    const inicioMin = timeToMinutes(inicio);
+    const fimMin = timeToMinutes(fim);
+    if (fimMin <= inicioMin) {
+      return `Horário inválido: a hora de término (${fim}) deve ser posterior à hora de início (${inicio}).`;
+    }
+    return null;
+  };
+
+  // VALIDAÇÃO 2: Verifica sobreposição de intervalos para o mesmo profissional
+  // Lógica: dois intervalos [A, B) e [C, D) se sobrepõem quando A < D && C < B
+  // Cobre todos os cenários:
+  //   - Novo começa durante existente:  novoInicio ∈ [existInicio, existFim)
+  //   - Novo termina durante existente: novoFim    ∈ (existInicio, existFim]
+  //   - Novo engloba o existente:       novoInicio <= existInicio && novoFim >= existFim
+  //   - Existente engloba o novo:       existInicio <= novoInicio && existFim >= novoFim
   const verificarConflito = (funcionarioId: string, inicio: string, fim: string): Agendamento | null => {
     const novoInicio = timeToMinutes(inicio);
     const novoFim = timeToMinutes(fim);
 
     const agendamentoConflitante = agendamentos.find(a => {
       if (a.funcionarioId !== funcionarioId) return false;
-      if (a.status === 'bloqueio') return false; // bloqueios visuais não são agendamentos reais
+      if (a.status === 'bloqueio') return false;
+
       const existInicio = timeToMinutes(a.horarioInicio);
       const existFim = timeToMinutes(a.horarioFim);
-      // Sobreposição: novoInicio < existFim && existInicio < novoFim
+
+      // Ignorar agendamentos com dados inválidos (fim <= inicio) que
+      // possam ter sido criados antes desta validação existir
+      if (existFim <= existInicio) return false;
+
+      // Sobreposição: novoInicio < existFim E existInicio < novoFim
       return novoInicio < existFim && existInicio < novoFim;
     }) || null;
 
@@ -95,7 +115,14 @@ export const CalendarView = () => {
     e.preventDefault();
     if (!newClient || !newService) return;
 
-    // TRAVA DE DOUBLE-BOOKING: verificar conflito antes de salvar
+    // TRAVA 1: Validar que hora de fim é posterior à hora de início
+    const erroHorario = validarHorarios(newTimeStart, newTimeEnd);
+    if (erroHorario) {
+      setConflictError(erroHorario);
+      return;
+    }
+
+    // TRAVA 2: Verificar conflito com agendamentos existentes (double-booking)
     const conflito = verificarConflito(newFuncionario, newTimeStart, newTimeEnd);
     if (conflito) {
       const profNome = funcionarios.find(f => f.id === newFuncionario)?.nome || 'este profissional';
