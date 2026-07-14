@@ -1,0 +1,22 @@
+Atue como Engenheiro de Software Sênior e UI/UX Designer no projeto HoraHub. Vamos focar na FRENTE A: Estrutura de Banco de Dados e Painel Administrativo de Visualização (estilo AppBarber).
+
+Use as ferramentas de MCP necessárias para interagir com o ambiente local e siga as instruções abaixo:
+
+1. MODELAGEM DE BANCO (SQL/Supabase):
+Crie as migrações SQL na pasta `/supabase/migrations` para estruturar as seguintes entidades (garantindo índices em `tenant_id` para isolamento multi-tenant):
+- `empresas` (id, nome, email, plano_status)
+- `funcionarios` (id, tenant_id, nome, especialidade, comissao_percentual)
+- `jornadas_trabalho` (id, funcionario_id, dia_semana [0-6], hora_inicio, hora_fim, almoco_inicio, almoco_fim)
+- `servicos` (id, tenant_id, nome, duracao_minutos, preco)
+- `agendamentos` (id, tenant_id, funcionario_id, cliente_name, servico_id, horario_inicio, horario_fim, custo_operacional, status)
+
+2. FRONTEND - PAINEL DE CONTROLE (Visualização por Profissional):
+Gere o componente de calendário do dia para a recepção do estabelecimento. 
+- Layout: Eixo Y exibe as horas (intervalos de 30 min) e o Eixo X exibe as colunas dos profissionais cadastrados lado a lado.
+- Design System HoraHub (Premium Minimalista):
+  * Tipografia: Inter ou similar geométrica limpa.
+  * Cores: Fundo em off-white (#FDFBF7), textos em grafite fosco (#1E1E24) e cartões de agendamento em tons pastéis de marrom acinzentado/bege (#E6DFD3, #D7C9B7).
+  * Status visual: Agendamentos confirmados em verde pastel suave, pendentes em marrom/bege suave e horários de almoço/bloqueios em cinza claro dessaturado.
+  * Botões de ação rápida (ex: "Novo Agendamento"): Formato pílula suave, cantos arredondados, sem bordas duras.
+
+Escreva o código modular e limpo, separando a migração SQL do componente de visualização.

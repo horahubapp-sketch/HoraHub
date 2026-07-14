@@ -95,3 +95,27 @@ button {
 .btn-pill:active {
   transform: translateY(0);
 }
+
+/* Estrutura de Layout com Sidebar */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding-left: 260px; /* Largura da Sidebar */
+  width: calc(100% - 260px);
+  min-height: 100vh;
+  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--bg-primary);
+}
+
+/* Responsivo para Sidebar Colapsada */
+@media (max-width: 768px) {
+  .main-content {
+    padding-left: 80px;
+    width: calc(100% - 80px);
+  }
+}
+

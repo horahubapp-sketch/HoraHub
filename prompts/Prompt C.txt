@@ -1,0 +1,29 @@
+Atue como Engenheiro de Software Sênior e UI/UX Designer no projeto HoraHub.
+
+Nosso objetivo agora é estruturar a navegação do sistema em rotas distintas e criar as páginas de Backoffice, isolando a tela de operação (Calendário) dos formulários de cadastros.
+
+Execute as seguintes tarefas de arquitetura e desenvolvimento no código:
+
+1. ESTRUTURA DE ROTAS E NAVEGAÇÃO (Sidebar Minimalista):
+- Crie ou configure um layout de navegação com uma barra lateral (Sidebar) minimalista.
+- Defina as seguintes rotas distintas na aplicação:
+  * `/` ou `/agenda`: Painel Operacional (Apenas o Calendário Multi-colunas e o Seletor de Datas, sem formulários pesados à mostra).
+  * `/admin/servicos`: Página dedicada ao Cadastro de Serviços e Tabela de Preços.
+  * `/admin/equipe`: Página dedicada ao Cadastro de Funcionários, Vínculo de Serviços e suas respectivas Jornadas de Trabalho (com horários de entrada, saída e almoço).
+
+2. FRENTE CONFIGURAÇÕES - PÁGINA `/admin/servicos` (Por Empresa):
+- Implemente a página `/admin/servicos` exibindo uma lista/tabela limpa dos serviços cadastrados (Nome, Duração em minutos e Preço).
+- Adicione um formulário (ou modal discreto) para cadastrar novos serviços ou editar os existentes, enviando os dados para a tabela `servicos` do Supabase com o respectivo `tenant_id` da empresa logada.
+
+3. FRENTE CONFIGURAÇÕES - PÁGINA `/admin/equipe` (Por Empresa):
+- Implemente a página `/admin/equipe` listando os funcionários contratados.
+- Adicione o formulário de cadastro/edição de funcionários que permita:
+  * Inserir dados básicos e a jornada de trabalho semanal (entrada, almoço, saída).
+  * Associar quais serviços da tabela de preços (da rota `/admin/servicos`) aquele funcionário está apto a realizar.
+- Salve as informações de forma coordenada no Supabase (`funcionarios` e `jornadas_trabalho`), garantindo o isolamento pelo `tenant_id`.
+
+4. DESIGN SYSTEM HORAHUB (Estética Premium Minimalista):
+- Mantenha a consistência visual definida: Fundo off-white (#FDFBF7), textos em grafite fosco (#1E1E24) e cartões de serviço/funcionário em tons pastéis de marrom acinzentado/bege (#E6DFD3, #D7C9B7).
+- Garanta que a transição entre as páginas por meio da Sidebar seja rápida e fluida.
+
+Escreva o código de maneira modular, separando os componentes de cada rota em arquivos específicos para manter a base de código limpa e otimizar nosso limite de tokens de contexto na IDE. Use as ferramentas de MCP para alinhar as queries com as tabelas do Supabase.

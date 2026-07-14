@@ -1,0 +1,330 @@
+/* Estilos da Página da Equipe */
+.equipe-container {
+  padding: 40px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* Grid de colaboradores */
+.equipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.equipe-card {
+  background-color: #FDFBF7;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.equipe-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #D7C9B7;
+}
+
+/* Avatar circular do colaborador */
+.card-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--card-bg-primary); /* Marrom acinzetado */
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  border: 2px solid var(--border-color);
+}
+
+.card-info h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.especialidade-tag {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background-color: #F1EFEA;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.comissao-info {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.comissao-info strong {
+  color: var(--text-primary);
+}
+
+/* Ações do Card */
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  width: 100%;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+  justify-content: center;
+}
+
+.btn-card-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background-color: transparent;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-card-action:hover {
+  background-color: #F1EFEA;
+}
+
+.btn-card-action.edit:hover {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-card-action.delete:hover {
+  color: #DC2626;
+  background-color: #FEF2F2;
+  border-color: #FCA5A5;
+}
+
+/* Modal Wide para acomodar Jornada */
+.modal-card.wide {
+  max-width: 720px;
+  width: 100%;
+}
+
+/* Abas do Modal */
+.modal-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  gap: 8px;
+}
+
+.tab-btn {
+  padding: 12px 18px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  color: var(--text-primary);
+  border-bottom-color: #1E1E24;
+  font-weight: 600;
+}
+
+.tab-pane {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.tab-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+/* Formulário de Jornada Semanal */
+.jornada-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.jornada-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background-color: #FDFBF7;
+  transition: all 0.2s ease;
+}
+
+.jornada-row.inactive {
+  background-color: #F8F5EE;
+  opacity: 0.7;
+}
+
+.jornada-day-col {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.checkbox-container input {
+  width: 16px;
+  height: 16px;
+  accent-color: #1E1E24;
+  cursor: pointer;
+}
+
+.jornada-hours-cols {
+  display: flex;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.hour-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.hour-field span {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.hour-field input {
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background-color: #FDFBF7;
+}
+
+.folga-tag {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: #EAE5DC;
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-left: auto;
+}
+
+/* Grade de Checkbox de Serviços */
+.services-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.service-checkbox-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: #FDFBF7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.service-checkbox-card:hover {
+  border-color: #D7C9B7;
+  background-color: rgba(215, 201, 183, 0.05);
+}
+
+.service-checkbox-card input {
+  width: 16px;
+  height: 16px;
+  accent-color: #1E1E24;
+}
+
+.service-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.no-services-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-left: 4px solid #F59E0B;
+  padding: 14px;
+  border-radius: 10px;
+  color: #B45309;
+  font-size: 0.88rem;
+}
+
+/* Modal Form Scrollable & Sticky Actions */
+.modal-form-scrollable {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 100px);
+}
+
+.form-actions-sticky {
+  margin-top: 24px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+  background-color: #FDFBF7;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .equipe-container {
+    padding: 24px;
+  }
+
+  .jornada-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .jornada-hours-cols {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

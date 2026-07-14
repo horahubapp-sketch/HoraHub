@@ -1,0 +1,16 @@
+Atue como Engenheiro de Software Sênior especialista em lógica de sistemas no projeto HoraHub. Vamos focar na FRENTE B: Motor de Grade de Horários e Prevenção de Conflitos (estilo Trinks).
+
+Use os MCPs de Postgres e pensamento sequencial para implementar a lógica de cálculo de slots disponíveis.
+
+1. LÓGICA DE GERAÇÃO DE SLOTS (TypeScript ou PostgreSQL Function):
+Escreva uma função que receba `funcionario_id`, `data_desejada` (YYYY-MM-DD) e `servico_id`. A função deve retornar um array de horários livres disponíveis para o cliente (ex: `["09:00", "09:45", "10:30"...]`).
+Para gerar esse array, a lógica precisa:
+- Buscar a jornada de trabalho daquele profissional para o dia da semana específico.
+- Dividir o dia de trabalho em blocos (slots) baseados na `duracao_minutos` do serviço escolhido.
+- Remover automaticamente os blocos que coincidam com o intervalo de almoço do profissional (`almoco_inicio` até `almoco_fim`).
+- Remover os blocos que conflitem ou se sobreponham com agendamentos já existentes e ativos daquele dia.
+
+2. TRAVA DE SEGURANÇA (Double-Booking):
+Escreva a trigger de banco ou validação de backend que impeça que duas requisições gravem um agendamento no mesmo horário para o mesmo profissional. Retorne um erro amigável se o horário for ocupado no milissegundo anterior.
+
+Gere uma implementação limpa, com testes unitários simples ou validações lógicas documentadas para garantir precisão máxima de fusos horários.

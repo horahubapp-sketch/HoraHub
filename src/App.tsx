@@ -1,11 +1,45 @@
-import CalendarView from './components/CalendarView';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import Sidebar from './components/Sidebar';
+import AgendaPage from './pages/AgendaPage';
+import ServicosPage from './pages/ServicosPage';
+import EquipePage from './pages/EquipePage';
+
+// Layout Principal que engloba a barra lateral e o conteúdo da rota
+function Layout() {
+  return (
+    <div className="app-layout">
+      <Sidebar />
+      <main className="main-content">
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+
+// Configuração de rotas da aplicação
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <AgendaPage />,
+      },
+      {
+        path: 'admin/servicos',
+        element: <ServicosPage />,
+      },
+      {
+        path: 'admin/equipe',
+        element: <EquipePage />,
+      },
+    ],
+  },
+]);
 
 function App() {
-  return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <CalendarView />
-    </main>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

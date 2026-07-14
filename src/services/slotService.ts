@@ -1,19 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-
-// ============================================================
-// Inicialização do cliente Supabase
-// ============================================================
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'HoraHub: Variáveis de ambiente do Supabase não configuradas. ' +
-    'Verifique VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no arquivo .env.local'
-  );
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from './supabase';
 
 // ============================================================
 // Tipos de Dados
