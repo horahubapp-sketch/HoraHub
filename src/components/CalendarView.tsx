@@ -26,6 +26,7 @@ export const CalendarView = () => {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>(AGENDAMENTOS_MOCK);
   const [selectedAgendamento, setSelectedAgendamento] = useState<Agendamento | null>(null);
   const [showNewModal, setShowNewModal] = useState(false);
+  const [conflictError, setConflictError] = useState<string | null>(null);
   
   // State do Form do Novo Agendamento
   const [newClient, setNewClient] = useState('');
@@ -70,10 +71,39 @@ export const CalendarView = () => {
     .filter(a => a.status !== 'bloqueio')
     .reduce((sum, a) => sum + (a.preco || 0), 0);
 
+  // VALIDAÇÃO DE CONFLITO: Verifica se o novo agendamento sobrepõe algum existente
+  // Espelha a lógica da trigger PostgreSQL `verificar_conflito_agendamento`
+  // Intervalos semi-abertos [inicio, fim): aInicio < bFim && bInicio < aFim
+  const verificarConflito = (funcionarioId: string, inicio: string, fim: string): Agendamento | null => {
+    const novoInicio = timeToMinutes(inicio);
+    const novoFim = timeToMinutes(fim);
+
+    const agendamentoConflitante = agendamentos.find(a => {
+      if (a.funcionarioId !== funcionarioId) return false;
+      if (a.status === 'bloqueio') return false; // bloqueios visuais não são agendamentos reais
+      const existInicio = timeToMinutes(a.horarioInicio);
+      const existFim = timeToMinutes(a.horarioFim);
+      // Sobreposição: novoInicio < existFim && existInicio < novoFim
+      return novoInicio < existFim && existInicio < novoFim;
+    }) || null;
+
+    return agendamentoConflitante;
+  };
+
   // Manipular Adição de Agendamento
   const handleCreateAgendamento = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newClient || !newService) return;
+
+    // TRAVA DE DOUBLE-BOOKING: verificar conflito antes de salvar
+    const conflito = verificarConflito(newFuncionario, newTimeStart, newTimeEnd);
+    if (conflito) {
+      const profNome = funcionarios.find(f => f.id === newFuncionario)?.nome || 'este profissional';
+      setConflictError(
+        `Horário já ocupado! ${profNome} tem "${conflito.clienteNome}" das ${conflito.horarioInicio} às ${conflito.horarioFim}. Escolha outro horário.`
+      );
+      return;
+    }
 
     const newAgenda: Agendamento = {
       id: `a-${Date.now()}`,
@@ -92,6 +122,7 @@ export const CalendarView = () => {
     setNewClient('');
     setNewService('');
     setNewPrice('50');
+    setConflictError(null);
     setShowNewModal(false);
   };
 
@@ -386,11 +417,11 @@ export const CalendarView = () => {
 
       {/* MODAL NOVO AGENDAMENTO */}
       {showNewModal && (
-        <div className="modal-overlay" onClick={() => setShowNewModal(false)}>
+        <div className="modal-overlay" onClick={() => { setConflictError(null); setShowNewModal(false); }}>
           <div className="modal-card" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Novo Agendamento</h2>
-              <button className="btn-close" onClick={() => setShowNewModal(false)}>
+              <button className="btn-close" onClick={() => { setConflictError(null); setShowNewModal(false); }}>
                 <X size={18} />
               </button>
             </div>
@@ -423,7 +454,7 @@ export const CalendarView = () => {
                   <label>Profissional</label>
                   <select 
                     value={newFuncionario} 
-                    onChange={e => setNewFuncionario(e.target.value)}
+                    onChange={e => { setNewFuncionario(e.target.value); setConflictError(null); }}
                   >
                     {funcionarios.map(func => (
                       <option key={func.id} value={func.id}>{func.nome}</option>
@@ -448,7 +479,7 @@ export const CalendarView = () => {
                   <input 
                     type="time" 
                     value={newTimeStart} 
-                    onChange={e => setNewTimeStart(e.target.value)} 
+                    onChange={e => { setNewTimeStart(e.target.value); setConflictError(null); }} 
                     required 
                   />
                 </div>
@@ -458,11 +489,18 @@ export const CalendarView = () => {
                   <input 
                     type="time" 
                     value={newTimeEnd} 
-                    onChange={e => setNewTimeEnd(e.target.value)} 
+                    onChange={e => { setNewTimeEnd(e.target.value); setConflictError(null); }} 
                     required 
                   />
                 </div>
               </div>
+
+              {conflictError && (
+                <div className="conflict-error-banner">
+                  <AlertCircle size={16} />
+                  <span>{conflictError}</span>
+                </div>
+              )}
 
               <button type="submit" className="btn-submit">
                 Salvar Agendamento
