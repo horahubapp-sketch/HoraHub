@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Cores Base */
+  --bg-primary: #FDFBF7; /* Off-white de fundo */
+  --text-primary: #1E1E24; /* Grafite fosco para textos */
+  --text-secondary: #5C5B64; /* Cinza médio para textos secundários */
+  --border-color: #EAE5DC; /* Bordas suaves */
+  
+  /* Cores dos Profissionais/Serviços (Tons Pastéis Premium) */
+  --card-bg-primary: #E6DFD3; /* Marrom acinzentado */
+  --card-bg-secondary: #D7C9B7; /* Bege */
+  
+  /* Status Visual */
+  --status-confirmed: #D4EDDA; /* Verde pastel suave */
+  --status-confirmed-text: #155724;
+  --status-pending: #F2E8DF; /* Bege/Marrom pastel suave */
+  --status-pending-text: #856404;
+  --status-blocked: #F1F1F1; /* Cinza claro dessaturado (Almoço/Bloqueio) */
+  --status-blocked-text: #727272;
+  
+  /* Botões e Ações */
+  --btn-bg: #1E1E24; /* Grafite fosco */
+  --btn-text: #FDFBF7; /* Off-white */
+  --btn-hover: #33333C;
+  
+  /* Fontes e Sombras */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --shadow-sm: 0 2px 8px rgba(30, 30, 36, 0.04);
+  --shadow-md: 0 4px 20px rgba(30, 30, 36, 0.06);
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset e Estrutura Básica */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tipografia */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+/* Componentes Globais / Utilidades */
+button {
+  font-family: var(--font-family);
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: var(--transition);
+}
+
+.btn-pill {
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
+  padding: 10px 24px;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-pill:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-1px);
+}
+
+.btn-pill:active {
+  transform: translateY(0);
+}
