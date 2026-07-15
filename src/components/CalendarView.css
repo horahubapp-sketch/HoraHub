@@ -179,9 +179,11 @@
 
 .calendar-grid-wrapper {
   overflow-x: auto;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   min-width: 800px;
+  max-height: calc(100vh - 280px);
 }
 
 /* Header do Grid (Coluna dos Profissionais) */
