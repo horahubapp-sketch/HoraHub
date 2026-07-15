@@ -339,3 +339,143 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+/* Efeito de Blur e Overlay de Conta Pendente */
+.app-container-relative {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.app-layout.pending-blur {
+  filter: blur(8px) grayscale(30%);
+  pointer-events: none;
+  opacity: 0.65;
+  user-select: none;
+}
+
+.pending-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(11, 11, 13, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.pending-modal-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 40px;
+  border-radius: 24px;
+  background: rgba(22, 22, 26, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  text-align: center;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+  animation: pendingCardSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pending-icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(255, 179, 0, 0.1);
+  border: 1px solid rgba(255, 179, 0, 0.25);
+  color: #FFB300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px auto;
+  animation: pendingPulse 2.5s infinite;
+}
+
+.pending-modal-card h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.pending-subtitle {
+  font-size: 0.88rem;
+  color: #A0A0B2;
+  margin: 0 0 24px 0;
+}
+
+.pending-desc-box {
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 28px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #E2E2E9;
+}
+
+.pending-actions-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-pending-verify {
+  height: 46px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-pending-verify:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.btn-pending-logout {
+  height: 44px;
+  border-radius: 10px;
+  background-color: transparent;
+  color: #FF5252;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-pending-logout:hover {
+  background-color: rgba(255, 82, 82, 0.08);
+}
+
+@keyframes pendingPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.3); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 179, 0, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); }
+}
+
+@keyframes pendingCardSlideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
