@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, AlertCircle, Sparkles, Clock, Check } from 'lucide-react';
-import { supabase, MOCK_TENANT_ID } from '../services/supabase';
+import { supabase } from '../services/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import './ServicosPage.css';
 
 interface Servico {
@@ -19,6 +20,7 @@ const isUUID = (str: string): boolean => {
 };
 
 export default function ServicosPage() {
+  const { tenantId } = useAuth();
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -34,13 +36,14 @@ export default function ServicosPage() {
 
   // Carregar serviços (Supabase com fallback para LocalStorage em modo demo)
   const loadServicos = async () => {
+    if (!tenantId) return;
     setLoading(true);
     setErrorMsg(null);
     try {
       const { data, error } = await supabase
         .from('servicos')
         .select('id, nome, duracao_minutos, intervalo_preparo_minutos, preco')
-        .eq('tenant_id', MOCK_TENANT_ID)
+        .eq('tenant_id', tenantId)
         .order('nome', { ascending: true });
 
       if (error) throw error;
@@ -78,7 +81,7 @@ export default function ServicosPage() {
 
   useEffect(() => {
     loadServicos();
-  }, []);
+  }, [tenantId]);
 
   // Abrir modal para Novo Cadastro
   const handleNewClick = () => {
@@ -173,7 +176,7 @@ export default function ServicosPage() {
         const { error } = await supabase
           .from('servicos')
           .insert({
-            tenant_id: MOCK_TENANT_ID,
+            tenant_id: tenantId,
             nome,
             duracao_minutos: Number(duracao),
             intervalo_preparo_minutos: Number(preparo),

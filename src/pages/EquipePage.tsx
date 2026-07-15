@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, AlertCircle, Sparkles, Check, Scissors } from 'lucide-react';
-import { supabase, MOCK_TENANT_ID } from '../services/supabase';
+import { supabase } from '../services/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import './EquipePage.css';
 
 interface Funcionario {
@@ -44,6 +45,8 @@ const isUUID = (str: string): boolean => {
 };
 
 export default function EquipePage() {
+  const { tenantId } = useAuth();
+
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [todosServicos, setTodosServicos] = useState<Servico[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,6 +82,7 @@ export default function EquipePage() {
 
   // Carregar dados (Supabase com fallback de LocalStorage)
   const loadDados = async () => {
+    if (!tenantId) return;
     setLoading(true);
     setErrorMsg(null);
     try {
@@ -86,7 +90,7 @@ export default function EquipePage() {
       const { data: funcs, error: errFuncs } = await supabase
         .from('funcionarios')
         .select('id, nome, especialidade, comissao_percentual, foto_url')
-        .eq('tenant_id', MOCK_TENANT_ID)
+        .eq('tenant_id', tenantId)
         .order('nome', { ascending: true });
 
       if (errFuncs) throw errFuncs;
@@ -99,7 +103,7 @@ export default function EquipePage() {
       const { data: servs, error: errServs } = await supabase
         .from('servicos')
         .select('id, nome')
-        .eq('tenant_id', MOCK_TENANT_ID)
+        .eq('tenant_id', tenantId)
         .order('nome', { ascending: true });
 
       if (errServs) throw errServs;
@@ -144,7 +148,7 @@ export default function EquipePage() {
 
   useEffect(() => {
     loadDados();
-  }, []);
+  }, [tenantId]);
 
   // Abrir Modal de Novo Profissional
   const handleNewClick = () => {
@@ -278,7 +282,7 @@ export default function EquipePage() {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = `${MOCK_TENANT_ID}/${fileName}`;
+      const filePath = `${tenantId || 'global'}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -390,7 +394,7 @@ export default function EquipePage() {
         const { data: newFunc, error: errFunc } = await supabase
           .from('funcionarios')
           .insert({
-            tenant_id: MOCK_TENANT_ID,
+            tenant_id: tenantId,
             nome,
             especialidade,
             comissao_percentual: Number(comissao),
@@ -464,7 +468,7 @@ export default function EquipePage() {
           .from('funcionario_servicos')
           .insert(
             servicosSelecionados.map(sid => ({
-              tenant_id: MOCK_TENANT_ID,
+              tenant_id: tenantId,
               funcionario_id: funcId,
               servico_id: sid
             }))

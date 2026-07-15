@@ -163,3 +163,41 @@
     justify-content: center;
   }
 }
+
+/* Botão de Logout */
+.btn-logout-sidebar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: rgba(253, 251, 247, 0.5);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.btn-logout-sidebar:hover {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: #F87171;
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+/* Responsividade do Logout */
+@media (max-width: 768px) {
+  .btn-logout-sidebar {
+    justify-content: center;
+    padding: 10px;
+  }
+  
+  .btn-logout-sidebar span {
+    display: none;
+  }
+}

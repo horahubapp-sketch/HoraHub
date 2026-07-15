@@ -1,0 +1,308 @@
+/* =========================================================================
+   ESTILOS PREMIUM GLASSMORPHIC PARA A TELA DE CADASTRO DO HORAHUB
+   ========================================================================= */
+
+.register-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #0b0b0d;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+  padding: 40px 20px;
+}
+
+/* Background com Efeitos de Luz */
+.register-bg-decor-1 {
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 230, 118, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(45px);
+  pointer-events: none;
+}
+
+.register-bg-decor-2 {
+  position: absolute;
+  bottom: -10%;
+  left: -10%;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 180, 216, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+/* Cartão de Vidro Largo */
+.register-glass-card {
+  width: 100%;
+  max-width: 860px;
+  padding: 44px;
+  border-radius: 28px;
+  background: rgba(22, 22, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  animation: registerCardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 10;
+}
+
+.register-card-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.register-logo-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00E676 0%, #00B4D8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+}
+
+.register-sparkle {
+  color: #FFFFFF;
+}
+
+.register-card-header h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.register-card-header p {
+  font-size: 0.88rem;
+  color: #A0A0B2;
+  margin: 0;
+}
+
+/* Alertas */
+.register-error-banner,
+.register-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.register-error-banner {
+  background-color: rgba(211, 47, 47, 0.1);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  color: #FF5252;
+}
+
+.register-success-banner {
+  background-color: rgba(56, 142, 60, 0.1);
+  border: 1px solid rgba(56, 142, 60, 0.2);
+  color: #69F0AE;
+}
+
+/* Formulário em Grid */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.register-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.register-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.register-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 10px;
+}
+
+.register-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.register-field-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #A0A0B2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.register-input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.register-input-icon-wrapper input {
+  height: 48px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 0 16px 0 46px;
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.register-input-icon-wrapper input:focus {
+  outline: none;
+  border-color: #00E676;
+  background-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1);
+}
+
+.register-input-icon {
+  position: absolute;
+  left: 16px;
+  color: #A0A0B2;
+  transition: color 0.2s ease;
+}
+
+.register-input-icon-wrapper input:focus + .register-input-icon {
+  color: #00E676;
+}
+
+.register-slug-preview {
+  font-size: 0.82rem;
+  color: #A0A0B2;
+  margin-top: 2px;
+}
+
+.register-slug-preview code {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #FFFFFF;
+  font-family: monospace;
+}
+
+.register-slug-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.register-slug-status .validating {
+  color: #A0A0B2;
+}
+
+.register-slug-status .available {
+  color: #69F0AE;
+}
+
+.register-slug-status .unavailable {
+  color: #FF5252;
+}
+
+/* Botão Submit */
+.btn-register-submit {
+  height: 52px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00E676 0%, #00C853 100%);
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.2);
+  width: 100%;
+}
+
+.btn-register-submit:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 230, 118, 0.3);
+}
+
+.btn-register-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Footer do Card */
+.register-card-footer {
+  margin-top: 32px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 24px;
+}
+
+.register-card-footer p {
+  font-size: 0.85rem;
+  color: #A0A0B2;
+  margin: 0 0 8px 0;
+}
+
+.register-login-link {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #00E676;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.register-login-link:hover {
+  color: #00B4D8;
+  text-decoration: underline;
+}
+
+@keyframes registerCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .register-glass-card {
+    padding: 32px 20px;
+    border-radius: 20px;
+  }
+
+  .register-form-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}

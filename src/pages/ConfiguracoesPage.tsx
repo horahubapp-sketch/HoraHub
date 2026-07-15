@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   Building, 
   Mail, 
@@ -12,9 +13,9 @@ import {
 } from 'lucide-react';
 import './ConfiguracoesPage.css';
 
-const MOCK_TENANT_ID = 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7';
-
 export default function ConfiguracoesPage() {
+  const { tenantId, refreshEmpresa } = useAuth();
+
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [sucessoMsg, setSucessoMsg] = useState<string | null>(null);
@@ -36,12 +37,13 @@ export default function ConfiguracoesPage() {
   // 1. Carregar Configurações Atuais
   useEffect(() => {
     async function loadConfig() {
+      if (!tenantId) return;
       setLoading(true);
       try {
         const { data, error } = await supabase
           .from('empresas')
           .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url')
-          .eq('id', MOCK_TENANT_ID)
+          .eq('id', tenantId)
           .single();
 
         if (error) throw error;
@@ -62,7 +64,7 @@ export default function ConfiguracoesPage() {
       }
     }
     loadConfig();
-  }, []);
+  }, [tenantId]);
 
   // 2. Validar Unicidade de Slug em Tempo Real
   useEffect(() => {
@@ -131,7 +133,7 @@ export default function ConfiguracoesPage() {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `logo-${Date.now()}.${fileExt}`;
-      const filePath = `${MOCK_TENANT_ID}/${fileName}`;
+      const filePath = `${tenantId || 'global'}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -187,6 +189,7 @@ export default function ConfiguracoesPage() {
 
       if (error) throw error;
 
+      await refreshEmpresa();
       setSucessoMsg('Configurações salvas e aplicadas com sucesso!');
       
       // Esconder a mensagem de sucesso após 3 segundos

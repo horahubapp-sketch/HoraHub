@@ -1,8 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { Calendar, Scissors, Users, ShieldAlert, Settings } from 'lucide-react';
+import { Calendar, Scissors, Users, ShieldAlert, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import './Sidebar.css';
 
 export default function Sidebar() {
+  const { signOut } = useAuth();
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -46,6 +49,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
+        <button className="btn-logout-sidebar" onClick={signOut} title="Sair do painel">
+          <LogOut size={16} />
+          <span>Sair da Conta</span>
+        </button>
         <div className="system-status">
           <ShieldAlert size={16} />
           <span>Backoffice</span>

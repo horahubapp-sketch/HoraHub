@@ -16,6 +16,7 @@ import {
 import { FUNCIONARIOS_MOCK } from '../mockData';
 import type { Funcionario, Agendamento } from '../mockData';
 import { supabase } from '../services/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import './CalendarView.css';
 
 const START_HOUR = 8;
@@ -30,6 +31,8 @@ interface Servico {
 }
 
 export const CalendarView = () => {
+  const { tenantId } = useAuth();
+
   // Sincronização com LocalStorage para dados em modo demo
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [catalogoServicos, setCatalogoServicos] = useState<Servico[]>([]);
@@ -90,6 +93,7 @@ export const CalendarView = () => {
     const dataKey = obterDataKey(currentDate);
     
     async function loadAgendamentos() {
+      if (!tenantId) return;
       try {
         const inicioDia = `${dataKey}T00:00:00Z`;
         const fimDia = `${dataKey}T23:59:59Z`;
@@ -105,6 +109,7 @@ export const CalendarView = () => {
             status,
             servicos ( nome, preco )
           `)
+          .eq('tenant_id', tenantId)
           .gte('horario_inicio', inicioDia)
           .lte('horario_inicio', fimDia)
           .neq('status', 'cancelado');
@@ -170,7 +175,7 @@ export const CalendarView = () => {
     }
 
     loadAgendamentos();
-  }, [currentDate, funcionarios]);
+  }, [currentDate, funcionarios, tenantId]);
 
   const salvarAgendamentosDaData = (novaLista: Agendamento[]) => {
     const dataKey = obterDataKey(currentDate);
@@ -374,7 +379,7 @@ export const CalendarView = () => {
       const { data: inserted, error } = await supabase
         .from('agendamentos')
         .insert({
-          tenant_id: 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', // default tenant
+          tenant_id: tenantId,
           funcionario_id: newFuncionario,
           cliente_name: newClient,
           servico_id: newServiceId,

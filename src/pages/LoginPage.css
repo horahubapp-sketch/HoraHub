@@ -1,0 +1,243 @@
+/* =========================================================================
+   ESTILOS PREMIUM GLASSMORPHIC PARA A TELA DE LOGIN DO HORAHUB
+   ========================================================================= */
+
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #0b0b0d;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+/* Background com Efeitos de Luz */
+.login-bg-decor-1 {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 230, 118, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.login-bg-decor-2 {
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 180, 216, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+/* Cartão de Vidro */
+.login-glass-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px;
+  border-radius: 24px;
+  background: rgba(22, 22, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+  animation: loginCardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 10;
+}
+
+.login-card-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-logo-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00E676 0%, #00B4D8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+}
+
+.login-sparkle {
+  color: #FFFFFF;
+}
+
+.login-card-header h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.login-card-header p {
+  font-size: 0.88rem;
+  color: #A0A0B2;
+  margin: 0;
+}
+
+/* Alerta de Erro */
+.login-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: rgba(211, 47, 47, 0.1);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  color: #FF5252;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+/* Campos de Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-field-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #A0A0B2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.login-input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-icon-wrapper input {
+  height: 48px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 0 16px 0 46px;
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.login-input-icon-wrapper input:focus {
+  outline: none;
+  border-color: #00E676;
+  background-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1);
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 16px;
+  color: #A0A0B2;
+  transition: color 0.2s ease;
+}
+
+.login-input-icon-wrapper input:focus + .login-input-icon {
+  color: #00E676;
+}
+
+/* Botão Submit */
+.btn-login-submit {
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00E676 0%, #00C853 100%);
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.2);
+}
+
+.btn-login-submit:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 230, 118, 0.3);
+}
+
+.btn-login-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Footer do Card */
+.login-card-footer {
+  margin-top: 28px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 20px;
+}
+
+.login-card-footer p {
+  font-size: 0.85rem;
+  color: #A0A0B2;
+  margin: 0 0 8px 0;
+}
+
+.login-register-link {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #00E676;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.login-register-link:hover {
+  color: #00B4D8;
+  text-decoration: underline;
+}
+
+@keyframes loginCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .login-glass-card {
+    padding: 30px 24px;
+    border-radius: 16px;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+}
