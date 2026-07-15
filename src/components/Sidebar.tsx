@@ -3,6 +3,11 @@ import { ShieldAlert, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import './Sidebar.css';
 
+// Importação direta dos assets de ícones
+import scheduleImg from '../assets/schedule.png';
+import servicesImg from '../assets/users-loyalty.png';
+import teamImg from '../assets/people-poll.png';
+
 export default function Sidebar() {
   const { signOut, user } = useAuth();
 
@@ -18,7 +23,13 @@ export default function Sidebar() {
           to="/" 
           className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
         >
-          <span className="sidebar-schedule-icon"></span>
+          <span 
+            className="sidebar-schedule-icon"
+            style={{
+              maskImage: `url(${scheduleImg})`,
+              WebkitMaskImage: `url(${scheduleImg})`
+            }}
+          ></span>
           <span className="sidebar-label">Agenda</span>
           <span className="badge-live">LIVE</span>
         </NavLink>
@@ -27,7 +38,13 @@ export default function Sidebar() {
           to="/admin/servicos" 
           className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
         >
-          <span className="sidebar-custom-icon"></span>
+          <span 
+            className="sidebar-custom-icon"
+            style={{
+              maskImage: `url(${servicesImg})`,
+              WebkitMaskImage: `url(${servicesImg})`
+            }}
+          ></span>
             <span className="sidebar-label">Serviços</span>
         </NavLink>
 
@@ -35,7 +52,13 @@ export default function Sidebar() {
           to="/admin/equipe" 
           className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
         >
-          <span className="sidebar-people-poll-icon"></span>
+          <span 
+            className="sidebar-people-poll-icon"
+            style={{
+              maskImage: `url(${teamImg})`,
+              WebkitMaskImage: `url(${teamImg})`
+            }}
+          ></span>
             <span className="sidebar-label">Equipe</span>
         </NavLink>
 

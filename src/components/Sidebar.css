@@ -87,20 +87,6 @@
   display: inline-block;
 }
 
-.sidebar-custom-icon {
-  -webkit-mask-image: url('../assets/users-loyalty.png');
-  mask-image: url('../assets/users-loyalty.png');
-}
-
-.sidebar-schedule-icon {
-  -webkit-mask-image: url('../assets/schedule.png');
-  mask-image: url('../assets/schedule.png');
-}
-
-.sidebar-people-poll-icon {
-  -webkit-mask-image: url('../assets/people-poll.png');
-  mask-image: url('../assets/people-poll.png');
-}
 
 /* Hover State */
 .sidebar-link:hover {
