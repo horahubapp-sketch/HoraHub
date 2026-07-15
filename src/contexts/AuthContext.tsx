@@ -54,6 +54,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Buscar empresa com retry automático para tratar a assincronia pós-cadastro
+  const fetchEmpresaComRetry = async (userId: string, userEmail?: string, retries = 5, delay = 500): Promise<Empresa | null> => {
+    for (let i = 0; i < retries; i++) {
+      const emp = await fetchEmpresaParaUsuario(userId);
+      if (emp) return emp;
+      
+      // Se for o admin mock do seed local, não precisa esperar retry de insert
+      if (userEmail === 'admin@horahub.com') {
+        break;
+      }
+      
+      if (i < retries - 1) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    return null;
+  };
+
   const refreshEmpresa = async () => {
     if (user) {
       const emp = await fetchEmpresaParaUsuario(user.id);
@@ -70,14 +88,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        const emp = await fetchEmpresaParaUsuario(session.user.id);
+        const emp = await fetchEmpresaComRetry(session.user.id, session.user.email);
         if (emp) {
           setEmpresa(emp);
           setTenantId(emp.id);
-        } else {
-          // Fallback temporário para tenant mock de seed local
-          // Isso ajuda nos testes locais caso o usuário de seed precise carregar
+        } else if (session.user.email === 'admin@horahub.com') {
+          // Apenas atrela o mock do seed se for especificamente o usuário de seed
           setTenantId('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7');
+        } else {
+          setEmpresa(null);
+          setTenantId(null);
         }
       } else {
         setEmpresa(null);
@@ -90,12 +110,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        const emp = await fetchEmpresaParaUsuario(session.user.id);
+        const emp = await fetchEmpresaComRetry(session.user.id, session.user.email);
         if (emp) {
           setEmpresa(emp);
           setTenantId(emp.id);
-        } else {
+        } else if (session.user.email === 'admin@horahub.com') {
+          // Apenas atrela o mock do seed se for especificamente o usuário de seed
           setTenantId('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7');
+        } else {
+          setEmpresa(null);
+          setTenantId(null);
         }
       } else {
         setEmpresa(null);
