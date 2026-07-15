@@ -96,8 +96,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Apenas atrela o mock do seed se for especificamente o usuário de seed
           setTenantId('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7');
         } else {
-          setEmpresa(null);
-          setTenantId(null);
+          // Se já estiver populado de forma síncrona pelo signUp, não limpa!
+          setEmpresa(prev => prev && prev.id ? prev : null);
+          setTenantId(prev => prev ? prev : null);
         }
       } else {
         setEmpresa(null);
@@ -118,8 +119,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Apenas atrela o mock do seed se for especificamente o usuário de seed
           setTenantId('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7');
         } else {
-          setEmpresa(null);
-          setTenantId(null);
+          // Se já estiver populado de forma síncrona pelo signUp, não limpa!
+          setEmpresa(prev => prev && prev.id ? prev : null);
+          setTenantId(prev => prev ? prev : null);
         }
       } else {
         setEmpresa(null);
@@ -180,6 +182,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('[HoraHub] Erro ao cadastrar empresa na trigger:', empError);
       throw empError;
     }
+
+    // Atualiza estados na mesma hora síncronamente para evitar qualquer flash no redirecionamento
+    setEmpresa(empData);
+    setTenantId(empData.id);
+    setUser(authData.user);
 
     return { user: authData.user, empresa: empData };
   };

@@ -13,8 +13,9 @@ import { Clock, LogOut } from 'lucide-react';
 
 // Layout Principal que engloba a barra lateral e o conteúdo da rota
 function Layout() {
-  const { empresa, signOut } = useAuth();
-  const isPendente = empresa && empresa.plano_status !== 'ativo';
+  const { empresa, signOut, user } = useAuth();
+  const isAtivo = (user?.email === 'admin@horahub.com') || (empresa && empresa.plano_status === 'ativo');
+  const isPendente = !isAtivo;
 
   return (
     <div className="app-container-relative" style={{ width: '100%' }}>
@@ -36,7 +37,7 @@ function Layout() {
             <p className="pending-subtitle">O acesso ao painel do HoraHub está aguardando ativação.</p>
 
             <div className="pending-desc-box">
-              Olá! Recebemos a solicitação de registro de <strong>{empresa.nome}</strong>. 
+              Olá! Recebemos a solicitação de registro de <strong>{empresa?.nome || 'sua empresa'}</strong>. 
               <br /><br />
               Nossa equipe administrativa já foi notificada e está realizando a validação dos dados cadastrados corporativos. Em breve seu acesso completo será liberado e você poderá começar a utilizar o painel.
             </div>
