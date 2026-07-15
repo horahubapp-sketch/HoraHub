@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import './Sidebar.css';
 
 export default function Sidebar() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
 
   return (
     <aside className="sidebar">
@@ -49,6 +49,21 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
+        {user?.email === 'admin@horahub.com' && (
+          <NavLink 
+            to="/superadmin" 
+            className="sidebar-link btn-superadmin-link"
+            style={{ 
+              marginBottom: '12px', 
+              border: '1px solid rgba(0, 230, 118, 0.2)', 
+              backgroundColor: 'rgba(0, 230, 118, 0.05)', 
+              color: '#00E676' 
+            }}
+          >
+            <ShieldAlert size={20} style={{ color: '#00E676' }} />
+            <span className="sidebar-label">Super Admin</span>
+          </NavLink>
+        )}
         <button className="btn-logout-sidebar" onClick={signOut} title="Sair do painel">
           <LogOut size={16} />
           <span>Sair da Conta</span>

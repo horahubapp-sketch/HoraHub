@@ -1,7 +1,11 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function ProtectedRoute() {
+interface ProtectedRouteProps {
+  requireSuperAdmin?: boolean;
+}
+
+export default function ProtectedRoute({ requireSuperAdmin = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -25,6 +29,11 @@ export default function ProtectedRoute() {
   // Se não autenticado, redireciona para Login
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Se exige super admin mas o e-mail não for o master
+  if (requireSuperAdmin && user.email !== 'admin@horahub.com') {
+    return <Navigate to="/" replace />;
   }
 
   // Se autenticado, libera o acesso às rotas filhas (Dashboard/Agenda)
