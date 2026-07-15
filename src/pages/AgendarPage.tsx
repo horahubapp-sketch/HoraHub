@@ -578,7 +578,7 @@ export default function AgendarPage() {
                   <strong>Privacidade & Segurança (LGPD)</strong>
                 </div>
                 <p>
-                  Coletamos seus dados cadastrais apenas para registrar o agendamento, identificar seu atendimento na barbearia/clínica e enviar notificações automáticas de confirmação e lembretes via WhatsApp.
+                  Coletamos seus dados cadastrais apenas para registrar o agendamento, identificar seu atendimento em <strong>{empresa.nome}</strong> e enviar notificações automáticas de confirmação e lembretes via WhatsApp.
                 </p>
                 <label className="lgpd-checkbox-container">
                   <input 
