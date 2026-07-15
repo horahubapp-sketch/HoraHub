@@ -100,6 +100,61 @@ export default function ConfiguracoesPage() {
     return () => clearTimeout(timer);
   }, [slug, empresaId]);
 
+  // Upload Híbrido de Logotipo local/online
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  const handleLogoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErroMsg('Por favor, selecione um arquivo de imagem válido.');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setErroMsg('A imagem deve ter no máximo 2MB.');
+      return;
+    }
+
+    setUploadingLogo(true);
+    setErroMsg(null);
+
+    // 1. Fallback visual Base64
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setLogoUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // 2. Upload real no storage do Supabase
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo-${Date.now()}.${fileExt}`;
+      const filePath = `${MOCK_TENANT_ID}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        console.warn('[HoraHub] Falha no storage do Supabase local. Mantendo Base64 offline:', uploadError.message);
+        setUploadingLogo(false);
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setLogoUrl(publicUrl);
+    } catch (err) {
+      console.warn('[HoraHub] Erro no upload da logo. Preservado Base64.');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
   // 3. Salvar no Supabase
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -232,13 +287,37 @@ export default function ConfiguracoesPage() {
           </div>
 
           <div className="form-group-config">
-            <label>Logotipo (URL da Imagem)</label>
-            <input 
-              type="url" 
-              placeholder="https://exemplo.com/logo.png"
-              value={logoUrl}
-              onChange={e => setLogoUrl(e.target.value)}
-            />
+            <label>Logotipo da Empresa</label>
+            <div className="logo-upload-wrapper">
+              <div className="logo-thumbnail-preview">
+                {logoUrl ? (
+                  <img src={logoUrl} alt="Thumbnail do Logo" />
+                ) : (
+                  <div className="logo-thumbnail-placeholder">★</div>
+                )}
+              </div>
+
+              <div className="logo-inputs-block">
+                <input 
+                  type="text" 
+                  placeholder="URL da imagem (ex: https://exemplo.com/logo.png)"
+                  value={logoUrl}
+                  onChange={e => setLogoUrl(e.target.value)}
+                  className="input-logo-url"
+                />
+
+                <label className="btn-upload-logo-local">
+                  {uploadingLogo ? 'Enviando...' : 'Carregar Imagem Local'}
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={handleLogoFileChange}
+                    style={{ display: 'none' }}
+                    disabled={uploadingLogo}
+                  />
+                </label>
+              </div>
+            </div>
           </div>
 
           <button type="submit" className="btn-save-config" disabled={salvando || slugDisponivel === false}>

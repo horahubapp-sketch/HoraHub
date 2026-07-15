@@ -405,3 +405,70 @@
     transform: translateY(0);
   }
 }
+
+/* Logo Upload Styles */
+.logo-upload-wrapper {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.logo-thumbnail-preview {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  overflow: hidden;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-thumbnail-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-thumbnail-placeholder {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.logo-inputs-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.input-logo-url {
+  font-size: 0.88rem !important;
+  height: 38px !important;
+}
+
+.btn-upload-logo-local {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  width: fit-content;
+}
+
+.btn-upload-logo-local:hover {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+}
+
