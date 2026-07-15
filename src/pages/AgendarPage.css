@@ -181,6 +181,7 @@ body {
   font-size: 1.05rem;
   margin: 0 0 6px 0;
   font-weight: 600;
+  color: #FFFFFF !important;
 }
 
 .duration-tag {
@@ -267,7 +268,7 @@ body {
   font-size: 1rem;
   font-weight: 600;
   margin: 0 0 4px 0;
-  color: var(--booking-text-primary);
+  color: #FFFFFF !important;
 }
 
 .team-card-booking p {

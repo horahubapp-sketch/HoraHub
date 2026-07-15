@@ -30,7 +30,6 @@ interface Funcionario {
 
 interface JornadaDia {
   dia_semana: number;
-  ativo: boolean;
   hora_inicio: string;
   hora_fim: string;
   almoco_inicio: string;
@@ -163,13 +162,13 @@ export default function AgendarPage() {
         // Busca Jornada de Trabalho do Profissional
         const { data: jorn, error: errJorn } = await supabase
           .from('jornadas_trabalho')
-          .select('dia_semana, ativo, hora_inicio, hora_fim, almoco_inicio, almoco_fim')
+          .select('dia_semana, hora_inicio, hora_fim, almoco_inicio, almoco_fim')
           .eq('funcionario_id', funcionarioSelecionado!.id)
           .eq('dia_semana', diaSemana)
           .single();
 
-        // Se der erro ou a jornada do dia não for ativa, assume que não trabalha hoje
-        if (errJorn || !jorn || !jorn.ativo) {
+        // Se der erro ou a jornada não existir, assume que não trabalha hoje
+        if (errJorn || !jorn) {
           setSlotsDisponiveis([]);
           setCalculandoSlots(false);
           return;
