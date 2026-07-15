@@ -13,6 +13,11 @@ interface Servico {
 
 const LOCAL_STORAGE_KEY = 'horahub_servicos_demo';
 
+const isUUID = (str: string): boolean => {
+  const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return regex.test(str);
+};
+
 export default function ServicosPage() {
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [loading, setLoading] = useState(true);
@@ -117,7 +122,23 @@ export default function ServicosPage() {
 
     try {
       if (editingServico) {
-        // Atualizar no Supabase
+        // Se o ID não for um UUID válido (for um mock como 's-mock-1' ou 's1'), salva diretamente local
+        if (!isUUID(editingServico.id)) {
+          const novaLista = servicos.map(s => s.id === editingServico.id ? {
+            ...s,
+            nome,
+            duracao_minutos: Number(duracao),
+            intervalo_preparo_minutos: Number(preparo),
+            preco: precoNumerico
+          } : s);
+          setServicos(novaLista);
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(novaLista));
+          showSuccess('Modo Demo: Serviço atualizado localmente!');
+          setShowModal(false);
+          return;
+        }
+
+        // Atualizar no Supabase (para UUIDs reais)
         const { error } = await supabase
           .from('servicos')
           .update({
@@ -197,6 +218,15 @@ export default function ServicosPage() {
 
     setErrorMsg(null);
     try {
+      // Se for um ID mockado (não-UUID), deleta diretamente local
+      if (!isUUID(id)) {
+        const novaLista = servicos.filter(s => s.id !== id);
+        setServicos(novaLista);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(novaLista));
+        showSuccess('Modo Demo: Serviço removido localmente!');
+        return;
+      }
+
       const { error } = await supabase
         .from('servicos')
         .delete()
