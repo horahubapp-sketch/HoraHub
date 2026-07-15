@@ -681,20 +681,16 @@ export default function EquipePage() {
 
                   <div className="form-group">
                     <label>Foto do Colaborador</label>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '10px' }}>
-                      <div className="card-avatar" style={{ width: '60px', height: '60px', minWidth: '60px', fontSize: '1.4rem', margin: 0 }}>
+                    <div className="avatar-upload-block">
+                      <div className="avatar-preview-box">
                         {fotoUrl ? (
-                          <img 
-                            src={fotoUrl} 
-                            alt="Preview" 
-                            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
-                          />
+                          <img src={fotoUrl} alt="Preview" />
                         ) : (
                           nome ? nome.charAt(0).toUpperCase() : '?'
                         )}
                       </div>
                       
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div className="avatar-upload-inputs">
                         <input 
                           type="file" 
                           accept="image/*" 
@@ -702,24 +698,10 @@ export default function EquipePage() {
                           style={{ display: 'none' }} 
                           onChange={handleFileChange} 
                         />
-                        <label 
-                          htmlFor="file-upload"
-                          style={{ 
-                            padding: '10px 16px', 
-                            borderRadius: '8px', 
-                            cursor: 'pointer', 
-                            fontSize: '0.85rem',
-                            display: 'inline-block',
-                            backgroundColor: '#1E1E24',
-                            color: '#FFFFFF',
-                            fontWeight: 600,
-                            textAlign: 'center',
-                            width: 'fit-content'
-                          }}
-                        >
+                        <label htmlFor="file-upload" className="btn-upload-avatar">
                           {uploading ? 'Carregando...' : 'Selecionar do Dispositivo'}
                         </label>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        <span className="upload-tip">
                           JPG, PNG (Recomendado: 1:1, máx. 2MB)
                         </span>
                       </div>
