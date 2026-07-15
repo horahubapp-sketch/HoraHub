@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Mail, Lock, LogIn, Sparkles, AlertCircle } from 'lucide-react';
+import { Mail, Lock, LogIn, Sparkles, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import './LoginPage.css';
 
 export default function LoginPage() {
@@ -10,6 +10,7 @@ export default function LoginPage() {
   
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [showSenha, setShowSenha] = useState(false);
   
   const [loading, setLoading] = useState(false);
   const [erroMsg, setErroMsg] = useState<string | null>(null);
@@ -80,16 +81,43 @@ export default function LoginPage() {
 
           <div className="login-field-group">
             <label>Sua Senha</label>
-            <div className="login-input-icon-wrapper">
+            <div className="login-input-icon-wrapper" style={{ position: 'relative' }}>
               <Lock size={18} className="login-input-icon" />
               <input 
-                type="password" 
+                type={showSenha ? 'text' : 'password'} 
                 placeholder="Digite sua senha"
                 value={senha}
                 onChange={e => setSenha(e.target.value)}
                 required
                 disabled={loading}
+                style={{ paddingRight: '48px' }}
               />
+              <button
+                type="button"
+                className="btn-toggle-password"
+                onClick={() => setShowSenha(!showSenha)}
+                title={showSenha ? "Ocultar senha" : "Exibir senha"}
+                disabled={loading}
+                style={{
+                  position: 'absolute',
+                  right: '16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'rgba(255, 255, 255, 0.4)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0,
+                  transition: 'color 0.2s'
+                }}
+                onMouseOver={e => e.currentTarget.style.color = '#FFFFFF'}
+                onMouseOut={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'}
+              >
+                {showSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 

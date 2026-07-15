@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
-import { User, Mail, Lock, Building, Link2, Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Mail, Lock, Building, Link2, Sparkles, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import './CadastroPage.css';
 
 export default function CadastroPage() {
@@ -20,6 +20,7 @@ export default function CadastroPage() {
   const [loading, setLoading] = useState(false);
   const [erroMsg, setErroMsg] = useState<string | null>(null);
   const [sucessoMsg, setSucessoMsg] = useState<string | null>(null);
+  const [showSenha, setShowSenha] = useState(false);
 
   // Validação de Slug em tempo real
   const [slugDisponivel, setSlugDisponivel] = useState<boolean | null>(null);
@@ -155,16 +156,43 @@ export default function CadastroPage() {
 
               <div className="register-field-group">
                 <label>Escolha uma Senha</label>
-                <div className="register-input-icon-wrapper">
+                <div className="register-input-icon-wrapper" style={{ position: 'relative' }}>
                   <Lock size={18} className="register-input-icon" />
                   <input 
-                    type="password" 
+                    type={showSenha ? 'text' : 'password'} 
                     placeholder="Mínimo 6 caracteres"
                     value={senha}
                     onChange={e => setSenha(e.target.value)}
                     required
                     disabled={loading}
+                    style={{ paddingRight: '48px' }}
                   />
+                  <button
+                    type="button"
+                    className="btn-toggle-password"
+                    onClick={() => setShowSenha(!showSenha)}
+                    title={showSenha ? "Ocultar senha" : "Exibir senha"}
+                    disabled={loading}
+                    style={{
+                      position: 'absolute',
+                      right: '16px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(255, 255, 255, 0.4)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: 0,
+                      transition: 'color 0.2s'
+                    }}
+                    onMouseOver={e => e.currentTarget.style.color = '#FFFFFF'}
+                    onMouseOut={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'}
+                  >
+                    {showSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
             </div>
