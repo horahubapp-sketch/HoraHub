@@ -27,7 +27,7 @@ export default function Sidebar() {
           to="/admin/servicos" 
           className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
         >
-          <i className="fi fi-tr-users-loyalty sidebar-icon" style={{ fontSize: '20px' }}></i>
+          <span className="sidebar-custom-icon"></span>
             <span className="sidebar-label">Serviços</span>
         </NavLink>
 
