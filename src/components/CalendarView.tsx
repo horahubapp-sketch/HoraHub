@@ -482,10 +482,15 @@ export const CalendarView = () => {
                             }}
                             onClick={() => setSelectedAgendamento(agenda)}
                           >
-                            <span className="card-time">{agenda.horarioInicio} - {agenda.horarioFim}</span>
-                            <h4 className="card-client">{agenda.clienteNome}</h4>
-                            <p className="card-service">{agenda.servicoNome}</p>
-                            {agenda.preco && <span className="card-price">R$ {agenda.preco.toFixed(2)}</span>}
+                            <div className="card-indicator"></div>
+                            <div className="appointment-card-content">
+                              <div className="appointment-header">
+                                <span className="appointment-time">{agenda.horarioInicio} - {agenda.horarioFim}</span>
+                              </div>
+                              <h4 className="client-name">{agenda.clienteNome}</h4>
+                              <p className="service-name">{agenda.servicoNome}</p>
+                              {agenda.preco && <span className="price-tag">R$ {Number(agenda.preco).toFixed(2)}</span>}
+                            </div>
                           </div>
                         );
                       })}
@@ -625,18 +630,32 @@ export const CalendarView = () => {
                 />
               </div>
 
-              {/* ORDEM ALTERADA: 1º PROFISSIONAL, 2º SERVIÇO (COMBOBOX) */}
+              {/* PROFISSIONAL ISOLADO (LARGURA INTEIRA) */}
+              <div className="form-group">
+                <label>Profissional</label>
+                <select 
+                  value={newFuncionario} 
+                  onChange={e => handleFuncionarioChange(e.target.value)}
+                >
+                  {funcionarios.map(func => (
+                    <option key={func.id} value={func.id}>{func.nome}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* PREÇO SUGERIDO | SERVIÇO HABILITADO */}
               <div className="form-row">
                 <div className="form-group">
-                  <label>Profissional</label>
-                  <select 
-                    value={newFuncionario} 
-                    onChange={e => handleFuncionarioChange(e.target.value)}
-                  >
-                    {funcionarios.map(func => (
-                      <option key={func.id} value={func.id}>{func.nome}</option>
-                    ))}
-                  </select>
+                  <label>Preço sugerido</label>
+                  <div className="price-input-wrapper">
+                    <span className="price-symbol">R$</span>
+                    <input 
+                      type="text" 
+                      value={newPrice} 
+                      onChange={e => setNewPrice(e.target.value)} 
+                      required 
+                    />
+                  </div>
                 </div>
 
                 <div className="form-group">
@@ -653,21 +672,8 @@ export const CalendarView = () => {
                 </div>
               </div>
 
+              {/* INÍCIO | FIM (LADO A LADO DO MESMO TAMANHO) */}
               <div className="form-row">
-                {/* PREÇO COM R$ EM TEXTO */}
-                <div className="form-group">
-                  <label>Preço sugerido</label>
-                  <div className="price-input-wrapper">
-                    <span className="price-symbol">R$</span>
-                    <input 
-                      type="text" 
-                      value={newPrice} 
-                      onChange={e => setNewPrice(e.target.value)} 
-                      required 
-                    />
-                  </div>
-                </div>
-
                 <div className="form-group">
                   <label>Horário de Início</label>
                   <input 
@@ -677,10 +683,8 @@ export const CalendarView = () => {
                     required 
                   />
                 </div>
-              </div>
 
-              <div className="form-row">
-                <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                <div className="form-group">
                   <label>Fim (estimado automaticamente)</label>
                   <input 
                     type="time" 
