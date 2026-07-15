@@ -80,12 +80,20 @@ export default function AgendarPage() {
         // Carrega Empresa
         const { data: emp, error: errEmp } = await supabase
           .from('empresas')
-          .select('id, nome, email')
+          .select('id, nome, email, cor_primaria, cor_secundaria, logo_url')
           .eq('slug', slug)
           .single();
 
         if (errEmp || !emp) throw new Error('Empresa não encontrada.');
         setEmpresa(emp);
+
+        // Injetar cores dinamicamente no :root
+        if (emp.cor_primaria) {
+          document.documentElement.style.setProperty('--booking-accent', emp.cor_primaria);
+        }
+        if (emp.cor_secundaria) {
+          document.documentElement.style.setProperty('--booking-bg', emp.cor_secundaria);
+        }
 
         // Carrega Serviços
         const { data: servs, error: errServs } = await supabase
@@ -364,7 +372,11 @@ export default function AgendarPage() {
       <div className="portal-container">
         {/* CABEÇALHO */}
         <header className="agendar-header">
-          <Sparkles className="sparkle-icon" size={24} />
+          {empresa.logo_url ? (
+            <img src={empresa.logo_url} alt={empresa.nome} className="portal-logo-header" />
+          ) : (
+            <Sparkles className="sparkle-icon" size={24} />
+          )}
           <h1>{empresa.nome}</h1>
           <p>Agendamento rápido, seguro e sem filas.</p>
         </header>

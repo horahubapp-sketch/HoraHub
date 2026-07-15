@@ -1,8 +1,8 @@
 -- Seed de Dados Iniciais para Desenvolvimento Local no HoraHub
 -- Tenant Mockado
-INSERT INTO empresas (id, nome, email, plano_status, slug)
-VALUES ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'Barbearia HoraHub Local', 'contato@horahub.local', 'ativo', 'barbearia-local')
-ON CONFLICT (id) DO UPDATE SET slug = EXCLUDED.slug;
+INSERT INTO empresas (id, nome, email, plano_status, slug, cor_primaria, cor_secundaria)
+VALUES ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'Barbearia HoraHub Local', 'contato@horahub.local', 'ativo', 'barbearia-local', '#00E676', '#121214')
+ON CONFLICT (id) DO UPDATE SET slug = EXCLUDED.slug, cor_primaria = EXCLUDED.cor_primaria, cor_secundaria = EXCLUDED.cor_secundaria;
 
 -- Funcionários (IDs em formato UUID válidos - 'f' é hexadecimal válido)
 INSERT INTO funcionarios (id, tenant_id, nome, especialidade, comissao_percentual, foto_url)

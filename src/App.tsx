@@ -4,6 +4,7 @@ import AgendaPage from './pages/AgendaPage';
 import ServicosPage from './pages/ServicosPage';
 import EquipePage from './pages/EquipePage';
 import AgendarPage from './pages/AgendarPage';
+import ConfiguracoesPage from './pages/ConfiguracoesPage';
 
 // Layout Principal que engloba a barra lateral e o conteúdo da rota
 function Layout() {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: 'admin/equipe',
         element: <EquipePage />,
+      },
+      {
+        path: 'admin/configuracoes',
+        element: <ConfiguracoesPage />,
       },
     ],
   },

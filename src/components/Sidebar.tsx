@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Calendar, Scissors, Users, ShieldAlert } from 'lucide-react';
+import { Calendar, Scissors, Users, ShieldAlert, Settings } from 'lucide-react';
 import './Sidebar.css';
 
 export default function Sidebar() {
@@ -34,6 +34,14 @@ export default function Sidebar() {
         >
           <Users size={20} className="sidebar-icon" />
           <span className="sidebar-label">Equipe</span>
+        </NavLink>
+
+        <NavLink 
+          to="/admin/configuracoes" 
+          className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+        >
+          <Settings size={20} className="sidebar-icon" />
+          <span className="sidebar-label">Configurações</span>
         </NavLink>
       </nav>
 
