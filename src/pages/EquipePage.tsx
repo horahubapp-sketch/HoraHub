@@ -181,9 +181,9 @@ export default function EquipePage() {
     try {
       // Se for mock/demo, não busca no Supabase
       if (func.id.startsWith('f-mock')) {
-        // Carrega vínculos fictícios ou lê do LocalStorage se for estendido
-        setServicosSelecionados(['s-mock-1', 's-mock-2']);
-        setJornada(jornadaPadrao);
+        const funcSalvo = funcionarios.find(f => f.id === func.id) as any;
+        setServicosSelecionados(funcSalvo?.servicos_ids || ['s-mock-1', 's-mock-2']);
+        setJornada(funcSalvo?.jornada || jornadaPadrao);
         setShowModal(true);
         return;
       }
@@ -288,7 +288,9 @@ export default function EquipePage() {
               ...f,
               nome,
               especialidade,
-              comissao_percentual: Number(comissao)
+              comissao_percentual: Number(comissao),
+              servicos_ids: servicosSelecionados,
+              jornada: jornada
             } : f);
             setFuncionarios(novaLista);
             localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
@@ -318,7 +320,9 @@ export default function EquipePage() {
               id: `f-mock-${Date.now()}`,
               nome,
               especialidade,
-              comissao_percentual: Number(comissao)
+              comissao_percentual: Number(comissao),
+              servicos_ids: servicosSelecionados,
+              jornada: jornada
             };
             const novaLista = [...funcionarios, novo];
             setFuncionarios(novaLista);

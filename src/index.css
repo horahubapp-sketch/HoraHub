@@ -245,6 +245,42 @@ button {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr)); /* Impede que colunas vazem */
   gap: 16px;
+  align-items: end; /* Alinha as caixas de entrada pela base, nivelando-as horizontalmente */
+}
+
+/* Wrapper Premium de entrada de Preços com símbolo R$ */
+.price-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding-left: 14px;
+  transition: var(--transition);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.price-input-wrapper:focus-within {
+  border-color: var(--text-primary);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 2px rgba(30, 30, 36, 0.05);
+}
+
+.price-symbol {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-right: 6px;
+  user-select: none;
+}
+
+.price-input-wrapper input {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 12px 12px 12px 0 !important;
+  margin: 0 !important;
 }
 
 .btn-submit {

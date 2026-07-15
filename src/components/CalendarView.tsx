@@ -21,8 +21,17 @@ const START_HOUR = 8;
 const END_HOUR = 20;
 const ROW_HEIGHT = 65; // px para cada intervalo de 30 minutos
 
+interface Servico {
+  id: string;
+  nome: string;
+  duracao_minutos: number;
+  preco: number;
+}
+
 export const CalendarView = () => {
-  const [funcionarios] = useState<Funcionario[]>(FUNCIONARIOS_MOCK);
+  // Sincronização com LocalStorage para dados em modo demo
+  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+  const [catalogoServicos, setCatalogoServicos] = useState<Servico[]>([]);
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [selectedAgendamento, setSelectedAgendamento] = useState<Agendamento | null>(null);
   const [showNewModal, setShowNewModal] = useState(false);
@@ -30,6 +39,30 @@ export const CalendarView = () => {
   
   // Controle Dinâmico de Data
   const [currentDate, setCurrentDate] = useState<Date>(new Date('2026-07-14')); // Inicia na data do mock
+
+  // Carregar dados de Funcionários e Serviços do LocalStorage (ou mocks se vazios)
+  useEffect(() => {
+    const localFuncs = localStorage.getItem('horahub_funcionarios_demo');
+    if (localFuncs) {
+      setFuncionarios(JSON.parse(localFuncs));
+    } else {
+      setFuncionarios(FUNCIONARIOS_MOCK);
+      localStorage.setItem('horahub_funcionarios_demo', JSON.stringify(FUNCIONARIOS_MOCK));
+    }
+
+    const localServs = localStorage.getItem('horahub_servicos_demo');
+    if (localServs) {
+      setCatalogoServicos(JSON.parse(localServs));
+    } else {
+      const mockServs = [
+        { id: 's-mock-1', nome: 'Corte Degradê', duracao_minutos: 45, preco: 60.00 },
+        { id: 's-mock-2', nome: 'Barboterapia', duracao_minutos: 30, preco: 40.00 },
+        { id: 's-mock-3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, preco: 90.00 }
+      ];
+      setCatalogoServicos(mockServs);
+      localStorage.setItem('horahub_servicos_demo', JSON.stringify(mockServs));
+    }
+  }, []);
 
   const formatarData = (date: Date): string => {
     const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -51,6 +84,8 @@ export const CalendarView = () => {
 
   // Carregar agendamentos do dia selecionado
   useEffect(() => {
+    if (funcionarios.length === 0) return;
+    
     const dataKey = obterDataKey(currentDate);
     const agendamentosSalvos = localStorage.getItem(`horahub_agendamentos_${dataKey}`);
     
@@ -99,13 +134,90 @@ export const CalendarView = () => {
     setCurrentDate(nova);
   };
 
-  // State do Form do Novo Agendamento
+  // States do Formulário de Novo Agendamento
   const [newClient, setNewClient] = useState('');
-  const [newService, setNewService] = useState('');
-  const [newFuncionario, setNewFuncionario] = useState(funcionarios[0]?.id || '');
+  const [newFuncionario, setNewFuncionario] = useState('');
+  const [newServiceId, setNewServiceId] = useState('');
+  const [newPrice, setNewPrice] = useState('50,00'); // Em R$
   const [newTimeStart, setNewTimeStart] = useState('09:00');
-  const [newTimeEnd, setNewTimeEnd] = useState('09:30');
-  const [newPrice, setNewPrice] = useState('50');
+  const [newTimeEnd, setNewTimeEnd] = useState('09:45');
+
+  // Inicializar o formulário com o primeiro profissional e seu primeiro serviço correspondente
+  useEffect(() => {
+    if (funcionarios.length > 0 && showNewModal) {
+      const primeiroFunc = funcionarios[0].id;
+      setNewFuncionario(primeiroFunc);
+      
+      const servicosValidos = getServicosDoProfissional(primeiroFunc);
+      if (servicosValidos.length > 0) {
+        const primeiroServ = servicosValidos[0];
+        setNewServiceId(primeiroServ.id);
+        setNewPrice(Number(primeiroServ.preco).toFixed(2).replace('.', ','));
+        atualizarHoraFim(newTimeStart, primeiroServ.duracao_minutos);
+      }
+    }
+  }, [funcionarios, showNewModal]);
+
+  // Retorna os serviços que o colaborador executa
+  const getServicosDoProfissional = (funcId: string): Servico[] => {
+    const func = funcionarios.find(f => f.id === funcId) as any;
+    if (func && func.servicos_ids && func.servicos_ids.length > 0) {
+      return catalogoServicos.filter(s => func.servicos_ids.includes(s.id));
+    }
+    // Fallback: se for mock sem associação, mostra todo o catálogo
+    return catalogoServicos;
+  };
+
+  // Atualizar hora de término com base na início + duração do serviço
+  const atualizarHoraFim = (inicio: string, duracaoMinutos: number) => {
+    const [h, m] = inicio.split(':').map(Number);
+    const totalMinutos = h * 60 + m + duracaoMinutos;
+    const novasHoras = Math.floor(totalMinutos / 60) % 24;
+    const novosMinutos = totalMinutos % 60;
+    const fimFormatado = `${String(novasHoras).padStart(2, '0')}:${String(novosMinutos).padStart(2, '0')}`;
+    setNewTimeEnd(fimFormatado);
+  };
+
+  // Tratar alteração do Profissional selecionado no Form
+  const handleFuncionarioChange = (funcId: string) => {
+    setNewFuncionario(funcId);
+    setConflictError(null);
+
+    // Ajustar ComboBox de Serviços baseado no novo profissional
+    const servs = getServicosDoProfissional(funcId);
+    if (servs.length > 0) {
+      const primeiroServ = servs[0];
+      setNewServiceId(primeiroServ.id);
+      setNewPrice(Number(primeiroServ.preco).toFixed(2).replace('.', ','));
+      atualizarHoraFim(newTimeStart, primeiroServ.duracao_minutos);
+    } else {
+      setNewServiceId('');
+      setNewPrice('0,00');
+    }
+  };
+
+  // Tratar alteração do Serviço selecionado no Form
+  const handleServicoChange = (servId: string) => {
+    setNewServiceId(servId);
+    setConflictError(null);
+
+    const serv = catalogoServicos.find(s => s.id === servId);
+    if (serv) {
+      setNewPrice(Number(serv.preco).toFixed(2).replace('.', ','));
+      atualizarHoraFim(newTimeStart, serv.duracao_minutos);
+    }
+  };
+
+  // Tratar alteração da Hora de Início selecionada no Form
+  const handleTimeStartChange = (inicio: string) => {
+    setNewTimeStart(inicio);
+    setConflictError(null);
+
+    const serv = catalogoServicos.find(s => s.id === newServiceId);
+    if (serv) {
+      atualizarHoraFim(inicio, serv.duracao_minutos);
+    }
+  };
 
   // Gerar array com todos os horários de 30 em 30 min de START_HOUR até END_HOUR
   const timeSlots: string[] = [];
@@ -140,7 +252,7 @@ export const CalendarView = () => {
     .filter(a => a.status !== 'bloqueio')
     .reduce((sum, a) => sum + (a.preco || 0), 0);
 
-  // VALIDAÇÃO 1: Verifica se o horário do slot é válido (fim > inicio)
+  // VALIDAÇÕES
   const validarHorarios = (inicio: string, fim: string): string | null => {
     const inicioMin = timeToMinutes(inicio);
     const fimMin = timeToMinutes(fim);
@@ -150,7 +262,6 @@ export const CalendarView = () => {
     return null;
   };
 
-  // VALIDAÇÃO 2: Verifica sobreposição de intervalos para o mesmo profissional
   const verificarConflito = (funcionarioId: string, inicio: string, fim: string): Agendamento | null => {
     const novoInicio = timeToMinutes(inicio);
     const novoFim = timeToMinutes(fim);
@@ -173,7 +284,7 @@ export const CalendarView = () => {
   // Manipular Adição de Agendamento
   const handleCreateAgendamento = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newClient || !newService) return;
+    if (!newClient || !newServiceId) return;
 
     const erroHorario = validarHorarios(newTimeStart, newTimeEnd);
     if (erroHorario) {
@@ -190,22 +301,23 @@ export const CalendarView = () => {
       return;
     }
 
+    const servObj = catalogoServicos.find(s => s.id === newServiceId);
+    const precoTratado = Number(newPrice.replace('R$', '').replace(',', '.').trim());
+
     const newAgenda: Agendamento = {
       id: `a-${Date.now()}`,
       funcionarioId: newFuncionario,
       clienteNome: newClient,
-      servicoNome: newService,
+      servicoNome: servObj?.nome || 'Serviço',
       horarioInicio: newTimeStart,
       horarioFim: newTimeEnd,
       status: 'confirmado',
-      preco: Number(newPrice)
+      preco: isNaN(precoTratado) ? (servObj?.preco || 50) : precoTratado
     };
 
     salvarAgendamentosDaData([...agendamentos, newAgenda]);
     
     setNewClient('');
-    setNewService('');
-    setNewPrice('50');
     setConflictError(null);
     setShowNewModal(false);
   };
@@ -366,30 +478,14 @@ export const CalendarView = () => {
                             className={`appointment-card ${agenda.status}`}
                             style={{ 
                               top: `${top}px`, 
-                              height: `${height}px` 
+                              height: `${height}px`,
                             }}
                             onClick={() => setSelectedAgendamento(agenda)}
                           >
-                            <div className="card-indicator" />
-                            <div className="appointment-card-content">
-                              <div className="appointment-header">
-                                <span className="appointment-time">
-                                  {agenda.horarioInicio} - {agenda.horarioFim}
-                                </span>
-                                {agenda.status === 'bloqueio' ? (
-                                  <Coffee size={12} className="status-icon" />
-                                ) : agenda.status === 'confirmado' ? (
-                                  <Check size={12} className="status-icon" />
-                                ) : (
-                                  <AlertCircle size={12} className="status-icon" />
-                                )}
-                              </div>
-                              <h4 className="client-name">{agenda.clienteNome}</h4>
-                              <p className="service-name">{agenda.servicoNome}</p>
-                              {agenda.preco && (
-                                <span className="price-tag">R$ {agenda.preco.toFixed(2)}</span>
-                              )}
-                            </div>
+                            <span className="card-time">{agenda.horarioInicio} - {agenda.horarioFim}</span>
+                            <h4 className="card-client">{agenda.clienteNome}</h4>
+                            <p className="card-service">{agenda.servicoNome}</p>
+                            {agenda.preco && <span className="card-price">R$ {agenda.preco.toFixed(2)}</span>}
                           </div>
                         );
                       })}
@@ -529,23 +625,13 @@ export const CalendarView = () => {
                 />
               </div>
 
-              <div className="form-group">
-                <label>Serviço</label>
-                <input 
-                  type="text" 
-                  placeholder="Ex: Corte Degradê, Barboterapia" 
-                  value={newService} 
-                  onChange={e => setNewService(e.target.value)} 
-                  required 
-                />
-              </div>
-
+              {/* ORDEM ALTERADA: 1º PROFISSIONAL, 2º SERVIÇO (COMBOBOX) */}
               <div className="form-row">
                 <div className="form-group">
                   <label>Profissional</label>
                   <select 
                     value={newFuncionario} 
-                    onChange={e => { setNewFuncionario(e.target.value); setConflictError(null); }}
+                    onChange={e => handleFuncionarioChange(e.target.value)}
                   >
                     {funcionarios.map(func => (
                       <option key={func.id} value={func.id}>{func.nome}</option>
@@ -554,29 +640,48 @@ export const CalendarView = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Preço (R$)</label>
+                  <label>Serviço Habilitado</label>
+                  <select 
+                    value={newServiceId} 
+                    onChange={e => handleServicoChange(e.target.value)}
+                    required
+                  >
+                    {getServicosDoProfissional(newFuncionario).map(serv => (
+                      <option key={serv.id} value={serv.id}>{serv.nome}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                {/* PREÇO COM R$ EM TEXTO */}
+                <div className="form-group">
+                  <label>Preço sugerido</label>
+                  <div className="price-input-wrapper">
+                    <span className="price-symbol">R$</span>
+                    <input 
+                      type="text" 
+                      value={newPrice} 
+                      onChange={e => setNewPrice(e.target.value)} 
+                      required 
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Horário de Início</label>
                   <input 
-                    type="number" 
-                    value={newPrice} 
-                    onChange={e => setNewPrice(e.target.value)} 
+                    type="time" 
+                    value={newTimeStart} 
+                    onChange={e => handleTimeStartChange(e.target.value)} 
                     required 
                   />
                 </div>
               </div>
 
               <div className="form-row">
-                <div className="form-group">
-                  <label>Início</label>
-                  <input 
-                    type="time" 
-                    value={newTimeStart} 
-                    onChange={e => { setNewTimeStart(e.target.value); setConflictError(null); }} 
-                    required 
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Fim</label>
+                <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                  <label>Fim (estimado automaticamente)</label>
                   <input 
                     type="time" 
                     value={newTimeEnd} 
