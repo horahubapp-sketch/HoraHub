@@ -1,0 +1,718 @@
+/* =========================================================================
+   ESTILOS PREMIUM PARA O PORTAL PÚBLICO DE AUTO-AGENDAMENTO (MOBILE FIRST)
+   ========================================================================= */
+
+:root {
+  --booking-bg: #121214;
+  --booking-card-bg: rgba(30, 30, 36, 0.6);
+  --booking-border: rgba(255, 255, 255, 0.08);
+  --booking-accent: #00E676; /* Verde Esmeralda Neon */
+  --booking-accent-hover: #00C853;
+  --booking-text-primary: #FFFFFF;
+  --booking-text-secondary: #A0A0B2;
+  --font-booking: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-booking);
+  background-color: var(--booking-bg);
+}
+
+.agendar-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--booking-bg);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(0, 230, 118, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(0, 230, 118, 0.02) 0%, transparent 45%);
+  font-family: var(--font-booking);
+}
+
+/* Barra de Progresso Superior */
+.progress-bar-container {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(18, 18, 20, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--booking-border);
+}
+
+.progress-fill {
+  height: 4px;
+  background: linear-gradient(90deg, #00E676, #00C853);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.steps-indicator {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 24px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--booking-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Container do Portal */
+.portal-container {
+  flex: 1;
+  max-width: 500px; /* Largura perfeita para simular mobile em desktop e caber perfeitamente no celular */
+  margin: 0 auto;
+  width: 100%;
+  padding: 32px 24px 60px 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Cabeçalho do Portal */
+.agendar-header {
+  text-align: center;
+  margin-bottom: 8px;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.sparkle-icon {
+  color: var(--booking-accent);
+  margin-bottom: 8px;
+  animation: pulse 2s infinite;
+}
+
+.agendar-header h1 {
+  font-size: 1.8rem;
+  margin: 0 0 6px 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #E2E2E9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.agendar-header p {
+  font-size: 0.9rem;
+  color: var(--booking-text-secondary);
+  margin: 0;
+}
+
+/* Telas do Passo a Passo */
+.step-pane {
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--booking-text-primary);
+}
+
+.step-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.step-header-row .step-title {
+  margin: 0;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--booking-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 20px;
+  background-color: var(--booking-card-bg);
+  border: 1px solid var(--booking-border);
+  transition: all 0.2s;
+}
+
+.btn-back:hover {
+  color: var(--booking-text-primary);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* PASSO 1: Lista de Serviços */
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.service-card {
+  background-color: var(--booking-card-bg);
+  border: 1px solid var(--booking-border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.service-card:hover {
+  border-color: rgba(0, 230, 118, 0.4);
+  transform: translateY(-2px);
+  background-color: rgba(30, 30, 36, 0.8);
+}
+
+.service-card.active {
+  border-color: var(--booking-accent);
+  background-color: rgba(0, 230, 118, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.1);
+}
+
+.service-main h3 {
+  font-size: 1.05rem;
+  margin: 0 0 6px 0;
+  font-weight: 600;
+}
+
+.duration-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--booking-text-secondary);
+  background-color: rgba(255, 255, 255, 0.04);
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.service-price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--booking-accent);
+}
+
+/* PASSO 2: Grid de Equipe */
+.team-grid-booking {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.team-card-booking {
+  background-color: var(--booking-card-bg);
+  border: 1px solid var(--booking-border);
+  border-radius: 16px;
+  padding: 20px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.team-card-booking:hover {
+  border-color: rgba(0, 230, 118, 0.4);
+  transform: translateY(-3px);
+  background-color: rgba(30, 30, 36, 0.8);
+}
+
+.team-card-booking.active {
+  border-color: var(--booking-accent);
+  background-color: rgba(0, 230, 118, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.1);
+}
+
+.booking-avatar-container {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 12px auto;
+  position: relative;
+}
+
+.booking-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--booking-border);
+  transition: border-color 0.2s;
+}
+
+.team-card-booking.active .booking-avatar {
+  border-color: var(--booking-accent);
+}
+
+.booking-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #3e3e4a;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.team-card-booking h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: var(--booking-text-primary);
+}
+
+.team-card-booking p {
+  font-size: 0.78rem;
+  color: var(--booking-text-secondary);
+  margin: 0;
+}
+
+/* PASSO 3: Carrossel de Datas */
+.dates-carousel {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 0 16px 0;
+  scroll-behavior: smooth;
+}
+
+/* Esconder barra de rolagem */
+.dates-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.date-btn {
+  flex: 0 0 62px;
+  height: 76px;
+  border-radius: 14px;
+  background-color: var(--booking-card-bg);
+  border: 1px solid var(--booking-border);
+  color: var(--booking-text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.date-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.date-btn.active {
+  background-color: var(--booking-accent);
+  border-color: var(--booking-accent);
+  color: #121214;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+}
+
+.date-btn .day-name {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--booking-text-secondary);
+  margin-bottom: 4px;
+}
+
+.date-btn.active .day-name {
+  color: rgba(18, 18, 20, 0.7);
+}
+
+.date-btn .day-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* Listagem de Slots de Horários */
+.time-slots-container {
+  margin-top: 12px;
+  background-color: var(--booking-card-bg);
+  border: 1px solid var(--booking-border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--booking-text-secondary);
+}
+
+.loading-slots,
+.empty-slots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 10px;
+  text-align: center;
+  color: var(--booking-text-secondary);
+  font-size: 0.9rem;
+}
+
+.empty-slots p {
+  margin: 12px 0 0 0;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.slot-btn {
+  height: 44px;
+  border-radius: 10px;
+  background-color: rgba(255,255,255,0.03);
+  border: 1px solid var(--booking-border);
+  color: var(--booking-text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.slot-btn:hover {
+  background-color: rgba(255,255,255,0.08);
+}
+
+.slot-btn.active {
+  background-color: var(--booking-accent);
+  border-color: var(--booking-accent);
+  color: #121214;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.2);
+}
+
+/* PASSO 4: Formulário e LGPD */
+.booking-summary-badge {
+  background-color: rgba(255,255,255,0.03);
+  border: 1px dashed var(--booking-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+}
+
+.summary-info span {
+  color: var(--booking-text-secondary);
+}
+
+.summary-info strong {
+  color: var(--booking-text-primary);
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group-booking {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group-booking label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--booking-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group-booking input {
+  height: 48px;
+  background-color: var(--booking-card-bg);
+  border: 1px solid var(--booking-border);
+  border-radius: 10px;
+  padding: 0 16px;
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  font-family: var(--font-booking);
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group-booking input:focus {
+  outline: none;
+  border-color: var(--booking-accent);
+}
+
+.input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon-wrapper input {
+  padding-left: 44px;
+  width: 100%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  color: var(--booking-text-secondary);
+}
+
+/* Box da LGPD */
+.lgpd-consent-box {
+  background-color: rgba(0, 230, 118, 0.02);
+  border: 1px solid rgba(0, 230, 118, 0.15);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lgpd-shield {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--booking-accent);
+}
+
+.lgpd-consent-box p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--booking-text-secondary);
+}
+
+.lgpd-checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.lgpd-checkbox-container input {
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--booking-accent);
+}
+
+.checkbox-text {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--booking-text-primary);
+  font-weight: 500;
+}
+
+.btn-confirm-booking {
+  height: 52px;
+  border-radius: 12px;
+  background-color: var(--booking-accent);
+  color: #121214;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.25);
+  margin-top: 8px;
+  font-family: var(--font-booking);
+}
+
+.btn-confirm-booking:hover:not(:disabled) {
+  background-color: var(--booking-accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-confirm-booking:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* PASSO 5: Tela de Sucesso */
+.success-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.success-checkmark-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: rgba(0, 230, 118, 0.1);
+  color: var(--booking-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  animation: scaleUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.success-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  color: var(--booking-text-primary);
+}
+
+.success-subtitle {
+  font-size: 0.95rem;
+  color: var(--booking-text-secondary);
+  margin: 0 0 24px 0;
+}
+
+.success-card {
+  width: 100%;
+  background-color: var(--booking-card-bg);
+  border: 1px solid var(--booking-border);
+  border-radius: 16px;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.success-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--booking-text-secondary);
+  margin: 0 0 4px 0;
+  border-bottom: 1px solid var(--booking-border);
+  padding-bottom: 8px;
+}
+
+.success-card-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.success-card-row span {
+  color: var(--booking-text-secondary);
+}
+
+.success-card-row strong {
+  color: var(--booking-text-primary);
+}
+
+.success-tip-text {
+  font-size: 0.85rem;
+  color: var(--booking-text-secondary);
+  margin: 0 0 24px 0;
+  line-height: 1.4;
+}
+
+.btn-new-booking {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--booking-border);
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-booking);
+}
+
+.btn-new-booking:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Erro Geral */
+.agendar-error-banner {
+  background-color: rgba(255, 23, 68, 0.05);
+  border: 1px solid rgba(255, 23, 68, 0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #FF1744;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* ==================== ANIMAÇÕES E TRANSIÇÕES ==================== */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Otimizações Responsivas para Dispositivos Pequenos */
+@media (max-width: 360px) {
+  .slots-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .team-grid-booking {
+    grid-template-columns: 1fr;
+  }
+}
