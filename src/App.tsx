@@ -38,7 +38,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: 'agendar/:slug',
+    path: '/agendar/:slug',
     element: <AgendarPage />,
   }
 ]);
