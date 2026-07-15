@@ -118,7 +118,12 @@ export default function CadastroPage() {
           </div>
         )}
 
-        <form onSubmit={handleCadastro} className="register-form">
+        <form onSubmit={handleCadastro} className="register-form" autoComplete="off">
+          {/* Honeypot: inputs invisíveis para enganar o autofill do Chrome/Edge */}
+          <div style={{ opacity: 0, position: 'absolute', height: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+            <input type="text" name="username_fake" tabIndex={-1} aria-hidden="true" />
+            <input type="password" name="password_fake" tabIndex={-1} aria-hidden="true" />
+          </div>
           <div className="register-form-grid">
             {/* Bloco 1: Seus Dados */}
             <div className="register-section">
@@ -135,6 +140,9 @@ export default function CadastroPage() {
                     onChange={e => setNomeDono(e.target.value)}
                     required
                     disabled={loading}
+                    autoComplete="off"
+                    readOnly
+                    onFocus={e => e.currentTarget.removeAttribute('readOnly')}
                   />
                 </div>
               </div>
@@ -150,6 +158,9 @@ export default function CadastroPage() {
                     onChange={e => setEmail(e.target.value)}
                     required
                     disabled={loading}
+                    autoComplete="off"
+                    readOnly
+                    onFocus={e => e.currentTarget.removeAttribute('readOnly')}
                   />
                 </div>
               </div>
@@ -166,6 +177,7 @@ export default function CadastroPage() {
                     required
                     disabled={loading}
                     style={{ paddingRight: '48px' }}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
