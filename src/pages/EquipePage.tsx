@@ -52,6 +52,7 @@ export default function EquipePage() {
   const [especialidade, setEspecialidade] = useState('');
   const [comissao, setComissao] = useState(0);
   const [fotoUrl, setFotoUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
   
   // Abas do Modal
   const [activeTab, setActiveTab] = useState<'dados' | 'jornada' | 'servicos'>('dados');
@@ -239,6 +240,61 @@ export default function EquipePage() {
       setServicosSelecionados([]);
       setJornada(jornadaPadrao);
       setShowModal(true);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMsg('Por favor, selecione um arquivo de imagem válido.');
+      return;
+    }
+
+    // Limitar em 2MB para evitar travar localStorage em Base64 fallback
+    if (file.size > 2 * 1024 * 1024) {
+      setErrorMsg('A imagem deve ter no máximo 2MB.');
+      return;
+    }
+
+    setUploading(true);
+    setErrorMsg(null);
+
+    // 1. Fallback / Modo Demo instantâneo usando FileReader (Base64)
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64data = reader.result as string;
+      setFotoUrl(base64data);
+    };
+    reader.readAsDataURL(file);
+
+    // 2. Tenta fazer o upload para o Supabase Storage se conectado
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${MOCK_TENANT_ID}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        console.warn('[HoraHub] Falha no storage do Supabase local. Mantendo Base64 offline:', uploadError.message);
+        setUploading(false);
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setFotoUrl(publicUrl);
+      showSuccess('Foto enviada e vinculada com sucesso no banco local!');
+    } catch (err: any) {
+      console.warn('[HoraHub] Erro de rede no upload do arquivo. Usando fallback offline.');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -592,13 +648,50 @@ export default function EquipePage() {
                   </div>
 
                   <div className="form-group">
-                    <label>URL da Foto do Profissional</label>
-                    <input 
-                      type="url" 
-                      placeholder="Ex: https://images.unsplash.com/..." 
-                      value={fotoUrl}
-                      onChange={e => setFotoUrl(e.target.value)}
-                    />
+                    <label>Foto do Colaborador</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '10px' }}>
+                      <div className="card-avatar" style={{ width: '60px', height: '60px', minWidth: '60px', fontSize: '1.4rem', margin: 0 }}>
+                        {fotoUrl ? (
+                          <img 
+                            src={fotoUrl} 
+                            alt="Preview" 
+                            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
+                          />
+                        ) : (
+                          nome ? nome.charAt(0).toUpperCase() : '?'
+                        )}
+                      </div>
+                      
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          id="file-upload" 
+                          style={{ display: 'none' }} 
+                          onChange={handleFileChange} 
+                        />
+                        <label 
+                          htmlFor="file-upload"
+                          style={{ 
+                            padding: '10px 16px', 
+                            borderRadius: '8px', 
+                            cursor: 'pointer', 
+                            fontSize: '0.85rem',
+                            display: 'inline-block',
+                            backgroundColor: '#1E1E24',
+                            color: '#FFFFFF',
+                            fontWeight: 600,
+                            textAlign: 'center',
+                            width: 'fit-content'
+                          }}
+                        >
+                          {uploading ? 'Carregando...' : 'Selecionar do Dispositivo'}
+                        </label>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                          JPG, PNG (Recomendado: 1:1, máx. 2MB)
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
