@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Calendar, Users, ShieldAlert, Settings, LogOut } from 'lucide-react';
+import { ShieldAlert, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import './Sidebar.css';
 
@@ -18,7 +18,7 @@ export default function Sidebar() {
           to="/" 
           className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
         >
-          <Calendar size={20} className="sidebar-icon" />
+          <span className="sidebar-schedule-icon"></span>
           <span className="sidebar-label">Agenda</span>
           <span className="badge-live">LIVE</span>
         </NavLink>
@@ -35,7 +35,7 @@ export default function Sidebar() {
           to="/admin/equipe" 
           className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
         >
-          <Users size={20} className="sidebar-icon" />
+          <span className="sidebar-people-poll-icon"></span>
             <span className="sidebar-label">Equipe</span>
         </NavLink>
 

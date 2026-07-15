@@ -73,18 +73,33 @@
   transition: color 0.2s ease-in-out;
 }
 
-.sidebar-custom-icon {
+.sidebar-custom-icon,
+.sidebar-schedule-icon,
+.sidebar-people-poll-icon {
   width: 20px;
   height: 20px;
   background-color: rgba(253, 251, 247, 0.5);
-  -webkit-mask-image: url('../assets/users-loyalty.png');
-  mask-image: url('../assets/users-loyalty.png');
   -webkit-mask-size: contain;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   transition: background-color 0.2s ease-in-out;
   display: inline-block;
+}
+
+.sidebar-custom-icon {
+  -webkit-mask-image: url('../assets/users-loyalty.png');
+  mask-image: url('../assets/users-loyalty.png');
+}
+
+.sidebar-schedule-icon {
+  -webkit-mask-image: url('../assets/schedule.png');
+  mask-image: url('../assets/schedule.png');
+}
+
+.sidebar-people-poll-icon {
+  -webkit-mask-image: url('../assets/people-poll.png');
+  mask-image: url('../assets/people-poll.png');
 }
 
 /* Hover State */
@@ -97,7 +112,9 @@
   color: #D7C9B7;
 }
 
-.sidebar-link:hover .sidebar-custom-icon {
+.sidebar-link:hover .sidebar-custom-icon,
+.sidebar-link:hover .sidebar-schedule-icon,
+.sidebar-link:hover .sidebar-people-poll-icon {
   background-color: #D7C9B7;
 }
 
@@ -112,7 +129,9 @@
   color: #D7C9B7;
 }
 
-.sidebar-link.active .sidebar-custom-icon {
+.sidebar-link.active .sidebar-custom-icon,
+.sidebar-link.active .sidebar-schedule-icon,
+.sidebar-link.active .sidebar-people-poll-icon {
   background-color: #D7C9B7;
 }
 
