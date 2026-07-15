@@ -10,6 +10,7 @@ interface Empresa {
   cor_primaria: string | null;
   cor_secundaria: string | null;
   logo_url: string | null;
+  plano_status: string | null;
 }
 
 interface AuthContextType {
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { data, error } = await supabase
         .from('empresas')
-        .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url')
+        .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url, plano_status')
         .eq('dono_id', userId)
         .maybeSingle();
 
