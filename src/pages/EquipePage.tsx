@@ -85,7 +85,7 @@ export default function EquipePage() {
       // 1. Carregar Funcionários
       const { data: funcs, error: errFuncs } = await supabase
         .from('funcionarios')
-        .select('id, nome, especialidade, comissao_percentual')
+        .select('id, nome, especialidade, comissao_percentual, foto_url')
         .eq('tenant_id', MOCK_TENANT_ID)
         .order('nome', { ascending: true });
 
