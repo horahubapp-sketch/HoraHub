@@ -38,6 +38,11 @@ const DIAS_SEMANA_NOMES = [
 const LOCAL_STORAGE_KEY_FUNCS = 'horahub_funcionarios_demo';
 const LOCAL_STORAGE_KEY_SERVS = 'horahub_servicos_demo';
 
+const isUUID = (str: string): boolean => {
+  const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return regex.test(str);
+};
+
 export default function EquipePage() {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [todosServicos, setTodosServicos] = useState<Servico[]>([]);
@@ -331,7 +336,25 @@ export default function EquipePage() {
       let funcId = editingFunc?.id;
 
       if (editingFunc) {
-        // 1. Atualizar dados básicos no Supabase
+        // Se o ID não for um UUID válido (for um mock como 'f2'), salva diretamente local
+        if (!isUUID(editingFunc.id)) {
+          const novaLista = funcionarios.map(f => f.id === editingFunc.id ? {
+            ...f,
+            nome,
+            especialidade,
+            comissao_percentual: Number(comissao),
+            servicos_ids: servicosSelecionados,
+            jornada: jornada,
+            foto_url: fotoUrl
+          } : f);
+          setFuncionarios(novaLista);
+          localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
+          showSuccess('Modo Demo: Profissional atualizado localmente!');
+          setShowModal(false);
+          return;
+        }
+
+        // 1. Atualizar dados básicos no Supabase (para UUIDs reais)
         const { error: errFunc } = await supabase
           .from('funcionarios')
           .update({
@@ -467,6 +490,15 @@ export default function EquipePage() {
 
     setErrorMsg(null);
     try {
+      // Se for um ID mockado (não-UUID), deleta diretamente local
+      if (!isUUID(id)) {
+        const novaLista = funcionarios.filter(f => f.id !== id);
+        setFuncionarios(novaLista);
+        localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
+        showSuccess('Modo Demo: Profissional removido localmente!');
+        return;
+      }
+
       const { error } = await supabase
         .from('funcionarios')
         .delete()
