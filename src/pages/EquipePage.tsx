@@ -8,6 +8,7 @@ interface Funcionario {
   nome: string;
   especialidade: string;
   comissao_percentual: number;
+  foto_url?: string;
 }
 
 interface JornadaDia {
@@ -50,6 +51,7 @@ export default function EquipePage() {
   const [nome, setNome] = useState('');
   const [especialidade, setEspecialidade] = useState('');
   const [comissao, setComissao] = useState(0);
+  const [fotoUrl, setFotoUrl] = useState('');
   
   // Abas do Modal
   const [activeTab, setActiveTab] = useState<'dados' | 'jornada' | 'servicos'>('dados');
@@ -107,10 +109,10 @@ export default function EquipePage() {
         setFuncionarios(JSON.parse(localFuncs));
       } else {
         const funcsMock = [
-          { id: 'f-mock-1', nome: 'Bruno Silva', especialidade: 'Cabelo & Barba Sênior', comissao_percentual: 50 },
-          { id: 'f-mock-2', nome: 'Lucas Nogueira', especialidade: 'Corte Moderno & Tintura', comissao_percentual: 40 },
-          { id: 'f-mock-3', nome: 'Ana Costa', especialidade: 'Barba Clássica & Visagismo', comissao_percentual: 45 },
-          { id: 'f-mock-4', nome: 'Mateus Santos', especialidade: 'Cortes Clássicos & Infantil', comissao_percentual: 50 }
+          { id: 'f-mock-1', nome: 'Bruno Silva', especialidade: 'Cabelo & Barba Sênior', comissao_percentual: 50, foto_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150' },
+          { id: 'f-mock-2', nome: 'Lucas Nogueira', especialidade: 'Corte Moderno & Tintura', comissao_percentual: 40, foto_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150' },
+          { id: 'f-mock-3', nome: 'Ana Costa', especialidade: 'Barba Clássica & Visagismo', comissao_percentual: 45, foto_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150' },
+          { id: 'f-mock-4', nome: 'Mateus Santos', especialidade: 'Cortes Clássicos & Infantil', comissao_percentual: 50, foto_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=150&h=150' }
         ];
         setFuncionarios(funcsMock);
         localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(funcsMock));
@@ -144,6 +146,7 @@ export default function EquipePage() {
     setNome('');
     setEspecialidade('');
     setComissao(0);
+    setFotoUrl('');
     setServicosSelecionados([]);
     setJornada(
       Array.from({ length: 7 }, (_, i) => ({
@@ -166,6 +169,7 @@ export default function EquipePage() {
     setNome(func.nome);
     setEspecialidade(func.especialidade || '');
     setComissao(Number(func.comissao_percentual));
+    setFotoUrl(func.foto_url || '');
     setActiveTab('dados');
     setErrorMsg(null);
 
@@ -277,7 +281,8 @@ export default function EquipePage() {
           .update({
             nome,
             especialidade,
-            comissao_percentual: Number(comissao)
+            comissao_percentual: Number(comissao),
+            foto_url: fotoUrl
           })
           .eq('id', editingFunc.id);
 
@@ -290,7 +295,8 @@ export default function EquipePage() {
               especialidade,
               comissao_percentual: Number(comissao),
               servicos_ids: servicosSelecionados,
-              jornada: jornada
+              jornada: jornada,
+              foto_url: fotoUrl
             } : f);
             setFuncionarios(novaLista);
             localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
@@ -308,7 +314,8 @@ export default function EquipePage() {
             tenant_id: MOCK_TENANT_ID,
             nome,
             especialidade,
-            comissao_percentual: Number(comissao)
+            comissao_percentual: Number(comissao),
+            foto_url: fotoUrl
           })
           .select('id')
           .single();
@@ -322,7 +329,8 @@ export default function EquipePage() {
               especialidade,
               comissao_percentual: Number(comissao),
               servicos_ids: servicosSelecionados,
-              jornada: jornada
+              jornada: jornada,
+              foto_url: fotoUrl
             };
             const novaLista = [...funcionarios, novo];
             setFuncionarios(novaLista);
@@ -472,7 +480,15 @@ export default function EquipePage() {
           {funcionarios.map((func) => (
             <div key={func.id} className="equipe-card">
               <div className="card-avatar">
-                {func.nome.charAt(0).toUpperCase()}
+                {func.foto_url ? (
+                  <img 
+                    src={func.foto_url} 
+                    alt={func.nome} 
+                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
+                  />
+                ) : (
+                  func.nome.charAt(0).toUpperCase()
+                )}
               </div>
               <div className="card-info">
                 <h3>{func.nome}</h3>
@@ -572,6 +588,16 @@ export default function EquipePage() {
                       value={comissao}
                       onChange={e => setComissao(Number(e.target.value))}
                       required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>URL da Foto do Profissional</label>
+                    <input 
+                      type="url" 
+                      placeholder="Ex: https://images.unsplash.com/..." 
+                      value={fotoUrl}
+                      onChange={e => setFotoUrl(e.target.value)}
                     />
                   </div>
                 </div>

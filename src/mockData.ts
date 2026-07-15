@@ -2,6 +2,8 @@ export interface Funcionario {
   id: string;
   nome: string;
   especialidade: string;
+  comissao_percentual?: number;
+  foto_url?: string;
 }
 
 export interface Agendamento {
@@ -20,21 +22,29 @@ export const FUNCIONARIOS_MOCK: Funcionario[] = [
     id: 'f1',
     nome: 'Bruno Silva',
     especialidade: 'Cabelo & Barba Sênior',
+    comissao_percentual: 50,
+    foto_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150'
   },
   {
     id: 'f2',
     nome: 'Lucas Nogueira',
     especialidade: 'Corte Moderno & Tintura',
+    comissao_percentual: 40,
+    foto_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150'
   },
   {
     id: 'f3',
     nome: 'Ana Costa',
     especialidade: 'Barba Clássica & Visagismo',
+    comissao_percentual: 45,
+    foto_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150'
   },
   {
     id: 'f4',
     nome: 'Mateus Santos',
     especialidade: 'Cortes Clássicos & Infantil',
+    comissao_percentual: 50,
+    foto_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=150&h=150'
   }
 ];
 

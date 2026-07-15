@@ -426,7 +426,15 @@ export const CalendarView = () => {
               {funcionarios.map(func => (
                 <div key={func.id} className="prof-header-cell">
                   <div className="avatar-placeholder">
-                    {func.nome.split(' ').map(n => n[0]).join('')}
+                    {func.foto_url ? (
+                      <img 
+                        src={func.foto_url} 
+                        alt={func.nome} 
+                        style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
+                      />
+                    ) : (
+                      func.nome.split(' ').map(n => n[0]).join('')
+                    )}
                   </div>
                   <div className="prof-info">
                     <h3>{func.nome}</h3>
@@ -560,9 +568,27 @@ export const CalendarView = () => {
                       <User size={16} />
                       <div>
                         <span>Profissional</span>
-                        <strong>
-                          {funcionarios.find(f => f.id === selectedAgendamento.funcionarioId)?.nome}
-                        </strong>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                          {(() => {
+                            const func = funcionarios.find(f => f.id === selectedAgendamento.funcionarioId);
+                            return (
+                              <>
+                                {func?.foto_url ? (
+                                  <img 
+                                    src={func.foto_url} 
+                                    alt={func.nome} 
+                                    style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} 
+                                  />
+                                ) : (
+                                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 600 }}>
+                                    {func?.nome.split(' ').map(n => n[0]).join('')}
+                                  </div>
+                                )}
+                                <strong style={{ marginTop: 0 }}>{func?.nome}</strong>
+                              </>
+                            );
+                          })()}
+                        </div>
                       </div>
                     </div>
 

@@ -1,0 +1,32 @@
+Como Engenheiro de Software Sênior e especialista em arquitetura SaaS B2B, analisar concorrentes consolidados como Trinks, Avec, AppBarber, Reservio e Agenda Geral nos dá insights valiosos sobre o que faz um sistema de agendamento decolar no mercado.
+
+Para posicionar o HoraHub como uma plataforma altamente competitiva, escalável e atrativa para múltiplos segmentos (barbearias, clínicas de estética, salões e manicures), aqui estão as principais sugestões divididas em Arquitetura Técnica e Funcionalidades de Produto (Diferenciais):
+
+1. Funcionalidades Cruciais de Produto (O que atrai o cliente)
+?? A. Link de Auto-Agendamento Público (O "Link da Bio")
+O que é: Uma página web externa minimalista e responsiva (estilo catálogo) onde o cliente final da clínica ou salão entra, escolhe o serviço, escolhe o profissional e seleciona o horário livre (usando o nosso motor de slots disponíveis).
+Por que é essencial: Esse é o recurso que mais vende software de agendamento hoje. O estabelecimento coloca o link no Instagram e os clientes agendam sozinhos de madrugada sem precisar falar no WhatsApp.
+Sugestão para o HoraHub: Criar uma rota pública [url]/[nome_do_estabelecimento] que liste os serviços ativos e os profissionais habilitados daquele tenant.
+?? B. Notificações Automáticas e Lembretes (WhatsApp Integration)
+O que é: O sistema dispara um lembrete automático no WhatsApp do cliente 2 horas antes ou no dia anterior ao agendamento, com um botão para "Confirmar" ou "Reagendar".
+Por que é essencial: O maior vilão de clínicas e salões é o "No-Show" (cliente faltar sem avisar). Sistemas que reduzem faltas em até 40% (como faz o AppBarber e o Avec) ganham a fidelidade do dono do estabelecimento instantaneamente.
+Sugestão para o HoraHub: Integrar uma API de WhatsApp (como Evolution API ou Z-API) para disparar confirmações automáticas de agendamentos salvos.
+?? C. Regras de Comissionamento Flexíveis
+O que é: No HoraHub, configuramos uma comissão geral para o profissional (ex: 40%). Mas no mercado real, a comissão varia por serviço (ex: o cabeleireiro ganha 50% em cortes de cabelo, mas ganha apenas 30% em processos químicos como coloração, porque o salão arca com o custo do produto).
+Sugestão para o HoraHub: Permitir sobrescrever a comissão padrão do profissional dentro do vínculo com o serviço. Ex: Lucas Nogueira tem comissão padrão de 40%, mas no serviço "Progressiva" ele tem comissão de 30%.
+?? D. Ficha de Anamnese / Prontuário Personalizável
+O que é: Clínicas de estética, estúdios de tatuagem e manicures precisam registrar o histórico do cliente (alergias, procedimentos passados, fotos de antes/depois).
+Sugestão para o HoraHub: Uma aba simples no prontuário do cliente permitindo preencher campos personalizados ou anexar notas rápidas a cada atendimento finalizado.
+?? E. Split de Pagamento (Diferencial Avec)
+O que é: O Avec cresceu muito no mercado porque resolve a complexidade fiscal do salão de beleza (Lei do Salão Parceiro no Brasil). Quando o cliente paga R$ 100,00 no cartão de crédito, o sistema divide automaticamente: R$ 40,00 vai direto para a conta do profissional parceiro e R$ 60,00 vai para a conta do salão.
+Por que é essencial: Isso evita que o salão pague imposto sobre a parte do dinheiro que pertence ao profissional.
+2. Sugestões de Arquitetura Técnica (Para escala e multi-tenant)
+?? A. Tenant Isolation Estrito (Segurança)
+Como várias empresas usarão o mesmo banco de dados, o isolamento precisa ser à prova de falhas.
+
+Database Row-Level Security (RLS): Como estamos usando PostgreSQL/Supabase, a melhor prática é ativar o RLS em todas as tabelas (agendamentos, funcionarios, servicos). Toda query no banco deve conter automaticamente a validação de que o tenant_id corresponde ao ID da empresa logada. Isso garante que a Barbearia A nunca consiga visualizar os clientes ou faturamento do Salão B, mesmo que ocorra um bug no front-end.
+?? B. Parametrização de Regras de Negócio por Segmento
+Clínicas de estética funcionam diferente de barbearias.
+
+Configuração de Tempo de Preparação/Limpeza: Já criamos isso de forma parametrizável (5min, 10min).
+Antecedência Mínima para Cancelamento: Permitir que cada estabelecimento configure com quantas horas de antecedência o cliente pode cancelar o agendamento de forma online (ex: mínimo 4 horas antes).
