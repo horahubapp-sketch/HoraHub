@@ -100,21 +100,22 @@ export default function LoginPage() {
                 disabled={loading}
                 style={{
                   position: 'absolute',
-                  right: '16px',
+                  right: '12px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'none',
                   border: 'none',
-                  color: 'rgba(255, 255, 255, 0.4)',
+                  color: '#A0A0B2',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: 0,
+                  padding: '8px',
+                  zIndex: 20,
                   transition: 'color 0.2s'
                 }}
-                onMouseOver={e => e.currentTarget.style.color = '#FFFFFF'}
-                onMouseOut={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'}
+                onMouseOver={e => e.currentTarget.style.color = '#00E676'}
+                onMouseOut={e => e.currentTarget.style.color = '#A0A0B2'}
               >
                 {showSenha ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
