@@ -274,7 +274,7 @@ export default function ConfiguracoesPage() {
               />
             </div>
             <div className="slug-preview-subtext">
-              Link final: <code>{window.location.origin}/agendar/{slug || '...'}</code>
+               Link final: <code>{window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1') ? 'http://localhost:5173' : 'https://horahub.com.br'}/agendar/{slug || '...'}</code>
             </div>
             {slug && (
               <div className="slug-validation-status">

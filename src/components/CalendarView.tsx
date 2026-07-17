@@ -306,9 +306,20 @@ export const CalendarView = () => {
     return { top, height };
   };
 
+  // Helper para verificar se o horário do slot de agendamento já passou no dia selecionado
+  const isSlotNoPassado = (horarioFimStr: string, dateObj: Date) => {
+    const agora = new Date();
+    const dataSlot = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+    const [horas, minutos] = horarioFimStr.split(':').map(Number);
+    dataSlot.setHours(horas, minutos, 0, 0);
+    return dataSlot < agora;
+  };
+
   // Estatísticas Rápidas
-  const totalConfirmados = agendamentos.filter(a => a.status === 'confirmado').length;
-  const totalPendentes = agendamentos.filter(a => a.status === 'pendente').length;
+  const agendamentosReais = agendamentos.filter(a => a.status !== 'bloqueio');
+  const totalConfirmados = agendamentosReais.filter(a => a.status === 'confirmado' && !isSlotNoPassado(a.horarioFim, currentDate)).length;
+  const totalPendentes = agendamentosReais.filter(a => a.status === 'pendente').length;
+  const totalExecutados = agendamentosReais.filter(a => a.status === 'confirmado' && isSlotNoPassado(a.horarioFim, currentDate)).length;
   const faturamentoEstimado = agendamentos
     .filter(a => a.status !== 'bloqueio')
     .reduce((sum, a) => sum + (a.preco || 0), 0);
@@ -864,6 +875,29 @@ export const CalendarView = () => {
           </div>
         </div>
       )}
+      {/* FAIXA DE RESUMO FLUTUANTE NO RODAPÉ */}
+      <div className="calendar-footer-summary">
+        <div className="footer-summary-container">
+          <div className="footer-summary-title">Resumo do Dia</div>
+          <div className="footer-summary-items">
+            <div className="footer-summary-item confirmed">
+              <span className="summary-dot"></span>
+              <span className="summary-label">Confirmados:</span>
+              <strong className="summary-value">{totalConfirmados}</strong>
+            </div>
+            <div className="footer-summary-item pending">
+              <span className="summary-dot"></span>
+              <span className="summary-label">Pendentes:</span>
+              <strong className="summary-value">{totalPendentes}</strong>
+            </div>
+            <div className="footer-summary-item executed">
+              <span className="summary-dot"></span>
+              <span className="summary-label">Já Executados:</span>
+              <strong className="summary-value">{totalExecutados}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

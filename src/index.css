@@ -96,26 +96,32 @@ button {
   transform: translateY(0);
 }
 
-/* Estrutura de Layout com Sidebar */
+/* Estrutura de Layout com Header Superior Flutuante */
 .app-layout {
-  display: flex;
+  display: block;
   min-height: 100vh;
 }
 
 .main-content {
-  flex-grow: 1;
-  padding-left: 260px; /* Largura da Sidebar */
-  width: calc(100% - 260px);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 110px; /* Espaço para o header flutuante */
+  padding-bottom: 120px; /* Espaço para a barra de rodapé */
+  padding-left: 24px;
+  padding-right: 24px;
   min-height: 100vh;
-  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: var(--bg-primary);
+  box-sizing: border-box;
 }
 
-/* Responsivo para Sidebar Colapsada */
+/* Responsivo para Telas Menores */
 @media (max-width: 768px) {
   .main-content {
-    padding-left: 80px;
-    width: calc(100% - 80px);
+    padding-top: 180px; /* Header mobile fica mais alto/empilhado */
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 140px;
   }
 }
 

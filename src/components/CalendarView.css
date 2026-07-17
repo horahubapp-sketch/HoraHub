@@ -203,6 +203,10 @@
   justify-content: center;
   color: var(--text-secondary);
   border-right: 1px solid var(--border-color);
+  position: sticky;
+  left: 0;
+  z-index: 12;
+  background-color: #FFFFFF;
 }
 
 .professionals-headers {
@@ -262,6 +266,9 @@
   border-right: 1px solid var(--border-color);
   background-color: #FFFFFF;
   user-select: none;
+  position: sticky;
+  left: 0;
+  z-index: 5;
 }
 
 .time-cell {
@@ -666,6 +673,132 @@
   padding: 16px;
   border-radius: 12px;
   margin-bottom: auto;
+}
+
+/* Faixa de Resumo Flutuante no Rodapé */
+.calendar-footer-summary {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 680px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(30, 30, 36, 0.08);
+  z-index: 900;
+  padding: 14px 28px;
+  box-sizing: border-box;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, 40px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.footer-summary-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.footer-summary-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1e293b;
+  border-right: 2px solid rgba(226, 232, 240, 1);
+  padding-right: 16px;
+  white-space: nowrap;
+}
+
+.footer-summary-items {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.footer-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.summary-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Cores dos dots de resumo */
+.footer-summary-item.confirmed .summary-dot {
+  background-color: #22c55e; /* Verde */
+}
+
+.footer-summary-item.pending .summary-dot {
+  background-color: #f59e0b; /* Laranja/Amarelo */
+}
+
+.footer-summary-item.executed .summary-dot {
+  background-color: #94a3b8; /* Cinza slate */
+}
+
+.summary-label {
+  font-weight: 500;
+}
+
+.summary-value {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 1.05rem;
+}
+
+/* Responsividade do rodapé */
+@media (max-width: 600px) {
+  .calendar-footer-summary {
+    padding: 10px 16px;
+    bottom: 12px;
+    width: calc(100% - 24px);
+  }
+  
+  .footer-summary-container {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .footer-summary-title {
+    border-right: none;
+    padding-right: 0;
+    font-size: 0.8rem;
+  }
+  
+  .footer-summary-items {
+    justify-content: center;
+    width: 100%;
+    gap: 12px;
+  }
+  
+  .footer-summary-item {
+    font-size: 0.8rem;
+  }
 }
 
 

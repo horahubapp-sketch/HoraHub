@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 import AgendaPage from './pages/AgendaPage';
 import ServicosPage from './pages/ServicosPage';
 import EquipePage from './pages/EquipePage';
@@ -29,7 +29,7 @@ function Layout() {
   return (
     <div className="app-container-relative" style={{ width: '100%' }}>
       <div className={`app-layout ${aplicarBlur ? 'pending-blur' : ''}`}>
-        <Sidebar />
+        <Header />
         <main className="main-content">
           <Outlet />
         </main>

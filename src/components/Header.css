@@ -1,0 +1,156 @@
+/* Header Flutuante Suspenso */
+.floating-header {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 1200px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  z-index: 990; /* Abaixo do modal-overlay (999) mas acima da main-content */
+  box-sizing: border-box;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 24px;
+}
+
+/* Brand Logo e Nome */
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(226, 232, 240, 1);
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.025em;
+}
+
+/* Links Centrais de Menu */
+.header-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-link {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.header-link:hover {
+  color: #1e293b;
+  background-color: #f1f5f9;
+}
+
+.header-link.active {
+  color: #1e293b;
+  background-color: #e2e8f0;
+  font-weight: 600;
+}
+
+/* Ações Direitas (Super Admin, Sair) */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-superadmin-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #00c853;
+  background: rgba(0, 200, 83, 0.08);
+  border: 1px solid rgba(0, 200, 83, 0.15);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-superadmin-header:hover {
+  background: rgba(0, 200, 83, 0.12);
+  transform: translateY(-1px);
+}
+
+.btn-logout-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: 1px solid rgba(226, 232, 240, 1);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout-header:hover {
+  color: #ef4444;
+  background-color: #fef2f2;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+  .floating-header {
+    top: 10px;
+    width: calc(100% - 20px);
+    height: auto;
+    padding: 10px 0;
+  }
+  
+  .header-container {
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px 16px;
+  }
+  
+  .header-menu {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+  }
+  
+  .header-link {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+}
