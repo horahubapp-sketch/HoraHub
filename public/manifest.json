@@ -1,0 +1,24 @@
+{
+  "short_name": "Encaixe",
+  "name": "Encaixe - Sua Agenda Inteligente",
+  "description": "Marque, Encaixe, simples assim.",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#FDFBF7",
+  "theme_color": "#1E1E24",
+  "display": "standalone",
+  "orientation": "portrait"
+}
