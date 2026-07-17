@@ -243,7 +243,7 @@ export default function CadastroPage() {
                   />
                 </div>
                 <div className="register-slug-preview">
-                  Link final: <code>http://localhost:5173/agendar/{slug || '...'}</code>
+                  Link final: <code>{window.location.origin}/agendar/{slug || '...'}</code>
                 </div>
                 {slug && (
                   <div className="register-slug-status">
