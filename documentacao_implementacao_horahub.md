@@ -127,3 +127,16 @@ Sprint 5  →  Pagamentos e Sinais Antecipados no Agendamento Online
 *   **Plano Bronze (R$ 99/mês)**: Gestão de agenda, equipe de até 3 profissionais e White Label.
 *   **Plano Prata (R$ 149/mês)**: Bronze + Disparo de Notificações WhatsApp + Relatórios Financeiros.
 *   **Plano Ouro (R$ 249/mês)**: Prata + Recebimento de Sinais + Prontuário Clínico Completo.
+
+### 6.1 Integração de WhatsApp com n8n (Backlog Técnico)
+
+Como solução escalável, econômica e customizável para reduzir faltas (No-Show), o envio de mensagens do WhatsApp será delegado para o **n8n** rodando em Docker:
+* **Gatilho**: Supabase Database Webhooks ativados na tabela `agendamentos` (escutando `INSERT` e `UPDATE` de status).
+* **Fluxo no n8n**:
+  1. **Webhook Node**: Escuta e recebe em tempo real o payload JSON do Supabase.
+  2. **Set/Edit Fields**: Formata os dados de data/hora para fuso horário de Brasília (`America/Sao_Paulo`).
+  3. **HTTP Request Node**: Dispara para a API de WhatsApp configurada (ex: Evolution API, Z-API).
+* **Ajuste de Banco Pendente**:
+  * Adicionar coluna `cliente_telefone` na tabela `agendamentos` para enviar ao n8n.
+  * Adicionar o campo de telefone no formulário de Novo Agendamento (Admin) e portal público.
+
