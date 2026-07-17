@@ -11,8 +11,8 @@ export default function Header() {
     <header className="floating-header">
       <div className="header-container">
         <div className="header-brand">
-          <img src={logoImg} alt="HoraHub Logo" className="header-logo" />
-          <span className="brand-name">HoraHub</span>
+          <img src={logoImg} alt="Encaixe Logo" className="header-logo" />
+          <span className="brand-name">Encaixe</span>
         </div>
 
         <nav className="header-menu">

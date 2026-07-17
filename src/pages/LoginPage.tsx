@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Mail, Lock, LogIn, Sparkles, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, LogIn, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import './LoginPage.css';
+import logoImg from '../assets/logo.jpg';
 
 export default function LoginPage() {
   const { signIn } = useAuth();
@@ -49,11 +50,12 @@ export default function LoginPage() {
 
       <div className="login-glass-card">
         <header className="login-card-header">
-          <div className="login-logo-circle">
-            <Sparkles className="login-sparkle" size={24} />
+          <div className="login-logo-circle" style={{ background: 'none', boxShadow: 'none' }}>
+            <img src={logoImg} alt="Encaixe Logo" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }} />
           </div>
-          <h1>HoraHub</h1>
-          <p>Painel Administrativo White Label</p>
+          <h1>Encaixe</h1>
+          <p style={{ color: '#00E676', fontWeight: 600, fontSize: '0.95rem', margin: '4px 0' }}>Marque, Encaixe, simples assim.</p>
+          <p style={{ fontSize: '0.85rem', color: '#A0A0B2', margin: 0 }}>Sua Agenda Inteligente</p>
         </header>
 
         {erroMsg && (
@@ -135,7 +137,7 @@ export default function LoginPage() {
         </form>
 
         <footer className="login-card-footer">
-          <p>Não tem conta no HoraHub?</p>
+          <p>Não tem conta no Encaixe?</p>
           <Link to="/cadastro" className="login-register-link">
             Cadastrar minha Empresa
           </Link>

@@ -176,7 +176,7 @@ export default function SuperAdminPage() {
           <span>Voltar ao Painel</span>
         </button>
         <div className="superadmin-title">
-          <h1>Super Admin HoraHub</h1>
+          <h1>Super Admin Encaixe</h1>
           <p>Controle de Assinaturas, Faturamento B2B e Ativação de Novas Empresas</p>
         </div>
         <button className="btn-refresh-admin" onClick={loadEmpresas} title="Recarregar dados">

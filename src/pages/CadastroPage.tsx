@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
-import { User, Mail, Lock, Building, Link2, Sparkles, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Building, Link2, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import './CadastroPage.css';
+import logoImg from '../assets/logo.jpg';
 
 export default function CadastroPage() {
   const { signUp } = useAuth();
@@ -97,8 +98,8 @@ export default function CadastroPage() {
 
       <div className="register-glass-card">
         <header className="register-card-header">
-          <div className="register-logo-circle">
-            <Sparkles className="register-sparkle" size={24} />
+          <div className="register-logo-circle" style={{ background: 'none', boxShadow: 'none' }}>
+            <img src={logoImg} alt="Encaixe Logo" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }} />
           </div>
           <h1>Crie sua Conta</h1>
           <p>Cadastre sua empresa e comece a agendar hoje.</p>

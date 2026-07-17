@@ -43,7 +43,7 @@ function Layout() {
             </div>
 
             <h2>Conta em Análise!</h2>
-            <p className="pending-subtitle">O acesso ao painel do HoraHub está aguardando ativação.</p>
+            <p className="pending-subtitle">O acesso ao painel do Encaixe está aguardando ativação.</p>
 
             <div className="pending-desc-box">
               Olá! Recebemos a solicitação de registro de <strong>{empresa?.nome || 'sua empresa'}</strong>. 
@@ -82,9 +82,9 @@ function Layout() {
             <p className="pending-subtitle">Acesso temporariamente suspenso devido a pendências financeiras.</p>
 
             <div className="pending-desc-box" style={{ borderLeft: '3px solid #FF5252' }}>
-              Olá! O acesso ao painel do HoraHub para a empresa <strong>{empresa?.nome || 'seu estabelecimento'}</strong> está suspenso temporariamente por inadimplência ou faturas em aberto.
+              Olá! O acesso ao painel do Encaixe para a empresa <strong>{empresa?.nome || 'seu estabelecimento'}</strong> está suspenso temporariamente por inadimplência ou faturas em aberto.
               <br /><br />
-              Para regularizar a situação das faturas vencidas e reativar imediatamente o acesso ao sistema, por favor entre em contato com o suporte financeiro do HoraHub.
+              Para regularizar a situação das faturas vencidas e reativar imediatamente o acesso ao sistema, por favor entre em contato com o suporte financeiro do Encaixe.
             </div>
 
             <div className="pending-actions-row">

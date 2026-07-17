@@ -496,7 +496,7 @@ export const CalendarView = () => {
         <div className="header-left">
           <div className="app-title-group">
             <span className="badge-live">Live</span>
-            <h1>HoraHub</h1>
+            <h1>Encaixe</h1>
           </div>
           <p className="header-subtitle">Painel de Recepção & Gestão do Dia</p>
         </div>
