@@ -82,45 +82,168 @@
   gap: 12px;
 }
 
-.btn-superadmin-header {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #00c853;
-  background: rgba(0, 200, 83, 0.08);
-  border: 1px solid rgba(0, 200, 83, 0.15);
-  padding: 6px 14px;
-  border-radius: 9999px;
-  text-decoration: none;
-  transition: all 0.2s ease;
+/* Menu de Perfil Dropdown Avatar */
+.profile-menu-container {
+  position: relative;
 }
 
-.btn-superadmin-header:hover {
-  background: rgba(0, 200, 83, 0.12);
-  transform: translateY(-1px);
-}
-
-.btn-logout-header {
-  display: inline-flex;
+.avatar-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1e293b;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #64748b;
-  background: transparent;
-  border: 1px solid rgba(226, 232, 240, 1);
-  padding: 6px 14px;
-  border-radius: 9999px;
+  justify-content: center;
+  border: 2px solid #e2e8f0;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.btn-logout-header:hover {
-  color: #ef4444;
+.avatar-btn:hover {
+  transform: scale(1.05);
+  background: #0f172a;
+  border-color: #cbd5e1;
+}
+
+/* Overlay invisível para capturar clique fora e fechar */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 991;
+  background: transparent;
+  cursor: default;
+}
+
+/* Card Flutuante do Dropdown */
+.profile-dropdown-card {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 240px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(30, 30, 36, 0.12);
+  z-index: 992;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-dropdown-header {
+  padding: 14px 18px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-email {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-role {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.profile-dropdown-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  width: 100%;
+}
+
+.profile-dropdown-body,
+.profile-dropdown-footer {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Itens de Link/Botão do Menu */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #475569;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.dropdown-item svg {
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.dropdown-item:hover svg {
+  color: #1e293b;
+}
+
+/* Estilo Super Admin especial */
+.superadmin-item {
+  color: #22c55e;
+}
+.superadmin-item svg {
+  color: #22c55e;
+}
+.superadmin-item:hover {
+  background-color: rgba(34, 197, 94, 0.08);
+  color: #166534;
+}
+.superadmin-item:hover svg {
+  color: #166534;
+}
+
+/* Estilo Sair especial */
+.logout-item {
+  color: #475569;
+}
+.logout-item:hover {
   background-color: #fef2f2;
-  border-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+.logout-item:hover svg {
+  color: #ef4444;
 }
 
 /* Responsividade Mobile */
