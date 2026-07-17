@@ -340,7 +340,6 @@ export const CalendarView = () => {
 
     const agendamentoConflitante = agendamentos.find(a => {
       if (a.funcionarioId !== funcionarioId) return false;
-      if (a.status === 'bloqueio') return false;
 
       const existInicio = timeToMinutes(a.horarioInicio);
       const existFim = timeToMinutes(a.horarioFim);
