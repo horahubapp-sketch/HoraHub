@@ -249,31 +249,44 @@
 /* Responsividade Mobile */
 @media (max-width: 768px) {
   .floating-header {
-    top: 10px;
-    width: calc(100% - 20px);
+    top: 8px;
+    width: calc(100% - 16px);
     height: auto;
-    padding: 10px 0;
+    padding: 10px 14px;
   }
   
   .header-container {
-    flex-direction: column;
-    gap: 12px;
-    padding: 8px 16px;
+    display: grid;
+    grid-template-areas: 
+      "brand actions"
+      "menu menu";
+    grid-template-columns: auto auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0;
   }
-  
+
+  .header-brand {
+    grid-area: brand;
+  }
+
+  .header-actions {
+    grid-area: actions;
+  }
+
   .header-menu {
+    grid-area: menu;
     flex-wrap: wrap;
     justify-content: center;
     gap: 4px;
+    width: 100%;
+    padding-top: 6px;
+    border-top: 1px solid rgba(226, 232, 240, 0.6);
   }
   
   .header-link {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-  }
-  
-  .header-actions {
-    width: 100%;
-    justify-content: center;
+    padding: 5px 10px;
+    font-size: 0.82rem;
   }
 }

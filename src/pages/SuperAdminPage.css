@@ -529,3 +529,65 @@
   color: #A0A0B2;
   font-size: 0.95rem;
 }
+
+/* Responsivo Mobile-First para SuperAdmin */
+@media (max-width: 768px) {
+  .superadmin-wrapper {
+    padding: 16px;
+  }
+
+  .superadmin-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .superadmin-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .superadmin-table-container {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .superadmin-table, 
+  .superadmin-table thead, 
+  .superadmin-table tbody, 
+  .superadmin-table th, 
+  .superadmin-table td, 
+  .superadmin-table tr {
+    display: block;
+  }
+
+  .superadmin-table thead {
+    display: none;
+  }
+
+  .superadmin-table tr {
+    background-color: rgba(22, 22, 26, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .superadmin-table td {
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .tenant-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}

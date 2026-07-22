@@ -373,21 +373,52 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsivo */
+/* Responsivo Mobile-First para Equipe */
 @media (max-width: 768px) {
   .equipe-container {
-    padding: 24px;
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .page-header .btn-pill {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .equipe-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .equipe-card {
+    padding: 20px;
   }
 
   .jornada-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+    padding: 14px;
+    background-color: #F8F5EE;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
   }
 
   .jornada-hours-cols {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .servicos-grid-selector {
+    grid-template-columns: 1fr;
   }
 }

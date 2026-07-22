@@ -770,12 +770,40 @@
   font-size: 1.05rem;
 }
 
-/* Responsividade do rodapé */
-@media (max-width: 600px) {
+/* Responsividade do rodapé e Bottom-Sheet no Mobile */
+@media (max-width: 768px) {
+  .side-panel-overlay,
+  .modal-overlay {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .side-panel,
+  .modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 24px 24px 0 0 !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    animation: bottomSheetSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  @keyframes bottomSheetSlide {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
   .calendar-footer-summary {
     padding: 10px 16px;
     bottom: 12px;
     width: calc(100% - 24px);
+    border-radius: 16px;
   }
   
   .footer-summary-container {
