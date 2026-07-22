@@ -928,8 +928,26 @@
     max-height: calc(100vh - 250px);
   }
 
+  .prof-info span {
+    display: none !important; /* Oculta a especialidade no modo celular conforme solicitado */
+  }
+
   .prof-header-cell {
-    min-width: 180px;
+    min-width: 150px;
+    flex: 1 0 150px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .prof-column-body {
+    min-width: 150px;
+    flex: 1 0 150px;
+  }
+
+  .avatar-placeholder {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
   }
 
   .side-panel-overlay,
