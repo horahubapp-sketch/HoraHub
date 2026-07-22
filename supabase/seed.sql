@@ -7,7 +7,7 @@ VALUES (
   'authenticated',
   'authenticated',
   'admin@horahub.com',
-  crypt('senha123', gen_salt('bf')), -- Senha encriptada: senha123
+  crypt('Hor@.hub.123', gen_salt('bf')), -- Senha encriptada: Hor@.hub.123
   now(),
   null,
   null,
