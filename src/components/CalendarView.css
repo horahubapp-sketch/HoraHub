@@ -198,6 +198,8 @@
 
 .time-column-header {
   width: 80px;
+  min-width: 80px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,8 +207,9 @@
   border-right: 1px solid var(--border-color);
   position: sticky;
   left: 0;
-  z-index: 12;
+  z-index: 25;
   background-color: #FFFFFF;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.02);
 }
 
 .professionals-headers {
@@ -215,13 +218,14 @@
 }
 
 .prof-header-cell {
-  flex: 1;
-  min-width: 180px;
-  padding: 16px;
+  flex: 1 0 160px;
+  min-width: 160px;
+  padding: 14px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
   border-right: 1px solid var(--border-color);
+  box-sizing: border-box;
 }
 
 .prof-header-cell:last-child {
@@ -241,6 +245,7 @@
   font-size: 0.9rem;
   border: 1.5px solid #FFFFFF;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  flex-shrink: 0;
 }
 
 .prof-info h3 {
@@ -263,12 +268,15 @@
 /* Eixo Y: Coluna dos Horários */
 .time-column {
   width: 80px;
+  min-width: 80px;
+  flex-shrink: 0;
   border-right: 1px solid var(--border-color);
   background-color: #FFFFFF;
   user-select: none;
   position: sticky;
   left: 0;
-  z-index: 5;
+  z-index: 20;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.02);
 }
 
 .time-cell {
@@ -319,11 +327,12 @@
 }
 
 .prof-column-body {
-  flex: 1;
-  min-width: 180px;
+  flex: 1 0 160px;
+  min-width: 160px;
   height: calc(25 * 65px); /* 12h5 * ROW_HEIGHT (25 blocos de 30m das 8h às 20h) */
   border-right: 1px solid var(--border-color);
   position: relative;
+  box-sizing: border-box;
 }
 
 .prof-column-body:last-child {
@@ -333,14 +342,14 @@
 /* CARTÕES DE AGENDAMENTO */
 .appointment-card {
   position: absolute;
-  left: 8px;
-  right: 8px;
-  border-radius: 12px;
-  padding: 10px 12px;
+  left: 6px;
+  right: 6px;
+  border-radius: 10px;
+  padding: 8px 10px;
   cursor: pointer;
   display: flex;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(30, 30, 36, 0.05);
 }
@@ -372,13 +381,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .appointment-time {
   font-size: 0.7rem;
   font-weight: 600;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 .status-icon {
@@ -409,13 +418,24 @@
   margin-top: auto;
 }
 
-/* Cores de Status para os Cartões */
+/* Cores de Status para os Cartões (Redesign Verde Esmeralda Sleek) */
 .appointment-card.confirmado {
-  background-color: var(--status-confirmed);
-  color: var(--status-confirmed-text);
+  background-color: #ECFDF5;
+  color: #065F46;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 .appointment-card.confirmado .card-indicator {
-  background-color: var(--status-confirmed-text);
+  background-color: #10B981;
+}
+.appointment-card.confirmado .client-name {
+  color: #065F46;
+  font-weight: 700;
+}
+.appointment-card.confirmado .service-name {
+  color: #047857;
+}
+.appointment-card.confirmado .appointment-time {
+  color: #059669;
 }
 
 .appointment-card.pendente {
