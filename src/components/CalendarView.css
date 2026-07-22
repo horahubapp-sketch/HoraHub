@@ -865,10 +865,25 @@
   }
 
   .header-left {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    display: none !important; /* Oculta título redundante no celular conforme plano */
+  }
+
+  .time-column-header,
+  .time-column {
+    width: 54px !important;
+    min-width: 54px !important;
+    flex-shrink: 0 !important;
+    background-color: #FFFFFF !important;
+    z-index: 25 !important;
+  }
+
+  .time-cell {
+    font-size: 0.72rem;
+  }
+
+  .calendar-outer-container {
+    border-radius: 16px;
+    margin-bottom: 70px; /* Folga para a faixa de resumo flutuante do rodapé não cobrir horários da noite */
   }
 
   .dashboard-header .btn-pill {
