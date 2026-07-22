@@ -41,8 +41,8 @@ export const CalendarView = () => {
   const [showNewModal, setShowNewModal] = useState(false);
   const [conflictError, setConflictError] = useState<string | null>(null);
   
-  // Controle Dinâmico de Data e Filtro de Profissional (Mobile)
-  const [currentDate, setCurrentDate] = useState<Date>(new Date('2026-07-14')); // Inicia na data do mock
+  // Controle Dinâmico de Data (Inicia sempre no dia atual)
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedProfId, setSelectedProfId] = useState<string>('all');
 
   // Carregar dados de Funcionários e Serviços do LocalStorage (ou mocks se vazios)
