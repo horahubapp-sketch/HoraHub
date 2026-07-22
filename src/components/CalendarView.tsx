@@ -41,8 +41,9 @@ export const CalendarView = () => {
   const [showNewModal, setShowNewModal] = useState(false);
   const [conflictError, setConflictError] = useState<string | null>(null);
   
-  // Controle Dinâmico de Data
+  // Controle Dinâmico de Data e Filtro de Profissional (Mobile)
   const [currentDate, setCurrentDate] = useState<Date>(new Date('2026-07-14')); // Inicia na data do mock
+  const [selectedProfId, setSelectedProfId] = useState<string>('all');
 
   // Carregar dados de Funcionários e Serviços do LocalStorage (ou mocks se vazios)
   useEffect(() => {
@@ -553,6 +554,32 @@ export const CalendarView = () => {
         </div>
       </section>
 
+      {/* BARRA DE ABAS DE FILTRO POR PROFISSIONAL (MOBILE & DESKTOP) */}
+      <div className="prof-filter-tabs-container">
+        <button 
+          className={`prof-filter-tab ${selectedProfId === 'all' ? 'active' : ''}`}
+          onClick={() => setSelectedProfId('all')}
+        >
+          <span>Todos ({funcionarios.length})</span>
+        </button>
+        {funcionarios.map(func => (
+          <button 
+            key={`tab-${func.id}`}
+            className={`prof-filter-tab ${selectedProfId === func.id ? 'active' : ''}`}
+            onClick={() => setSelectedProfId(func.id)}
+          >
+            <div className="tab-avatar-circle">
+              {func.foto_url ? (
+                <img src={func.foto_url} alt={func.nome} className="tab-avatar-img" />
+              ) : (
+                <span>{func.nome[0]}</span>
+              )}
+            </div>
+            <span>{func.nome.split(' ')[0]}</span>
+          </button>
+        ))}
+      </div>
+
       {/* GRADE DO CALENDÁRIO */}
       <div className="calendar-outer-container">
         <div className="calendar-grid-wrapper">
@@ -562,7 +589,7 @@ export const CalendarView = () => {
               <Clock size={14} />
             </div>
             <div className="professionals-headers">
-              {funcionarios.map(func => (
+              {(selectedProfId === 'all' ? funcionarios : funcionarios.filter(f => f.id === selectedProfId)).map(func => (
                 <div key={func.id} className="prof-header-cell">
                   <div className="avatar-placeholder">
                     {func.foto_url ? (
@@ -610,7 +637,7 @@ export const CalendarView = () => {
 
               {/* Colunas Reais dos Profissionais contendo os cartões absolutos */}
               <div className="columns-grid">
-                {funcionarios.map(func => {
+                {(selectedProfId === 'all' ? funcionarios : funcionarios.filter(f => f.id === selectedProfId)).map(func => {
                   // Filtrar agendamentos desse funcionário
                   const funcAgendamentos = agendamentos.filter(a => a.funcionarioId === func.id);
 
