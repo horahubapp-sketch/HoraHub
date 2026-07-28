@@ -444,7 +444,7 @@ export default function LandingPage() {
         </div>
 
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Encaixe (HoraHub) — Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Encaixe — Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

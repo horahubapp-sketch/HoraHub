@@ -13,7 +13,8 @@ import {
   RefreshCw, 
   ArrowLeft,
   X,
-  CreditCard
+  CreditCard,
+  Globe
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './SuperAdminPage.css';
@@ -179,9 +180,19 @@ export default function SuperAdminPage() {
           <h1>Super Admin Encaixe</h1>
           <p>Controle de Assinaturas, Faturamento B2B e Ativação de Novas Empresas</p>
         </div>
-        <button className="btn-refresh-admin" onClick={loadEmpresas} title="Recarregar dados">
-          <RefreshCw size={18} className={loading ? 'spin' : ''} />
-        </button>
+        <div className="superadmin-header-actions">
+          <button 
+            className="btn-preview-landing" 
+            onClick={() => window.open('/landing', '_blank')}
+            title="Visualizar Landing Page Oficial em nova aba"
+          >
+            <Globe size={16} />
+            <span>Ver Landing Page PRD</span>
+          </button>
+          <button className="btn-refresh-admin" onClick={loadEmpresas} title="Recarregar dados">
+            <RefreshCw size={18} className={loading ? 'spin' : ''} />
+          </button>
+        </div>
       </header>
 
       {/* Banners de Feedback */}
