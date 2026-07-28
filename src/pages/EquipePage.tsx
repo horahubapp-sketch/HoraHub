@@ -10,6 +10,7 @@ interface Funcionario {
   especialidade: string;
   comissao_percentual: number;
   foto_url?: string;
+  cpf?: string;
 }
 
 interface JornadaDia {
@@ -36,12 +37,24 @@ const DIAS_SEMANA_NOMES = [
   'Sábado'
 ];
 
-const LOCAL_STORAGE_KEY_FUNCS = 'horahub_funcionarios_demo';
-const LOCAL_STORAGE_KEY_SERVS = 'horahub_servicos_demo';
+const LOCAL_STORAGE_KEY_FUNCS = 'encaixe_funcionarios_demo';
+const LOCAL_STORAGE_KEY_SERVS = 'encaixe_servicos_demo';
 
 const isUUID = (str: string): boolean => {
   const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   return regex.test(str);
+};
+
+const parseEspecialidadeECpf = (espStr: string) => {
+  if (!espStr) return { especialidadeLimpa: '', cpfExtraido: '' };
+  const match = espStr.match(/^(.*?)(?:\s*\(CPF:\s*([^\)]+)\))?$/);
+  if (match) {
+    return {
+      especialidadeLimpa: match[1].trim(),
+      cpfExtraido: match[2] ? match[2].trim() : ''
+    };
+  }
+  return { especialidadeLimpa: espStr, cpfExtraido: '' };
 };
 
 export default function EquipePage() {
@@ -58,9 +71,21 @@ export default function EquipePage() {
   // States do Formulário
   const [nome, setNome] = useState('');
   const [especialidade, setEspecialidade] = useState('');
+  const [cpf, setCpf] = useState('');
   const [comissao, setComissao] = useState(0);
   const [fotoUrl, setFotoUrl] = useState('');
   const [uploading, setUploading] = useState(false);
+
+  const handleCpfMask = (val: string) => {
+    const cleaned = val.replace(/\D/g, '');
+    let formatted = cleaned;
+    if (cleaned.length <= 11) {
+      if (cleaned.length > 3) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3)}`;
+      if (cleaned.length > 6) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3, 6)}.${cleaned.substring(6)}`;
+      if (cleaned.length > 9) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3, 6)}.${cleaned.substring(6, 9)}-${cleaned.substring(9, 11)}`;
+    }
+    setCpf(formatted);
+  };
   
   // Abas do Modal
   const [activeTab, setActiveTab] = useState<'dados' | 'jornada' | 'servicos'>('dados');
@@ -109,7 +134,7 @@ export default function EquipePage() {
       if (errServs) throw errServs;
       setTodosServicos(servs || []);
     } catch (err: any) {
-      console.warn('[HoraHub] Erro ao carregar dados da equipe. Usando LocalStorage.');
+      console.warn('[Encaixe] Erro ao carregar dados da equipe. Usando LocalStorage.');
       
       // Carregar do LocalStorage
       const localFuncs = localStorage.getItem(LOCAL_STORAGE_KEY_FUNCS);
@@ -155,6 +180,7 @@ export default function EquipePage() {
     setEditingFunc(null);
     setNome('');
     setEspecialidade('');
+    setCpf('');
     setComissao(0);
     setFotoUrl('');
     setServicosSelecionados([]);
@@ -176,8 +202,10 @@ export default function EquipePage() {
   // Abrir Modal de Edição (Carrega funcionário, jornada e serviços associados)
   const handleEditClick = async (func: Funcionario) => {
     setEditingFunc(func);
+    const { especialidadeLimpa, cpfExtraido } = parseEspecialidadeECpf(func.especialidade || '');
     setNome(func.nome);
-    setEspecialidade(func.especialidade || '');
+    setEspecialidade(especialidadeLimpa);
+    setCpf(func.cpf || cpfExtraido);
     setComissao(Number(func.comissao_percentual));
     setFotoUrl(func.foto_url || '');
     setActiveTab('dados');
@@ -245,7 +273,7 @@ export default function EquipePage() {
       setJornada(novaJornada);
       setShowModal(true);
     } catch (err: any) {
-      console.warn('[HoraHub] Erro de rede ao buscar detalhes. Abrindo no modo offline/demo.');
+      console.warn('[Encaixe] Erro de rede ao buscar detalhes. Abrindo no modo offline/demo.');
       setServicosSelecionados([]);
       setJornada(jornadaPadrao);
       setShowModal(true);
@@ -289,7 +317,7 @@ export default function EquipePage() {
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) {
-        console.warn('[HoraHub] Falha no storage do Supabase local. Mantendo Base64 offline:', uploadError.message);
+        console.warn('[Encaixe] Falha no storage do Supabase local. Mantendo Base64 offline:', uploadError.message);
         setUploading(false);
         return;
       }
@@ -301,7 +329,7 @@ export default function EquipePage() {
       setFotoUrl(publicUrl);
       showSuccess('Foto enviada e vinculada com sucesso no banco local!');
     } catch (err: any) {
-      console.warn('[HoraHub] Erro de rede no upload do arquivo. Usando fallback offline.');
+      console.warn('[Encaixe] Erro de rede no upload do arquivo. Usando fallback offline.');
     } finally {
       setUploading(false);
     }
@@ -336,16 +364,18 @@ export default function EquipePage() {
       return;
     }
 
+    const especialidadeFinal = cpf ? `${especialidade} (CPF: ${cpf})` : especialidade;
+
     try {
       let funcId = editingFunc?.id;
 
       if (editingFunc) {
-        // Se o ID não for um UUID válido (for um mock como 'f2'), salva diretamente local
         if (!isUUID(editingFunc.id)) {
           const novaLista = funcionarios.map(f => f.id === editingFunc.id ? {
             ...f,
             nome,
-            especialidade,
+            especialidade: especialidadeFinal,
+            cpf,
             comissao_percentual: Number(comissao),
             servicos_ids: servicosSelecionados,
             jornada: jornada,
@@ -358,24 +388,23 @@ export default function EquipePage() {
           return;
         }
 
-        // 1. Atualizar dados básicos no Supabase (para UUIDs reais)
         const { error: errFunc } = await supabase
           .from('funcionarios')
           .update({
             nome,
-            especialidade,
+            especialidade: especialidadeFinal,
             comissao_percentual: Number(comissao),
             foto_url: fotoUrl
           })
           .eq('id', editingFunc.id);
 
         if (errFunc) {
-          // Fallback para rede/API Key inválida
           if (errFunc.message.includes('API key') || errFunc.message.includes('JWT') || errFunc.message.includes('fetch')) {
             const novaLista = funcionarios.map(f => f.id === editingFunc.id ? {
               ...f,
               nome,
-              especialidade,
+              especialidade: especialidadeFinal,
+              cpf,
               comissao_percentual: Number(comissao),
               servicos_ids: servicosSelecionados,
               jornada: jornada,
@@ -390,13 +419,12 @@ export default function EquipePage() {
           throw errFunc;
         }
       } else {
-        // 2. Cadastrar novo funcionário no Supabase
         const { data: newFunc, error: errFunc } = await supabase
           .from('funcionarios')
           .insert({
             tenant_id: tenantId,
             nome,
-            especialidade,
+            especialidade: especialidadeFinal,
             comissao_percentual: Number(comissao),
             foto_url: fotoUrl
           })
@@ -532,6 +560,19 @@ export default function EquipePage() {
     setTimeout(() => setSuccessMsg(null), 3000);
   };
 
+  // Fechar Modal com verificação de alterações pendentes (Dirty Check)
+  const handleCloseModal = () => {
+    const isDirty = editingFunc
+      ? (nome !== editingFunc.nome || especialidade !== editingFunc.especialidade || comissao !== editingFunc.comissao_percentual)
+      : (nome.trim() !== '' || especialidade.trim() !== '' || comissao !== 0 || fotoUrl !== '' || servicosSelecionados.length > 0);
+
+    if (isDirty) {
+      const confirmar = window.confirm('Você possui informações preenchidas neste profissional. Deseja realmente sair sem gravar?');
+      if (!confirmar) return;
+    }
+    setShowModal(false);
+  };
+
   return (
     <div className="equipe-container">
       <header className="page-header">
@@ -569,54 +610,62 @@ export default function EquipePage() {
         </div>
       ) : (
         <div className="equipe-grid">
-          {funcionarios.map((func) => (
-            <div key={func.id} className="equipe-card">
-              <div className="card-avatar">
-                {func.foto_url ? (
-                  <img 
-                    src={func.foto_url} 
-                    alt={func.nome} 
-                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
-                  />
-                ) : (
-                  func.nome.charAt(0).toUpperCase()
-                )}
-              </div>
-              <div className="card-info">
-                <h3>{func.nome}</h3>
-                <p className="especialidade-tag">{func.especialidade || 'Geral'}</p>
-                <div className="comissao-info">
-                  Comissão: <strong>{Number(func.comissao_percentual).toFixed(0)}%</strong>
+          {funcionarios.map((func) => {
+            const { especialidadeLimpa, cpfExtraido } = parseEspecialidadeECpf(func.especialidade || '');
+            const cpfDisplay = func.cpf || cpfExtraido;
+
+            return (
+              <div key={func.id} className="equipe-card">
+                <div className="card-avatar">
+                  {func.foto_url ? (
+                    <img 
+                      src={func.foto_url} 
+                      alt={func.nome} 
+                      style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
+                    />
+                  ) : (
+                    func.nome.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div className="card-info">
+                  <h3>{func.nome}</h3>
+                  <p className="especialidade-tag">{especialidadeLimpa || 'Geral'}</p>
+                  {cpfDisplay && (
+                    <div className="cpf-badge">CPF: {cpfDisplay}</div>
+                  )}
+                  <div className="comissao-info">
+                    Comissão: <strong>{Number(func.comissao_percentual).toFixed(0)}%</strong>
+                  </div>
+                </div>
+                <div className="card-actions">
+                  <button 
+                    className="btn-card-action edit"
+                    onClick={() => handleEditClick(func)}
+                    title="Editar profissional"
+                  >
+                    <Edit2 size={16} />
+                  </button>
+                  <button 
+                    className="btn-card-action delete"
+                    onClick={() => handleDelete(func.id)}
+                    title="Excluir profissional"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
-              <div className="card-actions">
-                <button 
-                  className="btn-card-action edit"
-                  onClick={() => handleEditClick(func)}
-                  title="Editar profissional"
-                >
-                  <Edit2 size={16} />
-                </button>
-                <button 
-                  className="btn-card-action delete"
-                  onClick={() => handleDelete(func.id)}
-                  title="Excluir profissional"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* MODAL CONFIGURAÇÃO COMPLETA */}
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-card wide" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h2>{editingFunc ? 'Editar Profissional' : 'Novo Profissional'}</h2>
-              <button className="btn-close" onClick={() => setShowModal(false)}>
+              <button className="btn-close" onClick={handleCloseModal}>
                 <X size={18} />
               </button>
             </div>
@@ -660,7 +709,7 @@ export default function EquipePage() {
                       required
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label>Especialidade / Cargo</label>
                     <input 
@@ -671,16 +720,32 @@ export default function EquipePage() {
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label>Percentual de Comissão (%)</label>
-                    <input 
-                      type="number" 
-                      min="0"
-                      max="100"
-                      value={comissao}
-                      onChange={e => setComissao(Number(e.target.value))}
-                      required
-                    />
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>CPF do Profissional (Opcional)</label>
+                      <input 
+                        type="text" 
+                        placeholder="000.000.000-00 (opcional)" 
+                        value={cpf}
+                        onChange={e => handleCpfMask(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Comissão (%)</label>
+                      <div className="input-with-suffix">
+                        <input 
+                          type="number" 
+                          min="0"
+                          max="100"
+                          placeholder="Ex: 50"
+                          value={comissao}
+                          onChange={e => setComissao(Number(e.target.value))}
+                          required
+                        />
+                        <span className="input-suffix">%</span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="form-group">

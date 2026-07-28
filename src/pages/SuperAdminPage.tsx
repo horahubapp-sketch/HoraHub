@@ -60,7 +60,7 @@ export default function SuperAdminPage() {
       if (error) throw error;
       setEmpresas(data || []);
     } catch (err: any) {
-      console.error('[HoraHub Superadmin] Erro ao carregar empresas:', err);
+      console.error('[Encaixe Superadmin] Erro ao carregar empresas:', err);
       setErroMsg(err.message || 'Falha ao buscar empresas no banco de dados.');
     } finally {
       setLoading(false);

@@ -8,7 +8,7 @@ import {
 
 // ============================================================
 // TESTES UNITÁRIOS - Frente B: Motor de Slots
-// HoraHub | Vitest
+// Encaixe | Vitest
 //
 // Estes testes cobrem a lógica pura de TypeScript (funções em slotUtils.ts):
 // - Conversão de fuso horário (São Paulo UTC-3 → UTC)

@@ -4,7 +4,7 @@
 
 -- 1. Inserir o tenant (empresa) mockado local para satisfazer chaves estrangeiras
 INSERT INTO empresas (id, nome, email, plano_status)
-VALUES ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'Barbearia HoraHub Local', 'contato@horahub.local', 'ativo')
+VALUES ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'Barbearia Encaixe Local', 'contato@encaixe.local', 'ativo')
 ON CONFLICT (id) DO NOTHING;
 
 -- 2. Conceder privilégios explícitos de acesso para as roles do Supabase/PostgREST

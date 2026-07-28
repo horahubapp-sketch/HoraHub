@@ -1,4 +1,4 @@
--- Seed de Dados Iniciais para Desenvolvimento Local no HoraHub
+-- Seed de Dados Iniciais para Desenvolvimento Local no Encaixe
 -- Criar usuário de testes auth.users
 INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token)
 VALUES (
@@ -6,7 +6,7 @@ VALUES (
   'd1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', -- id fixo para o dono
   'authenticated',
   'authenticated',
-  'admin@horahub.com',
+  'admin@encaixe.com',
   crypt('Hor@.hub.123', gen_salt('bf')), -- Senha encriptada: Hor@.hub.123
   now(),
   null,
@@ -26,17 +26,17 @@ INSERT INTO auth.identities (id, user_id, identity_data, provider, last_sign_in_
 VALUES (
   'd1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
   'd1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
-  json_build_object('sub', 'd1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'email', 'admin@horahub.com'),
+  json_build_object('sub', 'd1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'email', 'admin@encaixe.com'),
   'email',
   now(),
   now(),
   now(),
-  'admin@horahub.com'
+  'admin@encaixe.com'
 ) ON CONFLICT (provider, provider_id) DO NOTHING;
 
 -- Tenant Mockado
 INSERT INTO empresas (id, nome, email, plano_status, slug, cor_primaria, cor_secundaria, dono_id)
-VALUES ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'Barbearia HoraHub Local', 'contato@horahub.local', 'ativo', 'barbearia-local', '#00E676', '#121214', 'd1a3bc08-cb86-4e55-926c-d2c6c06a3eb7')
+VALUES ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'Barbearia Encaixe Local', 'contato@encaixe.local', 'ativo', 'barbearia-local', '#00E676', '#121214', 'd1a3bc08-cb86-4e55-926c-d2c6c06a3eb7')
 ON CONFLICT (id) DO UPDATE SET slug = EXCLUDED.slug, cor_primaria = EXCLUDED.cor_primaria, cor_secundaria = EXCLUDED.cor_secundaria, dono_id = EXCLUDED.dono_id;
 
 -- Funcionários (IDs em formato UUID válidos)

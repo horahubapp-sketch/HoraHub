@@ -1,22 +1,22 @@
-Atue como Engenheiro de Software SÍnior e UI/UX Designer no projeto HoraHub. Vamos focar na FRENTE A: Estrutura de Banco de Dados e Painel Administrativo de VisualizaÁ„o (estilo AppBarber).
+Atue como Engenheiro de Software S√™nior e UI/UX Designer no projeto Encaixe. Vamos focar na FRENTE A: Estrutura de Banco de Dados e Painel Administrativo de Visualiza√ß√£o (estilo AppBarber).
 
-Use as ferramentas de MCP necess·rias para interagir com o ambiente local e siga as instruÁıes abaixo:
+Use as ferramentas de MCP necess√°rias para interagir com o ambiente local e siga as instru√ß√µes abaixo:
 
 1. MODELAGEM DE BANCO (SQL/Supabase):
-Crie as migraÁıes SQL na pasta `/supabase/migrations` para estruturar as seguintes entidades (garantindo Ìndices em `tenant_id` para isolamento multi-tenant):
+Crie as migra√ß√µes SQL na pasta `/supabase/migrations` para estruturar as seguintes entidades (garantindo √≠ndices em `tenant_id` para isolamento multi-tenant):
 - `empresas` (id, nome, email, plano_status)
 - `funcionarios` (id, tenant_id, nome, especialidade, comissao_percentual)
 - `jornadas_trabalho` (id, funcionario_id, dia_semana [0-6], hora_inicio, hora_fim, almoco_inicio, almoco_fim)
 - `servicos` (id, tenant_id, nome, duracao_minutos, preco)
 - `agendamentos` (id, tenant_id, funcionario_id, cliente_name, servico_id, horario_inicio, horario_fim, custo_operacional, status)
 
-2. FRONTEND - PAINEL DE CONTROLE (VisualizaÁ„o por Profissional):
-Gere o componente de calend·rio do dia para a recepÁ„o do estabelecimento. 
+2. FRONTEND - PAINEL DE CONTROLE (Visualiza√ß√£o por Profissional):
+Gere o componente de calend√°rio do dia para a recep√ß√£o do estabelecimento. 
 - Layout: Eixo Y exibe as horas (intervalos de 30 min) e o Eixo X exibe as colunas dos profissionais cadastrados lado a lado.
-- Design System HoraHub (Premium Minimalista):
-  * Tipografia: Inter ou similar geomÈtrica limpa.
-  * Cores: Fundo em off-white (#FDFBF7), textos em grafite fosco (#1E1E24) e cartıes de agendamento em tons pastÈis de marrom acinzentado/bege (#E6DFD3, #D7C9B7).
-  * Status visual: Agendamentos confirmados em verde pastel suave, pendentes em marrom/bege suave e hor·rios de almoÁo/bloqueios em cinza claro dessaturado.
-  * Botıes de aÁ„o r·pida (ex: "Novo Agendamento"): Formato pÌlula suave, cantos arredondados, sem bordas duras.
+- Design System Encaixe (Premium Minimalista):
+  * Tipografia: Inter ou similar geom√©trica limpa.
+  * Cores: Fundo em off-white (#FDFBF7), textos em grafite fosco (#1E1E24) e cart√µes de agendamento em tons past√©is de marrom acinzentado/bege (#E6DFD3, #D7C9B7).
+  * Status visual: Agendamentos confirmados em verde pastel suave, pendentes em marrom/bege suave e hor√°rios de almo√ßo/bloqueios em cinza claro dessaturado.
+  * Bot√µes de a√ß√£o r√°pida (ex: "Novo Agendamento"): Formato p√≠lula suave, cantos arredondados, sem bordas duras.
 
-Escreva o cÛdigo modular e limpo, separando a migraÁ„o SQL do componente de visualizaÁ„o.
+Escreva o c√≥digo modular e limpo, separando a migra√ß√£o SQL do componente de visualiza√ß√£o.

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../services/supabase';
+import InstallAppBanner from '../components/InstallAppBanner';
+import QrCodeModal from '../components/QrCodeModal';
 import { 
   Clock, 
   Calendar as CalendarIcon, 
@@ -10,7 +12,12 @@ import {
   Sparkles,
   Phone,
   Mail,
-  AlertCircle
+  AlertCircle,
+  Share2,
+  QrCode,
+  Bell,
+  FileText,
+  Cake
 } from 'lucide-react';
 import './AgendarPage.css';
 
@@ -64,7 +71,31 @@ export default function AgendarPage() {
   const [clienteNome, setClienteNome] = useState('');
   const [clienteWhatsapp, setClienteWhatsapp] = useState('');
   const [clienteEmail, setClienteEmail] = useState('');
+  const [clienteCpfCnpj, setClienteCpfCnpj] = useState('');
+  const [clienteDataNascimento, setClienteDataNascimento] = useState('');
   const [consentimentoLgpd, setConsentimentoLgpd] = useState(false);
+
+  // Estados da regra Sem Preferência e Notificação Push
+  const [isSemPreferencia, setIsSemPreferencia] = useState(false);
+  const [profissionalSugeridoTag, setProfissionalSugeridoTag] = useState<string | null>(null);
+  const [notificacaoAtiva, setNotificacaoAtiva] = useState(false);
+
+  const handleClientCpfCnpjMask = (val: string) => {
+    const cleaned = val.replace(/\D/g, '');
+    let formatted = cleaned;
+    if (cleaned.length <= 11) {
+      if (cleaned.length > 3) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3)}`;
+      if (cleaned.length > 6) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3, 6)}.${cleaned.substring(6)}`;
+      if (cleaned.length > 9) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3, 6)}.${cleaned.substring(6, 9)}-${cleaned.substring(9, 11)}`;
+    } else {
+      formatted = `${cleaned.substring(0, 2)}.${cleaned.substring(2, 5)}.${cleaned.substring(5, 8)}/${cleaned.substring(8, 12)}-${cleaned.substring(12, 14)}`;
+    }
+    setClienteCpfCnpj(formatted);
+  };
+
+  // Modal de QR Code e Compartilhamento
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [linkCopiado, setLinkCopiado] = useState(false);
 
   // Slots de Horários Livres Calculados
   const [slotsDisponiveis, setSlotsDisponiveis] = useState<string[]>([]);
@@ -87,6 +118,23 @@ export default function AgendarPage() {
         if (errEmp || !emp) throw new Error('Empresa não encontrada.');
         setEmpresa(emp);
 
+        // Atualizar título da página e salvar no histórico local
+        document.title = `${emp.nome} - Agendamento Online | Encaixe`;
+        try {
+          const salvos = localStorage.getItem('encaixe_recent_slugs');
+          let lista = salvos ? JSON.parse(salvos) : [];
+          lista = lista.filter((item: any) => item.slug !== slug);
+          lista.unshift({
+            slug,
+            nome: emp.nome,
+            logoUrl: emp.logo_url,
+            dataAcesso: new Date().toISOString()
+          });
+          localStorage.setItem('encaixe_recent_slugs', JSON.stringify(lista.slice(0, 6)));
+        } catch (e) {
+          console.error('Erro ao salvar recentes:', e);
+        }
+
         // Injetar cores dinamicamente no :root
         if (emp.cor_primaria) {
           document.documentElement.style.setProperty('--booking-accent', emp.cor_primaria);
@@ -105,7 +153,7 @@ export default function AgendarPage() {
         if (errServs) throw errServs;
         setServicos(servs || []);
       } catch (err: any) {
-        console.error('[HoraHub] Erro na inicialização do portal:', err);
+        console.error('[Encaixe] Erro na inicialização do portal:', err);
         setErrorMsg('Não foi possível carregar a página de agendamentos.');
       } finally {
         setLoading(false);
@@ -113,6 +161,21 @@ export default function AgendarPage() {
     }
     initPortal();
   }, [slug]);
+
+  const handleCompartilhar = () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({
+        title: empresa?.nome || 'Agendamento Online',
+        text: `Agende seu horário na ${empresa?.nome}`,
+        url: url
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url);
+      setLinkCopiado(true);
+      setTimeout(() => setLinkCopiado(false), 2500);
+    }
+  };
 
   // 2. Carregar Colaboradores aptos ao Serviço selecionado (Passo 2)
   useEffect(() => {
@@ -148,7 +211,7 @@ export default function AgendarPage() {
           setFuncionarios(funcs || []);
         }
       } catch (err: any) {
-        console.error('[HoraHub] Erro ao carregar equipe:', err);
+        console.error('[Encaixe] Erro ao carregar equipe:', err);
       }
     }
     loadFuncionariosAptos();
@@ -198,7 +261,7 @@ export default function AgendarPage() {
 
         calculateTimeSlots(jorn, agends || []);
       } catch (err) {
-        console.error('[HoraHub] Erro ao buscar horários:', err);
+        console.error('[Encaixe] Erro ao buscar horários:', err);
       } finally {
         setCalculandoSlots(false);
       }
@@ -289,13 +352,15 @@ export default function AgendarPage() {
 
     const dataFim = new Date(dataInicio.getTime() + (servicoSelecionado!.duracao_minutos * 60 * 1000));
 
+    const clienteNameTratado = clienteCpfCnpj ? `${clienteNome} (CPF: ${clienteCpfCnpj})` : clienteNome;
+
     try {
       const { error } = await supabase
         .from('agendamentos')
         .insert({
           tenant_id: empresa.id,
           funcionario_id: funcionarioSelecionado!.id,
-          cliente_name: clienteNome,
+          cliente_name: clienteNameTratado,
           servico_id: servicoSelecionado!.id,
           horario_inicio: dataInicio.toISOString(),
           horario_fim: dataFim.toISOString(),
@@ -305,7 +370,7 @@ export default function AgendarPage() {
       if (error) throw error;
       setPasso(5); // Sucesso!
     } catch (err: any) {
-      console.error('[HoraHub] Erro ao gravar agendamento:', err);
+      console.error('[Encaixe] Erro ao gravar agendamento:', err);
       setErrorMsg(err.message || 'Erro ao realizar agendamento no sistema. Tente outro horário.');
     } finally {
       setLoading(false);
@@ -370,8 +435,22 @@ export default function AgendarPage() {
       </div>
 
       <div className="portal-container">
+        {/* Banner de Instalação de App (PWA) */}
+        <InstallAppBanner empresaNome={empresa.nome} logoUrl={empresa.logo_url} />
+
         {/* CABEÇALHO */}
         <header className="agendar-header">
+          <div className="portal-header-actions">
+            <button className="btn-portal-action" onClick={handleCompartilhar} title="Compartilhar agendamento">
+              <Share2 size={15} />
+              <span>{linkCopiado ? 'Copiado!' : 'Compartilhar'}</span>
+            </button>
+            <button className="btn-portal-action" onClick={() => setShowQrModal(true)} title="Visualizar QR Code">
+              <QrCode size={15} />
+              <span>QR Code</span>
+            </button>
+          </div>
+
           {empresa.logo_url ? (
             <img src={empresa.logo_url} alt={empresa.nome} className="portal-logo-header" />
           ) : (
@@ -429,12 +508,62 @@ export default function AgendarPage() {
             </div>
 
             <div className="team-grid-booking">
+              {/* Card Especial: Sem Preferência / Qualquer Profissional */}
+              <div 
+                className={`team-card-booking sem-pref-card ${isSemPreferencia ? 'active' : ''}`}
+                onClick={async () => {
+                  let escolhido = funcionarios[0];
+                  if (empresa?.regra_sem_preferencia === 'fixo' && empresa?.profissional_indicado_padrao_id) {
+                    const fixo = funcionarios.find(f => f.id === empresa.profissional_indicado_padrao_id);
+                    if (fixo) escolhido = fixo;
+                  } else if (funcionarios.length > 1) {
+                    try {
+                      const dataStr = `${dataSelecionada.getFullYear()}-${String(dataSelecionada.getMonth() + 1).padStart(2, '0')}-${String(dataSelecionada.getDate()).padStart(2, '0')}`;
+                      const { data: agendData } = await supabase
+                        .from('agendamentos')
+                        .select('funcionario_id')
+                        .gte('horario_inicio', `${dataStr}T00:00:00`)
+                        .lte('horario_inicio', `${dataStr}T23:59:59`);
+
+                      const contagem: Record<string, number> = {};
+                      funcionarios.forEach(f => { contagem[f.id] = 0; });
+                      agendData?.forEach((a: any) => {
+                        if (contagem[a.funcionario_id] !== undefined) contagem[a.funcionario_id]++;
+                      });
+
+                      let menorCarga = Infinity;
+                      funcionarios.forEach(f => {
+                        if (contagem[f.id] < menorCarga) {
+                          menorCarga = contagem[f.id];
+                          escolhido = f;
+                        }
+                      });
+                    } catch (e) {
+                      console.error('Erro ao calcular carga:', e);
+                    }
+                  }
+
+                  setFuncionarioSelecionado(escolhido);
+                  setIsSemPreferencia(true);
+                  setProfissionalSugeridoTag(`💡 Sugestão do sistema: ${escolhido.nome} (Maior disponibilidade)`);
+                  setPasso(3);
+                }}
+              >
+                <div className="booking-avatar-container sem-pref-icon-wrapper">
+                  <Sparkles size={24} style={{ color: '#00E676' }} />
+                </div>
+                <h3>Sem Preferência</h3>
+                <p>Qualquer Profissional Apto</p>
+              </div>
+
               {funcionarios.map(f => (
                 <div 
                   key={f.id}
-                  className={`team-card-booking ${funcionarioSelecionado?.id === f.id ? 'active' : ''}`}
+                  className={`team-card-booking ${funcionarioSelecionado?.id === f.id && !isSemPreferencia ? 'active' : ''}`}
                   onClick={() => {
                     setFuncionarioSelecionado(f);
+                    setIsSemPreferencia(false);
+                    setProfissionalSugeridoTag(null);
                     setPasso(3);
                   }}
                 >
@@ -541,6 +670,11 @@ export default function AgendarPage() {
                   {dataSelecionada.getDate()}/{dataSelecionada.getMonth() + 1}/{dataSelecionada.getFullYear()} às {horarioSelecionado}
                 </strong>
               </div>
+              {profissionalSugeridoTag && (
+                <div className="summary-suggestion-tag">
+                  <span>{profissionalSugeridoTag}</span>
+                </div>
+              )}
             </div>
 
             {/* Form de Dados */}
@@ -566,6 +700,31 @@ export default function AgendarPage() {
                     value={clienteWhatsapp}
                     onChange={e => handlePhoneMask(e.target.value)}
                     required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group-booking">
+                <label>CPF / CNPJ (Opcional)</label>
+                <div className="input-icon-wrapper">
+                  <FileText size={16} className="input-icon" />
+                  <input 
+                    type="text" 
+                    placeholder="000.000.000-00 (opcional)" 
+                    value={clienteCpfCnpj}
+                    onChange={e => handleClientCpfCnpjMask(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group-booking">
+                <label>Data de Nascimento (Opcional)</label>
+                <div className="input-icon-wrapper">
+                  <Cake size={16} className="input-icon" />
+                  <input 
+                    type="date" 
+                    value={clienteDataNascimento}
+                    onChange={e => setClienteDataNascimento(e.target.value)}
                   />
                 </div>
               </div>
@@ -648,6 +807,52 @@ export default function AgendarPage() {
               </div>
             </div>
 
+            {/* Notificação Push no Celular */}
+            <div className="push-notification-action-box" style={{ width: '100%', marginBottom: '16px' }}>
+              <button 
+                type="button"
+                className={`btn-push-notification ${notificacaoAtiva ? 'active' : ''}`}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: notificacaoAtiva ? 'rgba(0, 230, 118, 0.15)' : 'rgba(255, 255, 255, 0.08)',
+                  border: notificacaoAtiva ? '1px solid #00E676' : '1px solid rgba(255, 255, 255, 0.15)',
+                  color: notificacaoAtiva ? '#00E676' : '#FFFFFF',
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onClick={() => {
+                  if ('Notification' in window) {
+                    Notification.requestPermission().then(permission => {
+                      if (permission === 'granted') {
+                        setNotificacaoAtiva(true);
+                        try {
+                          new Notification(`Agendamento em ${empresa.nome}`, {
+                            body: `Lembrete Ativado! Seu horário com ${funcionarioSelecionado?.nome} é às ${horarioSelecionado}.`,
+                            icon: empresa.logo_url || '/icon-192.png'
+                          });
+                        } catch (err) {}
+                      } else {
+                        alert('Permissão de notificações não concedida no navegador.');
+                      }
+                    });
+                  } else {
+                    alert('Seu navegador não suporta Notificações Push.');
+                  }
+                }}
+              >
+                <Bell size={18} />
+                <span>{notificacaoAtiva ? '🔔 Lembrete Ativado no Celular!' : '🔔 Ativar Lembrete no Celular'}</span>
+              </button>
+            </div>
+
             <p className="success-tip-text">
               Um aviso de confirmação foi enviado para seu WhatsApp. Nos vemos lá!
             </p>
@@ -671,6 +876,14 @@ export default function AgendarPage() {
           </div>
         )}
       </div>
+
+      {/* Modal de QR Code */}
+      <QrCodeModal
+        isOpen={showQrModal}
+        onClose={() => setShowQrModal(false)}
+        empresaNome={empresa.nome}
+        slug={slug || ''}
+      />
     </div>
   );
 }

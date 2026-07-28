@@ -1,6 +1,6 @@
 -- ============================================================
 -- MIGRAÇÃO: Frente B - Motor de Slots e Anti Double-Booking
--- HoraHub | Data: 2026-07-14
+-- Encaixe | Data: 2026-07-14
 -- ============================================================
 
 -- 1. Ativar extensão necessária para Exclusion Constraint baseado em intervalo de tempo

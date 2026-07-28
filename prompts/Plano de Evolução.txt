@@ -1,32 +1,32 @@
-Como Engenheiro de Software SÍnior e especialista em arquitetura SaaS B2B, analisar concorrentes consolidados como Trinks, Avec, AppBarber, Reservio e Agenda Geral nos d· insights valiosos sobre o que faz um sistema de agendamento decolar no mercado.
+Como Engenheiro de Software S√™nior e especialista em arquitetura SaaS B2B, analisar concorrentes consolidados como Trinks, Avec, AppBarber, Reservio e Agenda Geral nos d√° insights valiosos sobre o que faz um sistema de agendamento decolar no mercado.
 
-Para posicionar o HoraHub como uma plataforma altamente competitiva, escal·vel e atrativa para m˙ltiplos segmentos (barbearias, clÌnicas de estÈtica, salıes e manicures), aqui est„o as principais sugestıes divididas em Arquitetura TÈcnica e Funcionalidades de Produto (Diferenciais):
+Para posicionar o Encaixe como uma plataforma altamente competitiva, escal√°vel e atrativa para m√∫ltiplos segmentos (barbearias, cl√≠nicas de est√©tica, sal√µes e manicures), aqui est√£o as principais sugest√µes divididas em Arquitetura T√©cnica e Funcionalidades de Produto (Diferenciais):
 
 1. Funcionalidades Cruciais de Produto (O que atrai o cliente)
-?? A. Link de Auto-Agendamento P˙blico (O "Link da Bio")
-O que È: Uma p·gina web externa minimalista e responsiva (estilo cat·logo) onde o cliente final da clÌnica ou sal„o entra, escolhe o serviÁo, escolhe o profissional e seleciona o hor·rio livre (usando o nosso motor de slots disponÌveis).
-Por que È essencial: Esse È o recurso que mais vende software de agendamento hoje. O estabelecimento coloca o link no Instagram e os clientes agendam sozinhos de madrugada sem precisar falar no WhatsApp.
-Sugest„o para o HoraHub: Criar uma rota p˙blica [url]/[nome_do_estabelecimento] que liste os serviÁos ativos e os profissionais habilitados daquele tenant.
-?? B. NotificaÁıes Autom·ticas e Lembretes (WhatsApp Integration)
-O que È: O sistema dispara um lembrete autom·tico no WhatsApp do cliente 2 horas antes ou no dia anterior ao agendamento, com um bot„o para "Confirmar" ou "Reagendar".
-Por que È essencial: O maior vil„o de clÌnicas e salıes È o "No-Show" (cliente faltar sem avisar). Sistemas que reduzem faltas em atÈ 40% (como faz o AppBarber e o Avec) ganham a fidelidade do dono do estabelecimento instantaneamente.
-Sugest„o para o HoraHub: Integrar uma API de WhatsApp (como Evolution API ou Z-API) para disparar confirmaÁıes autom·ticas de agendamentos salvos.
-?? C. Regras de Comissionamento FlexÌveis
-O que È: No HoraHub, configuramos uma comiss„o geral para o profissional (ex: 40%). Mas no mercado real, a comiss„o varia por serviÁo (ex: o cabeleireiro ganha 50% em cortes de cabelo, mas ganha apenas 30% em processos quÌmicos como coloraÁ„o, porque o sal„o arca com o custo do produto).
-Sugest„o para o HoraHub: Permitir sobrescrever a comiss„o padr„o do profissional dentro do vÌnculo com o serviÁo. Ex: Lucas Nogueira tem comiss„o padr„o de 40%, mas no serviÁo "Progressiva" ele tem comiss„o de 30%.
-?? D. Ficha de Anamnese / Prontu·rio Personaliz·vel
-O que È: ClÌnicas de estÈtica, est˙dios de tatuagem e manicures precisam registrar o histÛrico do cliente (alergias, procedimentos passados, fotos de antes/depois).
-Sugest„o para o HoraHub: Uma aba simples no prontu·rio do cliente permitindo preencher campos personalizados ou anexar notas r·pidas a cada atendimento finalizado.
+?? A. Link de Auto-Agendamento P√∫blico (O "Link da Bio")
+O que √©: Uma p√°gina web externa minimalista e responsiva (estilo cat√°logo) onde o cliente final da cl√≠nica ou sal√£o entra, escolhe o servi√ßo, escolhe o profissional e seleciona o hor√°rio livre (usando o nosso motor de slots dispon√≠veis).
+Por que √© essencial: Esse √© o recurso que mais vende software de agendamento hoje. O estabelecimento coloca o link no Instagram e os clientes agendam sozinhos de madrugada sem precisar falar no WhatsApp.
+Sugest√£o para o Encaixe: Criar uma rota p√∫blica [url]/[nome_do_estabelecimento] que liste os servi√ßos ativos e os profissionais habilitados daquele tenant.
+?? B. Notifica√ß√µes Autom√°ticas e Lembretes (WhatsApp Integration)
+O que √©: O sistema dispara um lembrete autom√°tico no WhatsApp do cliente 2 horas antes ou no dia anterior ao agendamento, com um bot√£o para "Confirmar" ou "Reagendar".
+Por que √© essencial: O maior vil√£o de cl√≠nicas e sal√µes √© o "No-Show" (cliente faltar sem avisar). Sistemas que reduzem faltas em at√© 40% (como faz o AppBarber e o Avec) ganham a fidelidade do dono do estabelecimento instantaneamente.
+Sugest√£o para o Encaixe: Integrar uma API de WhatsApp (como Evolution API ou Z-API) para disparar confirma√ß√µes autom√°ticas de agendamentos salvos.
+?? C. Regras de Comissionamento Flex√≠veis
+O que √©: No Encaixe, configuramos uma comiss√£o geral para o profissional (ex: 40%). Mas no mercado real, a comiss√£o varia por servi√ßo (ex: o cabeleireiro ganha 50% em cortes de cabelo, mas ganha apenas 30% em processos qu√≠micos como colora√ß√£o, porque o sal√£o arca com o custo do produto).
+Sugest√£o para o Encaixe: Permitir sobrescrever a comiss√£o padr√£o do profissional dentro do v√≠nculo com o servi√ßo. Ex: Lucas Nogueira tem comiss√£o padr√£o de 40%, mas no servi√ßo "Progressiva" ele tem comiss√£o de 30%.
+?? D. Ficha de Anamnese / Prontu√°rio Personaliz√°vel
+O que √©: Cl√≠nicas de est√©tica, est√∫dios de tatuagem e manicures precisam registrar o hist√≥rico do cliente (alergias, procedimentos passados, fotos de antes/depois).
+Sugest√£o para o Encaixe: Uma aba simples no prontu√°rio do cliente permitindo preencher campos personalizados ou anexar notas r√°pidas a cada atendimento finalizado.
 ?? E. Split de Pagamento (Diferencial Avec)
-O que È: O Avec cresceu muito no mercado porque resolve a complexidade fiscal do sal„o de beleza (Lei do Sal„o Parceiro no Brasil). Quando o cliente paga R$ 100,00 no cart„o de crÈdito, o sistema divide automaticamente: R$ 40,00 vai direto para a conta do profissional parceiro e R$ 60,00 vai para a conta do sal„o.
-Por que È essencial: Isso evita que o sal„o pague imposto sobre a parte do dinheiro que pertence ao profissional.
-2. Sugestıes de Arquitetura TÈcnica (Para escala e multi-tenant)
-?? A. Tenant Isolation Estrito (SeguranÁa)
-Como v·rias empresas usar„o o mesmo banco de dados, o isolamento precisa ser ‡ prova de falhas.
+O que √©: O Avec cresceu muito no mercado porque resolve a complexidade fiscal do sal√£o de beleza (Lei do Sal√£o Parceiro no Brasil). Quando o cliente paga R$ 100,00 no cart√£o de cr√©dito, o sistema divide automaticamente: R$ 40,00 vai direto para a conta do profissional parceiro e R$ 60,00 vai para a conta do sal√£o.
+Por que √© essencial: Isso evita que o sal√£o pague imposto sobre a parte do dinheiro que pertence ao profissional.
+2. Sugest√µes de Arquitetura T√©cnica (Para escala e multi-tenant)
+?? A. Tenant Isolation Estrito (Seguran√ßa)
+Como v√°rias empresas usar√£o o mesmo banco de dados, o isolamento precisa ser √† prova de falhas.
 
-Database Row-Level Security (RLS): Como estamos usando PostgreSQL/Supabase, a melhor pr·tica È ativar o RLS em todas as tabelas (agendamentos, funcionarios, servicos). Toda query no banco deve conter automaticamente a validaÁ„o de que o tenant_id corresponde ao ID da empresa logada. Isso garante que a Barbearia A nunca consiga visualizar os clientes ou faturamento do Sal„o B, mesmo que ocorra um bug no front-end.
-?? B. ParametrizaÁ„o de Regras de NegÛcio por Segmento
-ClÌnicas de estÈtica funcionam diferente de barbearias.
+Database Row-Level Security (RLS): Como estamos usando PostgreSQL/Supabase, a melhor pr√°tica √© ativar o RLS em todas as tabelas (agendamentos, funcionarios, servicos). Toda query no banco deve conter automaticamente a valida√ß√£o de que o tenant_id corresponde ao ID da empresa logada. Isso garante que a Barbearia A nunca consiga visualizar os clientes ou faturamento do Sal√£o B, mesmo que ocorra um bug no front-end.
+?? B. Parametriza√ß√£o de Regras de Neg√≥cio por Segmento
+Cl√≠nicas de est√©tica funcionam diferente de barbearias.
 
-ConfiguraÁ„o de Tempo de PreparaÁ„o/Limpeza: J· criamos isso de forma parametriz·vel (5min, 10min).
-AntecedÍncia MÌnima para Cancelamento: Permitir que cada estabelecimento configure com quantas horas de antecedÍncia o cliente pode cancelar o agendamento de forma online (ex: mÌnimo 4 horas antes).
+Configura√ß√£o de Tempo de Prepara√ß√£o/Limpeza: J√° criamos isso de forma parametriz√°vel (5min, 10min).
+Anteced√™ncia M√≠nima para Cancelamento: Permitir que cada estabelecimento configure com quantas horas de anteced√™ncia o cliente pode cancelar o agendamento de forma online (ex: m√≠nimo 4 horas antes).

@@ -20,7 +20,7 @@ interface AuthContextType {
   empresa: Empresa | null;
   loading: boolean;
   signIn: (email: string, senhha: string) => Promise<any>;
-  signUp: (nomeDono: string, email: string, senha: string, nomeEmpresa: string, slugDesejado: string) => Promise<any>;
+  signUp: (nomeDono: string, email: string, senha: string, nomeEmpresa: string, slugDesejado: string, cpfCnpj?: string) => Promise<any>;
   signOut: () => Promise<void>;
   refreshEmpresa: () => Promise<void>;
 }
@@ -44,12 +44,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle();
 
       if (error) {
-        console.error('[HoraHub] Erro ao buscar empresa do dono:', error);
+        console.error('[Encaixe] Erro ao buscar empresa do dono:', error);
         return null;
       }
       return data;
     } catch (err) {
-      console.error('[HoraHub] Erro ao buscar empresa do dono:', err);
+      console.error('[Encaixe] Erro ao buscar empresa do dono:', err);
       return null;
     }
   };
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (emp) return emp;
       
       // Se for o admin mock do seed local, não precisa esperar retry de insert
-      if (userEmail === 'admin@horahub.com') {
+      if (userEmail === 'admin@encaixe.com' || userEmail === 'admin@horahub.com') {
         break;
       }
       
@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (emp) {
           setEmpresa(emp);
           setTenantId(emp.id);
-        } else if (session.user.email === 'admin@horahub.com') {
+        } else if (session.user.email === 'admin@encaixe.com' || session.user.email === 'admin@horahub.com') {
           // Apenas atrela o mock do seed se for especificamente o usuário de seed
           setTenantId('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7');
         } else {
@@ -115,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (emp) {
           setEmpresa(emp);
           setTenantId(emp.id);
-        } else if (session.user.email === 'admin@horahub.com') {
+        } else if (session.user.email === 'admin@encaixe.com' || session.user.email === 'admin@horahub.com') {
           // Apenas atrela o mock do seed se for especificamente o usuário de seed
           setTenantId('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7');
         } else {
@@ -148,7 +148,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string, 
     senha: string, 
     nomeEmpresa: string, 
-    slugDesejado: string
+    slugDesejado: string,
+    cpfCnpj?: string
   ) => {
     // 1. Cadastro no Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -171,6 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         nome: nomeEmpresa,
         email: email,
         slug: slugDesejado,
+        cpf_cnpj: cpfCnpj || null,
         dono_id: authData.user.id,
         cor_primaria: '#00E676',
         cor_secundaria: '#121214'
@@ -179,7 +181,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .single();
 
     if (empError) {
-      console.error('[HoraHub] Erro ao cadastrar empresa na trigger:', empError);
+      console.error('[Encaixe] Erro ao cadastrar empresa na trigger:', empError);
       throw empError;
     }
 

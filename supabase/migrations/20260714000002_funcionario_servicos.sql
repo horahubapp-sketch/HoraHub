@@ -1,6 +1,6 @@
 -- ============================================================
 -- MIGRAÇÃO: Frente C - Tabela de Relacionamento Funcionário x Serviço (N:N)
--- HoraHub | Data: 2026-07-14
+-- Encaixe | Data: 2026-07-14
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS funcionario_servicos (

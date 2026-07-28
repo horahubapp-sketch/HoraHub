@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
-import { User, Mail, Lock, Building, Link2, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Building, Link2, AlertCircle, CheckCircle, Eye, EyeOff, FileText } from 'lucide-react';
 import './CadastroPage.css';
 import logoImg from '../assets/logo.jpg';
 
@@ -16,6 +16,20 @@ export default function CadastroPage() {
   const [senha, setSenha] = useState('');
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [slug, setSlug] = useState('');
+  const [cpfCnpj, setCpfCnpj] = useState('');
+
+  const handleCpfCnpjMask = (val: string) => {
+    const cleaned = val.replace(/\D/g, '');
+    let formatted = cleaned;
+    if (cleaned.length <= 11) {
+      if (cleaned.length > 3) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3)}`;
+      if (cleaned.length > 6) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3, 6)}.${cleaned.substring(6)}`;
+      if (cleaned.length > 9) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3, 6)}.${cleaned.substring(6, 9)}-${cleaned.substring(9, 11)}`;
+    } else {
+      formatted = `${cleaned.substring(0, 2)}.${cleaned.substring(2, 5)}.${cleaned.substring(5, 8)}/${cleaned.substring(8, 12)}-${cleaned.substring(12, 14)}`;
+    }
+    setCpfCnpj(formatted);
+  };
 
   // Estados de Controle
   const [loading, setLoading] = useState(false);
@@ -61,8 +75,8 @@ export default function CadastroPage() {
 
   const handleCadastro = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nomeDono || !email || !senha || !nomeEmpresa || !slug) {
-      setErroMsg('Por favor, preencha todos os campos obrigatórios.');
+    if (!nomeDono || !email || !senha || !nomeEmpresa || !slug || !cpfCnpj.trim()) {
+      setErroMsg('Por favor, preencha todos os campos obrigatórios (incluindo CPF/CNPJ do estabelecimento).');
       return;
     }
 
@@ -76,7 +90,7 @@ export default function CadastroPage() {
     setSucessoMsg(null);
 
     try {
-      await signUp(nomeDono, email, senha, nomeEmpresa, slug);
+      await signUp(nomeDono, email, senha, nomeEmpresa, slug, cpfCnpj);
       setSucessoMsg('Conta e empresa criadas com sucesso!');
       
       // Espera 2 segundos para o usuário ver o sucesso e navega para a agenda
@@ -84,7 +98,7 @@ export default function CadastroPage() {
         navigate('/');
       }, 2000);
     } catch (err: any) {
-      console.error('[HoraHub] Erro de cadastro:', err);
+      console.error('[Encaixe] Erro de cadastro:', err);
       setErroMsg(err.message || 'Erro ao registrar sua conta e empresa.');
     } finally {
       setLoading(false);
@@ -224,6 +238,21 @@ export default function CadastroPage() {
                     placeholder="Ex: Barbearia Estrela"
                     value={nomeEmpresa}
                     onChange={e => setNomeEmpresa(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              <div className="register-field-group">
+                <label>CPF / CNPJ do Estabelecimento (Obrigatório)</label>
+                <div className="register-input-icon-wrapper">
+                  <FileText size={18} className="register-input-icon" />
+                  <input 
+                    type="text" 
+                    placeholder="000.000.000-00 ou 00.000.000/0001-00"
+                    value={cpfCnpj}
+                    onChange={e => handleCpfCnpjMask(e.target.value)}
                     required
                     disabled={loading}
                   />

@@ -1,0 +1,177 @@
+.aniversariantes-wrapper {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  color: #FFFFFF;
+}
+
+.aniversariantes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.aniversariantes-title-block h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #FFFFFF;
+  margin: 0 0 4px 0;
+}
+
+.aniversariantes-title-block p {
+  color: #94A3B8;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.month-selector-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(24, 24, 27, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 8px 16px;
+}
+
+.month-selector-badge label {
+  font-size: 0.85rem;
+  color: #CBD5E1;
+  font-weight: 600;
+}
+
+.month-select-dropdown {
+  background: #09090B;
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  color: #00E676;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+}
+
+.aniversariantes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.aniversariante-card {
+  background: rgba(24, 24, 27, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.aniversariante-card:hover {
+  border-color: rgba(0, 230, 118, 0.3);
+  transform: translateY(-3px);
+}
+
+.aniversariante-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.aniversariante-avatar-circle {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, rgba(0, 230, 118, 0.2), rgba(0, 230, 118, 0.05));
+  border: 2px solid rgba(0, 230, 118, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00E676;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.aniversariante-info h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #F8FAFC;
+  margin: 0;
+}
+
+.aniversariante-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #00E676;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.aniversariante-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #94A3B8;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-whatsapp-parabens {
+  background: #25D366;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.25);
+}
+
+.btn-whatsapp-parabens:hover {
+  background: #1EBE57;
+  transform: translateY(-1px);
+}
+
+.empty-aniversariantes-card {
+  grid-column: 1 / -1;
+  background: rgba(24, 24, 27, 0.6);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 50px 20px;
+  text-align: center;
+  color: #94A3B8;
+}
+
+.empty-aniversariantes-card h3 {
+  font-size: 1.2rem;
+  color: #F8FAFC;
+  margin: 12px 0 4px 0;
+}

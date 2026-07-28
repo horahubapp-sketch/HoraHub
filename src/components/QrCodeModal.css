@@ -1,0 +1,174 @@
+.qrcode-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeInModal 0.25s ease-out;
+}
+
+.qrcode-card-modal {
+  background: #18181B;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 24px;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.btn-close-qrcode {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #A0A0B2;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-close-qrcode:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+}
+
+.qrcode-icon-badge {
+  width: 52px;
+  height: 52px;
+  background: rgba(0, 230, 118, 0.1);
+  border: 1px solid rgba(0, 230, 118, 0.25);
+  color: #00E676;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.qrcode-header h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 6px 0;
+}
+
+.qrcode-subtitle {
+  font-size: 0.88rem;
+  color: #A0A0B2;
+  line-height: 1.45;
+  margin: 0 0 20px 0;
+}
+
+.qrcode-subtitle strong {
+  color: #E2E8F0;
+}
+
+.qrcode-image-box {
+  background: #FFFFFF;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+}
+
+.qrcode-img {
+  width: 220px;
+  height: 220px;
+  display: block;
+}
+
+.qrcode-link-input-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.qrcode-link-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  color: #CBD5E1;
+  font-family: monospace;
+  outline: none;
+}
+
+.btn-copy-qrcode {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-copy-qrcode:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.btn-copy-qrcode.copied {
+  background: #00E676;
+  border-color: #00E676;
+  color: #121214;
+}
+
+.qrcode-actions {
+  width: 100%;
+}
+
+.btn-download-qrcode {
+  width: 100%;
+  background: #00E676;
+  color: #09090B;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.25);
+}
+
+.btn-download-qrcode:hover {
+  background: #00C853;
+  transform: translateY(-1px);
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}

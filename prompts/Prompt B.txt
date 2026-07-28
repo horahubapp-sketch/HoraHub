@@ -1,16 +1,16 @@
-Atue como Engenheiro de Software SÍnior especialista em lÛgica de sistemas no projeto HoraHub. Vamos focar na FRENTE B: Motor de Grade de Hor·rios e PrevenÁ„o de Conflitos (estilo Trinks).
+Atue como Engenheiro de Software S√™nior especialista em l√≥gica de sistemas no projeto Encaixe. Vamos focar na FRENTE B: Motor de Grade de Hor√°rios e Preven√ß√£o de Conflitos (estilo Trinks).
 
-Use os MCPs de Postgres e pensamento sequencial para implementar a lÛgica de c·lculo de slots disponÌveis.
+Use os MCPs de Postgres e pensamento sequencial para implementar a l√≥gica de c√°lculo de slots dispon√≠veis.
 
-1. L”GICA DE GERA«√O DE SLOTS (TypeScript ou PostgreSQL Function):
-Escreva uma funÁ„o que receba `funcionario_id`, `data_desejada` (YYYY-MM-DD) e `servico_id`. A funÁ„o deve retornar um array de hor·rios livres disponÌveis para o cliente (ex: `["09:00", "09:45", "10:30"...]`).
-Para gerar esse array, a lÛgica precisa:
-- Buscar a jornada de trabalho daquele profissional para o dia da semana especÌfico.
-- Dividir o dia de trabalho em blocos (slots) baseados na `duracao_minutos` do serviÁo escolhido.
-- Remover automaticamente os blocos que coincidam com o intervalo de almoÁo do profissional (`almoco_inicio` atÈ `almoco_fim`).
-- Remover os blocos que conflitem ou se sobreponham com agendamentos j· existentes e ativos daquele dia.
+1. L√ìGICA DE GERA√á√ÉO DE SLOTS (TypeScript ou PostgreSQL Function):
+Escreva uma fun√ß√£o que receba `funcionario_id`, `data_desejada` (YYYY-MM-DD) e `servico_id`. A fun√ß√£o deve retornar um array de hor√°rios livres dispon√≠veis para o cliente (ex: `["09:00", "09:45", "10:30"...]`).
+Para gerar esse array, a l√≥gica precisa:
+- Buscar a jornada de trabalho daquele profissional para o dia da semana espec√≠fico.
+- Dividir o dia de trabalho em blocos (slots) baseados na `duracao_minutos` do servi√ßo escolhido.
+- Remover automaticamente os blocos que coincidam com o intervalo de almo√ßo do profissional (`almoco_inicio` at√© `almoco_fim`).
+- Remover os blocos que conflitem ou se sobreponham com agendamentos j√° existentes e ativos daquele dia.
 
-2. TRAVA DE SEGURAN«A (Double-Booking):
-Escreva a trigger de banco ou validaÁ„o de backend que impeÁa que duas requisiÁıes gravem um agendamento no mesmo hor·rio para o mesmo profissional. Retorne um erro amig·vel se o hor·rio for ocupado no milissegundo anterior.
+2. TRAVA DE SEGURAN√áA (Double-Booking):
+Escreva a trigger de banco ou valida√ß√£o de backend que impe√ßa que duas requisi√ß√µes gravem um agendamento no mesmo hor√°rio para o mesmo profissional. Retorne um erro amig√°vel se o hor√°rio for ocupado no milissegundo anterior.
 
-Gere uma implementaÁ„o limpa, com testes unit·rios simples ou validaÁıes lÛgicas documentadas para garantir precis„o m·xima de fusos hor·rios.
+Gere uma implementa√ß√£o limpa, com testes unit√°rios simples ou valida√ß√µes l√≥gicas documentadas para garantir precis√£o m√°xima de fusos hor√°rios.

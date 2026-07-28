@@ -30,7 +30,7 @@ export default function LoginPage() {
       await signIn(email, senha);
       navigate('/'); // Vai para a agenda administrativa
     } catch (err: any) {
-      console.error('[HoraHub] Erro de login:', err);
+      console.error('[Encaixe] Erro de login:', err);
       // Traduzir erros comuns do Supabase Auth para o usuário
       if (err.message?.includes('Invalid login credentials')) {
         setErroMsg('E-mail ou senha incorretos.');

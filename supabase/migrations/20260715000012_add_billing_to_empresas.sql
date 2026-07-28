@@ -6,4 +6,4 @@ ALTER TABLE empresas ADD COLUMN IF NOT EXISTS data_renovacao TIMESTAMP WITH TIME
 
 -- Criar política de super administrador para permitir gerenciar qualquer empresa
 CREATE POLICY "Superadmin gerencia todas as empresas" ON empresas
-FOR ALL TO authenticated USING (auth.jwt() ->> 'email' = 'admin@horahub.com');
+FOR ALL TO authenticated USING (auth.jwt() ->> 'email' = 'admin@encaixe.com');

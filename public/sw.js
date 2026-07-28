@@ -1,82 +1,47 @@
-const CACHE_NAME = 'encaixe-cache-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/favicon.svg',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/apple-touch-icon.png'
-];
+const CACHE_NAME = 'encaixe-cache-v3';
 
-// Evento Install: Cria o cache e armazena os assets estáticos iniciais
+// Evento Install: Força a atualização imediata do Service Worker
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[Encaixe PWA] Salvando assets estáticos no cache...');
-        return cache.addAll(ASSETS_TO_CACHE);
-      })
-      .then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
 });
 
-// Evento Activate: Limpa caches antigos se houver atualização de versão
+// Evento Activate: Limpa todos os caches antigos
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            console.log('[Encaixe PWA] Deletando cache antigo:', cache);
-            return caches.delete(cache);
-          }
+          console.log('[Encaixe PWA] Limpando cache antigo:', cache);
+          return caches.delete(cache);
         })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// Evento Fetch: Intercepta requisições de rede
+// Evento Fetch: Estratégia Network-First (Rede Primeiro, Cache apenas para Offline)
 self.addEventListener('fetch', event => {
-  // Apenas intercepta requisições GET
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // Ignora requisições de APIs externas (ex: Supabase) para evitar cachear dados em tempo real
+  // Ignora requisições de APIs externas (ex: Supabase)
   if (url.origin !== self.location.origin) return;
 
+  // Busca sempre da rede primeiro para garantir código atualizado
   event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        if (cachedResponse) {
-          // Retorna do cache se encontrado
-          return cachedResponse;
+    fetch(event.request)
+      .then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
         }
-
-        // Caso contrário, busca na rede
-        return fetch(event.request)
-          .then(response => {
-            // Se for uma resposta válida, coloca no cache
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch(() => {
-            // Se falhar a rede (offline) e for uma rota de navegação, retorna a index.html
-            if (event.request.mode === 'navigate') {
-              return caches.match('/index.html');
-            }
-          });
+        return networkResponse;
+      })
+      .catch(() => {
+        // Fallback para o cache apenas se estiver totalmente offline
+        return caches.match(event.request);
       })
   );
-});
+}
+);

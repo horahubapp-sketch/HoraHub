@@ -1,0 +1,24 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = 'https://wxrkanrzxsjopcnnaxoe.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4cmthbnJ6eHNqb3Bjbm5heG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwMzU0NzIsImV4cCI6MjA5OTYxMTQ3Mn0.OczrHQUB129oWN347ev-hDvGMElnqYju7TyZ1MuEbbc';
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function testCpfInsert() {
+  console.log('--- Testando inserção com cliente_cpf_cnpj ---');
+  const { data, error } = await supabase.from('agendamentos').insert({
+    tenant_id: 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
+    funcionario_id: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
+    cliente_name: 'Teste CPF Column',
+    servico_id: 'c1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
+    horario_inicio: '2026-07-27T09:00:00Z',
+    horario_fim: '2026-07-27T09:45:00Z',
+    status: 'confirmado',
+    cliente_cpf_cnpj: '123.456.789-00'
+  }).select().single();
+
+  console.log('Resultado:', data, error);
+}
+
+testCpfInsert();

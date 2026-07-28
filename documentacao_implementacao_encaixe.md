@@ -1,6 +1,6 @@
-# Documentação de Implementação e Evolução — HoraHub
+# Documentação de Implementação e Evolução — Encaixe
 
-Este documento consolida todo o planejamento técnico, histórico de implementações entregues e o roadmap de evolução futura do **HoraHub** para servir de base e documentação de referência no NotebookLM.
+Este documento consolida todo o planejamento técnico, histórico de implementações entregues e o roadmap de evolução futura do **Encaixe** para servir de base e documentação de referência no NotebookLM.
 
 ---
 
@@ -16,7 +16,7 @@ Este documento consolida todo o planejamento técnico, histórico de implementa�
 
 ## 1. Histórico e Escopo do Projeto
 
-O **HoraHub** é um sistema de agendamento online B2B SaaS White Label (focado inicialmente em barbearias, salões de beleza e clínicas de estética). Ele opera em um modelo multi-tenant isolado por banco de dados onde cada empresa cadastrada possui sua própria agenda pública (/agendar/[slug]) e seu painel administrativo (/admin).
+O **Encaixe** é um sistema de agendamento online B2B SaaS White Label (focado inicialmente em barbearias, salões de beleza e clínicas de estética). Ele opera em um modelo multi-tenant isolado por banco de dados onde cada empresa cadastrada possui sua própria agenda pública (/agendar/[slug]) e seu painel administrativo (/admin).
 
 A arquitetura utiliza:
 *   **Frontend**: React (TypeScript), Vite, React Router, CSS customizado (sem Tailwind para maior controle visual).
@@ -38,7 +38,7 @@ Este plano detalhou a criação do painel mestre de governança e as travas fina
 *   **RLS Bypass para o Super Admin**:
     ```sql
     CREATE POLICY "Superadmin gerencia todas as empresas" ON empresas
-    FOR ALL TO authenticated USING (auth.jwt() ->> 'email' = 'admin@horahub.com');
+    FOR ALL TO authenticated USING (auth.jwt() ->> 'email' = 'admin@encaixe.com');
     ```
 
 ### 2.2 Rotas e Layouts Protegidos
@@ -54,7 +54,7 @@ Entregas realizadas e validadas localmente com sucesso:
 
 ### 3.1 Painel Master de Governança
 *   Implementado design premium de controle centralizado no arquivo `SuperAdminPage.tsx`.
-*   Inserção do botão verde neon exclusivo de "Super Admin" no rodapé esquerdo da sidebar para o usuário `admin@horahub.com`.
+*   Inserção do botão verde neon exclusivo de "Super Admin" no rodapé esquerdo da sidebar para o usuário `admin@encaixe.com`.
 
 ### 3.2 Travas de Segurança & Suspensão
 *   Desenvolvimento do card visual premium de suspensão de acesso no `App.tsx` que monitora as sessões em tempo real.
@@ -139,4 +139,3 @@ Como solução escalável, econômica e customizável para reduzir faltas (No-Sh
 * **Ajuste de Banco Pendente**:
   * Adicionar coluna `cliente_telefone` na tabela `agendamentos` para enviar ao n8n.
   * Adicionar o campo de telefone no formulário de Novo Agendamento (Admin) e portal público.
-

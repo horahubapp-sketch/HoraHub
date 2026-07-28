@@ -103,12 +103,14 @@
   letter-spacing: 0.5px;
 }
 
-.form-group-config input {
+.form-group-config input,
+.form-group-config select {
   height: 48px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 0 16px;
   color: var(--text-primary);
+  background-color: #FFFFFF;
   font-size: 0.95rem;
   font-family: inherit;
   transition: all 0.2s;
@@ -116,7 +118,8 @@
   width: 100%;
 }
 
-.form-group-config input:focus {
+.form-group-config input:focus,
+.form-group-config select:focus {
   outline: none;
   border-color: #00E676;
   box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1);

@@ -8,11 +8,10 @@ interface Servico {
   id: string;
   nome: string;
   duracao_minutos: number;
-  intervalo_preparo_minutos: number;
   preco: number;
 }
 
-const LOCAL_STORAGE_KEY = 'horahub_servicos_demo';
+const LOCAL_STORAGE_KEY = 'encaixe_servicos_demo';
 
 const isUUID = (str: string): boolean => {
   const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -31,10 +30,9 @@ export default function ServicosPage() {
   // States do Formulário
   const [nome, setNome] = useState('');
   const [duracao, setDuracao] = useState(45);
-  const [preparo, setPreparo] = useState(5);
-  const [preco, setPreco] = useState('50,00'); // Armazena como string para permitir vírgula ou ponto no input
+  const [preco, setPreco] = useState('50,00');
 
-  // Carregar serviços (Supabase com fallback para LocalStorage em modo demo)
+  // Carregar serviços
   const loadServicos = async () => {
     if (!tenantId) return;
     setLoading(true);
@@ -42,30 +40,26 @@ export default function ServicosPage() {
     try {
       const { data, error } = await supabase
         .from('servicos')
-        .select('id, nome, duracao_minutos, intervalo_preparo_minutos, preco')
+        .select('id, nome, duracao_minutos, preco')
         .eq('tenant_id', tenantId)
         .order('nome', { ascending: true });
 
       if (error) throw error;
       
       setServicos(data || []);
-      // Atualizar o localStorage para sincronia se o banco estiver ok
       if (data) {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
       }
     } catch (err: any) {
-      console.warn('[HoraHub] Erro de rede ou chave de API inválida. Carregando dados do LocalStorage.');
-      
-      // Carregar do LocalStorage
+      console.warn('[Encaixe] Carregando dados do LocalStorage.');
       const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (localData) {
         setServicos(JSON.parse(localData));
       } else {
-        // Dados estáticos iniciais caso não tenha nada salvo no navegador
         const inicialMock = [
-          { id: 's-mock-1', nome: 'Corte Degradê', duracao_minutos: 45, intervalo_preparo_minutos: 5, preco: 60.00 },
-          { id: 's-mock-2', nome: 'Barboterapia', duracao_minutos: 30, intervalo_preparo_minutos: 5, preco: 40.00 },
-          { id: 's-mock-3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, intervalo_preparo_minutos: 10, preco: 90.00 }
+          { id: 's-mock-1', nome: 'Corte Degradê', duracao_minutos: 45, preco: 60.00 },
+          { id: 's-mock-2', nome: 'Barboterapia', duracao_minutos: 30, preco: 40.00 },
+          { id: 's-mock-3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, preco: 90.00 }
         ];
         setServicos(inicialMock);
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(inicialMock));
@@ -88,7 +82,6 @@ export default function ServicosPage() {
     setEditingServico(null);
     setNome('');
     setDuracao(45);
-    setPreparo(5);
     setPreco('50,00');
     setErrorMsg(null);
     setShowModal(true);
@@ -99,11 +92,22 @@ export default function ServicosPage() {
     setEditingServico(servico);
     setNome(servico.nome);
     setDuracao(servico.duracao_minutos);
-    setPreparo(servico.intervalo_preparo_minutos);
-    // Formatar preco numérico para exibição amigável com vírgula
     setPreco(Number(servico.preco).toFixed(2).replace('.', ','));
     setErrorMsg(null);
     setShowModal(true);
+  };
+
+  // Fechar Modal com verificação de alterações pendentes (Dirty Check)
+  const handleCloseModal = () => {
+    const isDirty = editingServico
+      ? (nome !== editingServico.nome || duracao !== editingServico.duracao_minutos || preco !== Number(editingServico.preco).toFixed(2).replace('.', ','))
+      : (nome.trim() !== '' || duracao !== 45 || preco !== '50,00');
+
+    if (isDirty) {
+      const confirmar = window.confirm('Você possui informações preenchidas neste serviço. Deseja realmente sair sem gravar?');
+      if (!confirmar) return;
+    }
+    setShowModal(false);
   };
 
   // Cadastrar ou Editar
@@ -116,7 +120,6 @@ export default function ServicosPage() {
       return;
     }
 
-    // Tratar o preço de string ("30,00" ou "30.00") para número float
     const precoNumerico = Number(preco.replace(',', '.'));
     if (isNaN(precoNumerico) || precoNumerico < 0) {
       setErrorMsg('Preço inválido. Digite um número positivo (Ex: 45,50).');
@@ -125,13 +128,11 @@ export default function ServicosPage() {
 
     try {
       if (editingServico) {
-        // Se o ID não for um UUID válido (for um mock como 's-mock-1' ou 's1'), salva diretamente local
         if (!isUUID(editingServico.id)) {
           const novaLista = servicos.map(s => s.id === editingServico.id ? {
             ...s,
             nome,
             duracao_minutos: Number(duracao),
-            intervalo_preparo_minutos: Number(preparo),
             preco: precoNumerico
           } : s);
           setServicos(novaLista);
@@ -141,25 +142,21 @@ export default function ServicosPage() {
           return;
         }
 
-        // Atualizar no Supabase (para UUIDs reais)
         const { error } = await supabase
           .from('servicos')
           .update({
             nome,
             duracao_minutos: Number(duracao),
-            intervalo_preparo_minutos: Number(preparo),
             preco: precoNumerico
           })
           .eq('id', editingServico.id);
 
         if (error) {
-          // Fallback para falha de rede/API key
           if (error.message.includes('API key') || error.message.includes('JWT') || error.message.includes('fetch')) {
             const novaLista = servicos.map(s => s.id === editingServico.id ? {
               ...s,
               nome,
               duracao_minutos: Number(duracao),
-              intervalo_preparo_minutos: Number(preparo),
               preco: precoNumerico
             } : s);
             setServicos(novaLista);
@@ -172,25 +169,21 @@ export default function ServicosPage() {
         }
         showSuccess('Serviço atualizado com sucesso!');
       } else {
-        // Cadastrar no Supabase
         const { error } = await supabase
           .from('servicos')
           .insert({
             tenant_id: tenantId,
             nome,
             duracao_minutos: Number(duracao),
-            intervalo_preparo_minutos: Number(preparo),
             preco: precoNumerico
           });
 
         if (error) {
-          // Fallback para falha de rede/API key
           if (error.message.includes('API key') || error.message.includes('JWT') || error.message.includes('fetch')) {
             const novo = {
               id: `s-mock-${Date.now()}`,
               nome,
               duracao_minutos: Number(duracao),
-              intervalo_preparo_minutos: Number(preparo),
               preco: precoNumerico
             };
             const novaLista = [...servicos, novo];
@@ -221,7 +214,6 @@ export default function ServicosPage() {
 
     setErrorMsg(null);
     try {
-      // Se for um ID mockado (não-UUID), deleta diretamente local
       if (!isUUID(id)) {
         const novaLista = servicos.filter(s => s.id !== id);
         setServicos(novaLista);
@@ -236,7 +228,6 @@ export default function ServicosPage() {
         .eq('id', id);
 
       if (error) {
-        // Fallback para falha de rede/API key
         if (error.message.includes('API key') || error.message.includes('JWT') || error.message.includes('fetch')) {
           const novaLista = servicos.filter(s => s.id !== id);
           setServicos(novaLista);
@@ -264,7 +255,7 @@ export default function ServicosPage() {
       <header className="page-header">
         <div className="header-text">
           <h1>Serviços & Preços</h1>
-          <p>Gerencie o catálogo de serviços, tempo de duração e intervalos de preparo.</p>
+          <p>Gerencie o catálogo de serviços, tempo de duração e valores.</p>
         </div>
         <button className="btn-pill" onClick={handleNewClick}>
           <Plus size={18} />
@@ -301,7 +292,6 @@ export default function ServicosPage() {
               <tr>
                 <th>Serviço</th>
                 <th>Duração</th>
-                <th>Preparo/Limpeza</th>
                 <th>Preço</th>
                 <th className="text-right">Ações</th>
               </tr>
@@ -316,15 +306,9 @@ export default function ServicosPage() {
                       <span>{servico.duracao_minutos} min</span>
                     </div>
                   </td>
-                  <td>
-                    <div className="cell-with-icon text-muted">
-                      <span>+ {servico.intervalo_preparo_minutos} min</span>
-                    </div>
-                  </td>
                   <td className="font-bold price-cell">
                     R$ {Number(servico.preco).toFixed(2)}
                   </td>
-                  {/* ALINHAMENTO CORRIGIDO: actions-cell dentro do td text-right */}
                   <td className="text-right">
                     <div className="actions-cell">
                       <button 
@@ -352,11 +336,11 @@ export default function ServicosPage() {
 
       {/* MODAL CADASTRAR/EDITAR */}
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-card" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h2>{editingServico ? 'Editar Serviço' : 'Novo Serviço'}</h2>
-              <button className="btn-close" onClick={() => setShowModal(false)}>
+              <button className="btn-close" onClick={handleCloseModal}>
                 <X size={18} />
               </button>
             </div>
@@ -386,27 +370,15 @@ export default function ServicosPage() {
                 </div>
 
                 <div className="form-group">
-                  <label>Preparo/Limpeza (minutos)</label>
+                  <label>Preço Sugerido (R$)</label>
                   <input 
-                    type="number" 
-                    min="0"
-                    value={preparo}
-                    onChange={e => setPreparo(Number(e.target.value))}
+                    type="text" 
+                    placeholder="Ex: 50,00" 
+                    value={preco}
+                    onChange={e => setPreco(e.target.value)}
                     required
                   />
                 </div>
-              </div>
-
-              <div className="form-group">
-                <label>Preço Sugerido (R$)</label>
-                {/* CAMPO DE PREÇO CORRIGIDO: Permite pontuação correta */}
-                <input 
-                  type="text" 
-                  placeholder="Ex: 50,00" 
-                  value={preco}
-                  onChange={e => setPreco(e.target.value)}
-                  required
-                />
               </div>
 
               {errorMsg && (

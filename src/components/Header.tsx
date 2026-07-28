@@ -1,21 +1,26 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { ShieldAlert, LogOut, Settings } from 'lucide-react';
+import { ShieldAlert, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import './Header.css';
 import logoImg from '../assets/logo.jpg';
 
+import InstallAppBanner from './InstallAppBanner';
+
 export default function Header() {
-  const { signOut, user } = useAuth();
+  const { signOut, user, empresa } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showRelatorios, setShowRelatorios] = useState(false);
 
   return (
-    <header className="floating-header">
-      <div className="header-container">
-        <div className="header-brand">
-          <img src={logoImg} alt="Encaixe Logo" className="header-logo" />
-          <span className="brand-name">Encaixe</span>
-        </div>
+    <>
+      <InstallAppBanner empresaNome={empresa?.nome ? `${empresa.nome} (Gestão)` : 'Encaixe Gestão (Admin)'} logoUrl={empresa?.logo_url} />
+      <header className="floating-header">
+        <div className="header-container">
+          <div className="header-brand">
+            <img src={logoImg} alt="Encaixe Logo" className="header-logo" />
+            <span className="brand-name">Encaixe</span>
+          </div>
 
         <nav className="header-menu">
           <NavLink 
@@ -31,11 +36,35 @@ export default function Header() {
             Serviços
           </NavLink>
           <NavLink 
-            to="/admin/equipe" 
+            to="/admin/profissionais" 
             className={({ isActive }) => `header-link ${isActive ? 'active' : ''}`}
           >
-            Equipe
+            Profissionais
           </NavLink>
+
+          {/* Submenu de Relatórios */}
+          <div 
+            className="header-dropdown-wrapper"
+            onMouseEnter={() => setShowRelatorios(true)}
+            onMouseLeave={() => setShowRelatorios(false)}
+          >
+            <button className="header-link header-dropdown-trigger">
+              <span>Relatórios</span>
+              <ChevronDown size={14} />
+            </button>
+            {showRelatorios && (
+              <div className="header-submenu-card">
+                <NavLink 
+                  to="/admin/relatorios/aniversariantes" 
+                  className={({ isActive }) => `header-submenu-item ${isActive ? 'active' : ''}`}
+                  onClick={() => setShowRelatorios(false)}
+                >
+                  <span>Aniversariantes</span>
+                </NavLink>
+              </div>
+            )}
+          </div>
+
           <NavLink 
             to="/admin/configuracoes" 
             className={({ isActive }) => `header-link ${isActive ? 'active' : ''}`}
@@ -63,14 +92,14 @@ export default function Header() {
                   <div className="profile-dropdown-header">
                     <span className="profile-email">{user?.email}</span>
                     <span className="profile-role">
-                      {user?.email === 'admin@horahub.com' ? 'Super Administrador' : 'Administrador'}
+                      {(user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com') ? 'Super Administrador' : 'Administrador'}
                     </span>
                   </div>
                   
                   <div className="profile-dropdown-divider" />
                   
                   <div className="profile-dropdown-body">
-                    {user?.email === 'admin@horahub.com' && (
+                    {(user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com') && (
                       <NavLink 
                         to="/superadmin" 
                         className="dropdown-item superadmin-item"
@@ -108,5 +137,6 @@ export default function Header() {
         </div>
       </div>
     </header>
+    </>
   );
 }

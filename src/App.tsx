@@ -8,6 +8,8 @@ import ConfiguracoesPage from './pages/ConfiguracoesPage';
 import LoginPage from './pages/LoginPage';
 import CadastroPage from './pages/CadastroPage';
 import SuperAdminPage from './pages/SuperAdminPage';
+import ClientAppLauncherPage from './pages/ClientAppLauncherPage';
+import AniversariantesPage from './pages/AniversariantesPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Clock, LogOut, ShieldAlert } from 'lucide-react';
@@ -17,7 +19,7 @@ function Layout() {
   const { empresa, signOut, user } = useAuth();
   
   // Apenas considera ativo se for o administrador padrão do seed OR se a empresa estiver ativa
-  const isAtivo = (user?.email === 'admin@horahub.com') || (empresa && empresa.plano_status === 'ativo');
+  const isAtivo = (user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com') || (empresa && empresa.plano_status === 'ativo');
   
   // O blur é aplicado para qualquer estado que não seja ativo
   const aplicarBlur = !isAtivo;
@@ -121,12 +123,21 @@ const router = createBrowserRouter([
     path: '/cadastro',
     element: <CadastroPage />,
   },
-  // Portal Público do Cliente (Sem login)
+  // Portal de Busca de Slugs para Clientes (PWA Launcher)
+  {
+    path: '/app',
+    element: <ClientAppLauncherPage />,
+  },
+  {
+    path: '/agendar',
+    element: <ClientAppLauncherPage />,
+  },
+  // Portal Público do Cliente por Slug (Sem login)
   {
     path: '/agendar/:slug',
     element: <AgendarPage />,
   },
-  // Rotas do Super Administrador (Apenas admin@horahub.com)
+  // Rotas do Super Administrador (Apenas admin@encaixe.com)
   {
     path: '/superadmin',
     element: <ProtectedRoute requireSuperAdmin={true} />,
@@ -155,8 +166,20 @@ const router = createBrowserRouter([
             element: <ServicosPage />,
           },
           {
+            path: 'admin/profissionais',
+            element: <EquipePage />,
+          },
+          {
             path: 'admin/equipe',
             element: <EquipePage />,
+          },
+          {
+            path: 'admin/aniversariantes',
+            element: <AniversariantesPage />,
+          },
+          {
+            path: 'admin/relatorios/aniversariantes',
+            element: <AniversariantesPage />,
           },
           {
             path: 'admin/configuracoes',

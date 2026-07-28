@@ -32,7 +32,7 @@ export default function ProtectedRoute({ requireSuperAdmin = false }: ProtectedR
   }
 
   // Se exige super admin mas o e-mail não for o master
-  if (requireSuperAdmin && user.email !== 'admin@horahub.com') {
+  if (requireSuperAdmin && user.email !== 'admin@encaixe.com' && user.email !== 'admin@horahub.com') {
     return <Navigate to="/" replace />;
   }
 

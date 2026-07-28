@@ -14,8 +14,8 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <span className="brand-logo">H</span>
-        <span className="brand-name">HoraHub</span>
+        <span className="brand-logo">E</span>
+        <span className="brand-name">Encaixe</span>
       </div>
 
       <nav className="sidebar-menu">
@@ -49,7 +49,7 @@ export default function Sidebar() {
         </NavLink>
 
         <NavLink 
-          to="/admin/equipe" 
+          to="/admin/profissionais" 
           className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
         >
           <span 
@@ -59,8 +59,23 @@ export default function Sidebar() {
               WebkitMaskImage: `url(${teamImg})`
             }}
           ></span>
-            <span className="sidebar-label">Equipe</span>
+            <span className="sidebar-label">Profissionais</span>
         </NavLink>
+
+        {/* Grupo de Relatórios */}
+        <div className="sidebar-group-container">
+          <div className="sidebar-group-title">
+            <span className="sidebar-label">Relatórios</span>
+          </div>
+          <div className="sidebar-sub-menu">
+            <NavLink 
+              to="/admin/relatorios/aniversariantes" 
+              className={({ isActive }) => `sidebar-sub-link ${isActive ? 'active' : ''}`}
+            >
+              <span>Aniversariantes</span>
+            </NavLink>
+          </div>
+        </div>
 
         <NavLink 
           to="/admin/configuracoes" 
@@ -72,7 +87,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        {user?.email === 'admin@horahub.com' && (
+        {(user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com') && (
           <NavLink 
             to="/superadmin" 
             className="sidebar-link btn-superadmin-link"

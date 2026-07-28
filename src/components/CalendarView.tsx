@@ -44,18 +44,33 @@ export const CalendarView = () => {
   // Controle Dinâmico de Data (Inicia sempre no dia atual)
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedProfId, setSelectedProfId] = useState<string>('all');
+  const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  // Monitorar resolução mobile para desativar filtro 'Todos'
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (mobile && selectedProfId === 'all' && funcionarios.length > 0) {
+        setSelectedProfId(funcionarios[0].id);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [funcionarios, selectedProfId]);
 
   // Carregar dados de Funcionários e Serviços do LocalStorage (ou mocks se vazios)
   useEffect(() => {
-    const localFuncs = localStorage.getItem('horahub_funcionarios_demo');
+    const localFuncs = localStorage.getItem('encaixe_funcionarios_demo');
     if (localFuncs) {
       setFuncionarios(JSON.parse(localFuncs));
     } else {
       setFuncionarios(FUNCIONARIOS_MOCK);
-      localStorage.setItem('horahub_funcionarios_demo', JSON.stringify(FUNCIONARIOS_MOCK));
+      localStorage.setItem('encaixe_funcionarios_demo', JSON.stringify(FUNCIONARIOS_MOCK));
     }
 
-    const localServs = localStorage.getItem('horahub_servicos_demo');
+    const localServs = localStorage.getItem('encaixe_servicos_demo');
     if (localServs) {
       setCatalogoServicos(JSON.parse(localServs));
     } else {
@@ -65,7 +80,7 @@ export const CalendarView = () => {
         { id: 's-mock-3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, preco: 90.00 }
       ];
       setCatalogoServicos(mockServs);
-      localStorage.setItem('horahub_servicos_demo', JSON.stringify(mockServs));
+      localStorage.setItem('encaixe_servicos_demo', JSON.stringify(mockServs));
     }
   }, []);
 
@@ -139,7 +154,7 @@ export const CalendarView = () => {
         });
 
         // Combinar os agendamentos do Supabase com os bloqueios de almoço locais do localStorage
-        const agendamentosSalvos = localStorage.getItem(`horahub_agendamentos_${dataKey}`);
+        const agendamentosSalvos = localStorage.getItem(`encaixe_agendamentos_${dataKey}`);
         let locais = agendamentosSalvos ? JSON.parse(agendamentosSalvos) : [];
         
         // Filtrar locais para manter apenas os que são do tipo 'bloqueio'
@@ -161,14 +176,14 @@ export const CalendarView = () => {
             };
           });
           setAgendamentos([...bloqueiosPadrao, ...dbMapeados]);
-          localStorage.setItem(`horahub_agendamentos_${dataKey}`, JSON.stringify([...bloqueiosPadrao, ...dbMapeados]));
+          localStorage.setItem(`encaixe_agendamentos_${dataKey}`, JSON.stringify([...bloqueiosPadrao, ...dbMapeados]));
         } else {
           setAgendamentos([...bloqueiosLocais, ...dbMapeados]);
         }
       } catch (err) {
-        console.error('[HoraHub] Erro ao carregar agendamentos do Supabase:', err);
+        console.error('[Encaixe] Erro ao carregar agendamentos do Supabase:', err);
         // Fallback completo do localStorage se estiver offline
-        const agendamentosSalvos = localStorage.getItem(`horahub_agendamentos_${dataKey}`);
+        const agendamentosSalvos = localStorage.getItem(`encaixe_agendamentos_${dataKey}`);
         if (agendamentosSalvos) {
           setAgendamentos(JSON.parse(agendamentosSalvos));
         }
@@ -181,7 +196,7 @@ export const CalendarView = () => {
   const salvarAgendamentosDaData = (novaLista: Agendamento[]) => {
     const dataKey = obterDataKey(currentDate);
     setAgendamentos(novaLista);
-    localStorage.setItem(`horahub_agendamentos_${dataKey}`, JSON.stringify(novaLista));
+    localStorage.setItem(`encaixe_agendamentos_${dataKey}`, JSON.stringify(novaLista));
   };
 
   const handlePrevDay = () => {
@@ -198,11 +213,25 @@ export const CalendarView = () => {
 
   // States do Formulário de Novo Agendamento
   const [newClient, setNewClient] = useState('');
+  const [newClientCpfCnpj, setNewClientCpfCnpj] = useState('');
   const [newFuncionario, setNewFuncionario] = useState('');
   const [newServiceId, setNewServiceId] = useState('');
   const [newPrice, setNewPrice] = useState('50,00'); // Em R$
   const [newTimeStart, setNewTimeStart] = useState('09:00');
   const [newTimeEnd, setNewTimeEnd] = useState('09:45');
+
+  const handleClientCpfCnpjMask = (val: string) => {
+    const cleaned = val.replace(/\D/g, '');
+    let formatted = cleaned;
+    if (cleaned.length <= 11) {
+      if (cleaned.length > 3) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3)}`;
+      if (cleaned.length > 6) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3, 6)}.${cleaned.substring(6)}`;
+      if (cleaned.length > 9) formatted = `${cleaned.substring(0, 3)}.${cleaned.substring(3, 6)}.${cleaned.substring(6, 9)}-${cleaned.substring(9, 11)}`;
+    } else {
+      formatted = `${cleaned.substring(0, 2)}.${cleaned.substring(2, 5)}.${cleaned.substring(5, 8)}/${cleaned.substring(8, 12)}-${cleaned.substring(12, 14)}`;
+    }
+    setNewClientCpfCnpj(formatted);
+  };
 
   // Inicializar o formulário com o primeiro profissional e seu primeiro serviço correspondente
   useEffect(() => {
@@ -380,11 +409,27 @@ export const CalendarView = () => {
     const [hStart, mStart] = newTimeStart.split(':').map(Number);
     const [hEnd, mEnd] = newTimeEnd.split(':').map(Number);
 
-    const dInicio = new Date(currentDate);
-    dInicio.setHours(hStart, mStart, 0, 0);
+    const dInicio = new Date(Date.UTC(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate(),
+      hStart,
+      mStart,
+      0,
+      0
+    ));
 
-    const dFim = new Date(currentDate);
-    dFim.setHours(hEnd, mEnd, 0, 0);
+    const dFim = new Date(Date.UTC(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate(),
+      hEnd,
+      mEnd,
+      0,
+      0
+    ));
+
+    const clienteNameFormatado = newClientCpfCnpj ? `${newClient} (CPF: ${newClientCpfCnpj})` : newClient;
 
     try {
       const { data: inserted, error } = await supabase
@@ -392,7 +437,7 @@ export const CalendarView = () => {
         .insert({
           tenant_id: tenantId,
           funcionario_id: newFuncionario,
-          cliente_name: newClient,
+          cliente_name: clienteNameFormatado,
           servico_id: newServiceId,
           horario_inicio: dInicio.toISOString(),
           horario_fim: dFim.toISOString(),
@@ -406,7 +451,7 @@ export const CalendarView = () => {
       const newAgenda: Agendamento = {
         id: inserted.id,
         funcionarioId: newFuncionario,
-        clienteNome: newClient,
+        clienteNome: clienteNameFormatado,
         servicoNome: servObj?.nome || 'Serviço',
         horarioInicio: newTimeStart,
         horarioFim: newTimeEnd,
@@ -415,25 +460,14 @@ export const CalendarView = () => {
       };
 
       salvarAgendamentosDaData([...agendamentos, newAgenda]);
-    } catch (err) {
-      console.error('[HoraHub] Erro ao gravar agendamento no Supabase:', err);
-      // Fallback local se estiver offline
-      const newAgenda: Agendamento = {
-        id: `a-${Date.now()}`,
-        funcionarioId: newFuncionario,
-        clienteNome: newClient,
-        servicoNome: servObj?.nome || 'Serviço',
-        horarioInicio: newTimeStart,
-        horarioFim: newTimeEnd,
-        status: 'confirmado',
-        preco: isNaN(precoTratado) ? (servObj?.preco || 50) : precoTratado
-      };
-      salvarAgendamentosDaData([...agendamentos, newAgenda]);
+      setNewClient('');
+      setNewClientCpfCnpj('');
+      setConflictError(null);
+      setShowNewModal(false);
+    } catch (err: any) {
+      console.error('[Encaixe] Erro ao gravar agendamento no Supabase:', err);
+      setConflictError(`Erro ao salvar no banco: ${err.message || 'Verifique a conexão.'}`);
     }
-    
-    setNewClient('');
-    setConflictError(null);
-    setShowNewModal(false);
   };
 
   // Alterar Status
@@ -448,7 +482,7 @@ export const CalendarView = () => {
           .update({ status: nextStatus })
           .eq('id', id);
       } catch (err) {
-        console.error('[HoraHub] Erro ao alterar status no Supabase:', err);
+        console.error('[Encaixe] Erro ao alterar status no Supabase:', err);
       }
     }
 
@@ -480,7 +514,7 @@ export const CalendarView = () => {
           .update({ status: 'cancelado' })
           .eq('id', id);
       } catch (err) {
-        console.error('[HoraHub] Erro ao cancelar agendamento no Supabase:', err);
+        console.error('[Encaixe] Erro ao cancelar agendamento no Supabase:', err);
       }
     }
 
@@ -489,9 +523,21 @@ export const CalendarView = () => {
     setSelectedAgendamento(null);
   };
 
+  const handleCloseNewModal = () => {
+    const isDirty = Boolean(newClient.trim() || newClientCpfCnpj.trim());
+    if (isDirty) {
+      const confirmar = window.confirm('Você possui informações preenchidas neste agendamento. Deseja realmente sair sem gravar?');
+      if (!confirmar) return;
+    }
+    setNewClient('');
+    setNewClientCpfCnpj('');
+    setConflictError(null);
+    setShowNewModal(false);
+  };
+
   return (
-    <div className="dashboard-container">
-      {/* HEADER PRINCIPAL */}
+    <div className="calendar-container">
+      {/* HEADER DA AGENDA */}
       <header className="dashboard-header">
         <div className="header-left">
           <div className="app-title-group">
@@ -556,12 +602,14 @@ export const CalendarView = () => {
 
       {/* BARRA DE ABAS DE FILTRO POR PROFISSIONAL (MOBILE & DESKTOP) */}
       <div className="prof-filter-tabs-container">
-        <button 
-          className={`prof-filter-tab ${selectedProfId === 'all' ? 'active' : ''}`}
-          onClick={() => setSelectedProfId('all')}
-        >
-          <span>Todos ({funcionarios.length})</span>
-        </button>
+        {!isMobile && (
+          <button 
+            className={`prof-filter-tab ${selectedProfId === 'all' ? 'active' : ''}`}
+            onClick={() => setSelectedProfId('all')}
+          >
+            <span>Todos ({funcionarios.length})</span>
+          </button>
+        )}
         {funcionarios.map(func => (
           <button 
             key={`tab-${func.id}`}
@@ -801,11 +849,11 @@ export const CalendarView = () => {
 
       {/* MODAL NOVO AGENDAMENTO */}
       {showNewModal && (
-        <div className="modal-overlay" onClick={() => { setConflictError(null); setShowNewModal(false); }}>
+        <div className="modal-overlay" onClick={handleCloseNewModal}>
           <div className="modal-card" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Novo Agendamento</h2>
-              <button className="btn-close" onClick={() => { setConflictError(null); setShowNewModal(false); }}>
+              <button className="btn-close" onClick={handleCloseNewModal}>
                 <X size={18} />
               </button>
             </div>
@@ -819,6 +867,16 @@ export const CalendarView = () => {
                   value={newClient} 
                   onChange={e => setNewClient(e.target.value)} 
                   required 
+                />
+              </div>
+
+              <div className="form-group">
+                <label>CPF / CNPJ do Cliente (Opcional)</label>
+                <input 
+                  type="text" 
+                  placeholder="000.000.000-00 (opcional)" 
+                  value={newClientCpfCnpj} 
+                  onChange={e => handleClientCpfCnpjMask(e.target.value)} 
                 />
               </div>
 

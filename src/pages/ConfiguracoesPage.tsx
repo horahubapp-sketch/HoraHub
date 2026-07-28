@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import { 
   Building, 
   Mail, 
-  Link, 
+  Link2, 
   Palette, 
   Save, 
   CheckCircle, 
   AlertCircle,
-  Eye
+  Eye,
+  ShieldAlert
 } from 'lucide-react';
 import './ConfiguracoesPage.css';
 
@@ -26,39 +28,73 @@ export default function ConfiguracoesPage() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [slug, setSlug] = useState('');
+  const [cpfCnpj, setCpfCnpj] = useState('');
   const [corPrimaria, setCorPrimaria] = useState('#00E676');
   const [corSecundaria, setCorSecundaria] = useState('#121214');
   const [logoUrl, setLogoUrl] = useState('');
+  const [regraSemPreferencia, setRegraSemPreferencia] = useState('algoritmo');
+  const [profissionalIndicadoId, setProfissionalIndicadoId] = useState('');
+  const [funcionarios, setFuncionarios] = useState<any[]>([]);
 
   // Validação de Slug
   const [slugDisponivel, setSlugDisponivel] = useState<boolean | null>(null);
   const [validandoSlug, setValidandoSlug] = useState(false);
 
-  // 1. Carregar Configurações Atuais
+  // 1. Carregar Configurações Atuais (Estritamente isolado por tenantId)
   useEffect(() => {
     async function loadConfig() {
-      if (!tenantId) return;
+      if (!tenantId) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
+      setErroMsg(null);
       try {
         const { data, error } = await supabase
           .from('empresas')
-          .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url')
+          .select('id, nome, email, slug, cpf_cnpj, cor_primaria, cor_secundaria, logo_url, regra_sem_preferencia, profissional_indicado_padrao_id')
           .eq('id', tenantId)
-          .single();
+          .maybeSingle();
 
-        if (error) throw error;
-        if (data) {
+        if (error) {
+          console.warn('[Encaixe] Fallback para colunas básicas:', error);
+          const { data: basicData } = await supabase
+            .from('empresas')
+            .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url')
+            .eq('id', tenantId)
+            .maybeSingle();
+
+          if (basicData) {
+            setEmpresaId(basicData.id);
+            setNome(basicData.nome);
+            setEmail(basicData.email || '');
+            setSlug(basicData.slug || '');
+            setCorPrimaria(basicData.cor_primaria || '#00E676');
+            setCorSecundaria(basicData.cor_secundaria || '#121214');
+            setLogoUrl(basicData.logo_url || '');
+          }
+        } else if (data) {
           setEmpresaId(data.id);
           setNome(data.nome);
           setEmail(data.email || '');
           setSlug(data.slug || '');
+          setCpfCnpj(data.cpf_cnpj || '');
           setCorPrimaria(data.cor_primaria || '#00E676');
           setCorSecundaria(data.cor_secundaria || '#121214');
           setLogoUrl(data.logo_url || '');
+          setRegraSemPreferencia(data.regra_sem_preferencia || 'algoritmo');
+          setProfissionalIndicadoId(data.profissional_indicado_padrao_id || '');
         }
+
+        // Carrega Lista de Profissionais estritamente vinculados ao tenantId do usuário
+        const { data: funcs } = await supabase
+          .from('funcionarios')
+          .select('id, nome')
+          .eq('tenant_id', tenantId);
+        setFuncionarios(funcs || []);
       } catch (err: any) {
-        console.error('[HoraHub] Erro ao carregar configurações:', err);
-        setErroMsg('Erro ao carregar os dados da empresa do banco local.');
+        console.error('[Encaixe] Erro ao carregar configurações:', err);
       } finally {
         setLoading(false);
       }
@@ -140,7 +176,7 @@ export default function ConfiguracoesPage() {
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) {
-        console.warn('[HoraHub] Falha no storage do Supabase local. Mantendo Base64 offline:', uploadError.message);
+        console.warn('[Encaixe] Falha no storage do Supabase local. Mantendo Base64 offline:', uploadError.message);
         setUploadingLogo(false);
         return;
       }
@@ -151,7 +187,7 @@ export default function ConfiguracoesPage() {
 
       setLogoUrl(publicUrl);
     } catch (err) {
-      console.warn('[HoraHub] Erro no upload da logo. Preservado Base64.');
+      console.warn('[Encaixe] Erro no upload da logo. Preservado Base64.');
     } finally {
       setUploadingLogo(false);
     }
@@ -181,9 +217,12 @@ export default function ConfiguracoesPage() {
           nome,
           email,
           slug,
+          cpf_cnpj: cpfCnpj,
           cor_primaria: corPrimaria,
           cor_secundaria: corSecundaria,
-          logo_url: logoUrl
+          logo_url: logoUrl,
+          regra_sem_preferencia: regraSemPreferencia,
+          profissional_indicado_padrao_id: profissionalIndicadoId || null
         })
         .eq('id', empresaId);
 
@@ -195,7 +234,7 @@ export default function ConfiguracoesPage() {
       // Esconder a mensagem de sucesso após 3 segundos
       setTimeout(() => setSucessoMsg(null), 3000);
     } catch (err: any) {
-      console.error('[HoraHub] Erro ao salvar configurações:', err);
+      console.error('[Encaixe] Erro ao salvar configurações:', err);
       setErroMsg(err.message || 'Erro de conexão ao gravar dados.');
     } finally {
       setSalvando(false);
@@ -204,6 +243,43 @@ export default function ConfiguracoesPage() {
 
   if (loading) {
     return <div className="config-loading">Carregando parametrizações...</div>;
+  }
+
+  if (!empresaId) {
+    return (
+      <div className="config-page-container">
+        <div style={{
+          background: 'rgba(24, 24, 27, 0.85)',
+          border: '1px solid rgba(0, 230, 118, 0.3)',
+          borderRadius: '20px',
+          padding: '40px',
+          textAlign: 'center',
+          color: '#FFFFFF',
+          maxWidth: '650px',
+          margin: '60px auto',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)'
+        }}>
+          <ShieldAlert size={48} style={{ color: '#00E676', marginBottom: '16px' }} />
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '12px', color: '#FFFFFF' }}>Modo Super Administrador</h2>
+          <p style={{ color: '#94A3B8', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
+            Você está conectado com uma conta de administração global da plataforma. Os dados cadastrais de cada cliente são estritamente isolados por estabelecimento e protegidos por políticas de segurança.
+          </p>
+          <Link to="/superadmin" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            background: '#00E676',
+            color: '#09090B',
+            padding: '12px 24px',
+            borderRadius: '12px',
+            fontWeight: 700,
+            textDecoration: 'none'
+          }}>
+            Gerenciar Plataforma no Super Admin
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -249,6 +325,44 @@ export default function ConfiguracoesPage() {
           </div>
 
           <div className="form-group-config">
+            <label>CPF / CNPJ do Estabelecimento</label>
+            <input 
+              type="text" 
+              placeholder="000.000.000-00 ou 00.000.000/0001-00"
+              value={cpfCnpj}
+              onChange={e => setCpfCnpj(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group-config">
+            <label>Regra para Agendamento "Sem Preferência"</label>
+            <select
+              className="config-select-rule"
+              value={regraSemPreferencia}
+              onChange={e => setRegraSemPreferencia(e.target.value)}
+            >
+              <option value="algoritmo">Algoritmo Inteligente (Aloca o profissional com agenda mais livre)</option>
+              <option value="fixo">Indicar um profissional fixo de preferência</option>
+            </select>
+          </div>
+
+          {regraSemPreferencia === 'fixo' && (
+            <div className="form-group-config">
+              <label>Profissional Indicado Padrão</label>
+              <select
+                className="config-select-rule"
+                value={profissionalIndicadoId}
+                onChange={e => setProfissionalIndicadoId(e.target.value)}
+              >
+                <option value="">Selecione um profissional padrão...</option>
+                {funcionarios.map(f => (
+                  <option key={f.id} value={f.id}>{f.nome}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="form-group-config">
             <label>E-mail de Contato</label>
             <div className="config-input-wrapper">
               <Mail size={16} className="config-icon" />
@@ -264,7 +378,7 @@ export default function ConfiguracoesPage() {
           <div className="form-group-config">
             <label>Link de Auto-Agendamento (Slug da URL)</label>
             <div className="config-input-wrapper">
-              <Link size={16} className="config-icon" />
+              <Link2 size={16} className="config-icon" />
               <input 
                 type="text" 
                 placeholder="barbearia-bruno"

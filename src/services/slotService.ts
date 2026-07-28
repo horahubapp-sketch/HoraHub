@@ -53,7 +53,7 @@ export async function getSlotsDisponiveis(
   });
 
   if (error) {
-    console.error('[HoraHub] Erro ao buscar slots disponíveis:', error.message);
+    console.error('[Encaixe] Erro ao buscar slots disponíveis:', error.message);
     throw new Error(`Não foi possível buscar os horários disponíveis: ${error.message}`);
   }
 
@@ -113,7 +113,7 @@ export async function criarAgendamento(
     }
 
     // Outros erros de banco de dados
-    console.error('[HoraHub] Erro ao criar agendamento:', error);
+    console.error('[Encaixe] Erro ao criar agendamento:', error);
     throw new Error(`Não foi possível criar o agendamento: ${error.message}`);
   }
 

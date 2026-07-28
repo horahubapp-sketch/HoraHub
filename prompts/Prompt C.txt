@@ -1,29 +1,29 @@
-Atue como Engenheiro de Software SÍnior e UI/UX Designer no projeto HoraHub.
+Atue como Engenheiro de Software S√™nior e UI/UX Designer no projeto Encaixe.
 
-Nosso objetivo agora È estruturar a navegaÁ„o do sistema em rotas distintas e criar as p·ginas de Backoffice, isolando a tela de operaÁ„o (Calend·rio) dos formul·rios de cadastros.
+Nosso objetivo agora √© estruturar a navega√ß√£o do sistema em rotas distintas e criar as p√°ginas de Backoffice, isolando a tela de opera√ß√£o (Calend√°rio) dos formul√°rios de cadastros.
 
-Execute as seguintes tarefas de arquitetura e desenvolvimento no cÛdigo:
+Execute as seguintes tarefas de arquitetura e desenvolvimento no c√≥digo:
 
-1. ESTRUTURA DE ROTAS E NAVEGA«√O (Sidebar Minimalista):
-- Crie ou configure um layout de navegaÁ„o com uma barra lateral (Sidebar) minimalista.
-- Defina as seguintes rotas distintas na aplicaÁ„o:
-  * `/` ou `/agenda`: Painel Operacional (Apenas o Calend·rio Multi-colunas e o Seletor de Datas, sem formul·rios pesados ‡ mostra).
-  * `/admin/servicos`: P·gina dedicada ao Cadastro de ServiÁos e Tabela de PreÁos.
-  * `/admin/equipe`: P·gina dedicada ao Cadastro de Funcion·rios, VÌnculo de ServiÁos e suas respectivas Jornadas de Trabalho (com hor·rios de entrada, saÌda e almoÁo).
+1. ESTRUTURA DE ROTAS E NAVEGA√á√ÉO (Sidebar Minimalista):
+- Crie ou configure um layout de navega√ß√£o com uma barra lateral (Sidebar) minimalista.
+- Defina as seguintes rotas distintas na aplica√ß√£o:
+  * `/` ou `/agenda`: Painel Operacional (Apenas o Calend√°rio Multi-colunas e o Seletor de Datas, sem formul√°rios pesados √† mostra).
+  * `/admin/servicos`: P√°gina dedicada ao Cadastro de Servi√ßos e Tabela de Pre√ßos.
+  * `/admin/equipe`: P√°gina dedicada ao Cadastro de Funcion√°rios, V√≠nculo de Servi√ßos e suas respectivas Jornadas de Trabalho (com hor√°rios de entrada, sa√≠da e almo√ßo).
 
-2. FRENTE CONFIGURA«’ES - P¡GINA `/admin/servicos` (Por Empresa):
-- Implemente a p·gina `/admin/servicos` exibindo uma lista/tabela limpa dos serviÁos cadastrados (Nome, DuraÁ„o em minutos e PreÁo).
-- Adicione um formul·rio (ou modal discreto) para cadastrar novos serviÁos ou editar os existentes, enviando os dados para a tabela `servicos` do Supabase com o respectivo `tenant_id` da empresa logada.
+2. FRENTE CONFIGURA√á√ïES - P√ÅGINA `/admin/servicos` (Por Empresa):
+- Implemente a p√°gina `/admin/servicos` exibindo uma lista/tabela limpa dos servi√ßos cadastrados (Nome, Dura√ß√£o em minutos e Pre√ßo).
+- Adicione um formul√°rio (ou modal discreto) para cadastrar novos servi√ßos ou editar os existentes, enviando os dados para a tabela `servicos` do Supabase com o respectivo `tenant_id` da empresa logada.
 
-3. FRENTE CONFIGURA«’ES - P¡GINA `/admin/equipe` (Por Empresa):
-- Implemente a p·gina `/admin/equipe` listando os funcion·rios contratados.
-- Adicione o formul·rio de cadastro/ediÁ„o de funcion·rios que permita:
-  * Inserir dados b·sicos e a jornada de trabalho semanal (entrada, almoÁo, saÌda).
-  * Associar quais serviÁos da tabela de preÁos (da rota `/admin/servicos`) aquele funcion·rio est· apto a realizar.
-- Salve as informaÁıes de forma coordenada no Supabase (`funcionarios` e `jornadas_trabalho`), garantindo o isolamento pelo `tenant_id`.
+3. FRENTE CONFIGURA√á√ïES - P√ÅGINA `/admin/equipe` (Por Empresa):
+- Implemente a p√°gina `/admin/equipe` listando os funcion√°rios contratados.
+- Adicione o formul√°rio de cadastro/edi√ß√£o de funcion√°rios que permita:
+  * Inserir dados b√°sicos e a jornada de trabalho semanal (entrada, almo√ßo, sa√≠da).
+  * Associar quais servi√ßos da tabela de pre√ßos (da rota `/admin/servicos`) aquele funcion√°rio est√° apto a realizar.
+- Salve as informa√ß√µes de forma coordenada no Supabase (`funcionarios` e `jornadas_trabalho`), garantindo o isolamento pelo `tenant_id`.
 
-4. DESIGN SYSTEM HORAHUB (EstÈtica Premium Minimalista):
-- Mantenha a consistÍncia visual definida: Fundo off-white (#FDFBF7), textos em grafite fosco (#1E1E24) e cartıes de serviÁo/funcion·rio em tons pastÈis de marrom acinzentado/bege (#E6DFD3, #D7C9B7).
-- Garanta que a transiÁ„o entre as p·ginas por meio da Sidebar seja r·pida e fluida.
+4. DESIGN SYSTEM ENCAIXE (Est√©tica Premium Minimalista):
+- Mantenha a consist√™ncia visual definida: Fundo off-white (#FDFBF7), textos em grafite fosco (#1E1E24) e cart√µes de servi√ßo/funcion√°rio em tons past√©is de marrom acinzentado/bege (#E6DFD3, #D7C9B7).
+- Garanta que a transi√ß√£o entre as p√°ginas por meio da Sidebar seja r√°pida e fluida.
 
-Escreva o cÛdigo de maneira modular, separando os componentes de cada rota em arquivos especÌficos para manter a base de cÛdigo limpa e otimizar nosso limite de tokens de contexto na IDE. Use as ferramentas de MCP para alinhar as queries com as tabelas do Supabase.
+Escreva o c√≥digo de maneira modular, separando os componentes de cada rota em arquivos espec√≠ficos para manter a base de c√≥digo limpa e otimizar nosso limite de tokens de contexto na IDE. Use as ferramentas de MCP para alinhar as queries com as tabelas do Supabase.
