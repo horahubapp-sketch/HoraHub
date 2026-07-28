@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
-  Sparkles, 
   Calendar, 
   ShieldCheck, 
   Users, 
@@ -13,8 +12,14 @@ import {
   ArrowRight,
   Scissors,
   Award,
-  Zap
+  Zap,
+  Stethoscope,
+  HeartHandshake,
+  Sparkle,
+  Dog,
+  Check
 } from 'lucide-react';
+import logoImg from '../assets/logo.jpg';
 import './LandingPage.css';
 
 export default function LandingPage() {
@@ -26,14 +31,12 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="landing-container">
+    <div className="landing-container light-theme">
       {/* NAVBAR */}
       <header className="landing-navbar">
         <div className="landing-nav-content">
           <div className="landing-brand" onClick={() => navigate('/landing')}>
-            <div className="brand-icon">
-              <Sparkles size={22} />
-            </div>
+            <img src={logoImg} alt="Encaixe Logo" className="landing-logo-img" />
             <span className="brand-name">Encaixe</span>
           </div>
 
@@ -55,12 +58,12 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* HERO SECTION (Estilo AppBarber / Booksy Premium) */}
+      {/* HERO SECTION */}
       <section className="hero-section">
         <div className="hero-content">
           <div className="hero-badge">
             <Zap size={14} />
-            <span>O Sistema de Agendamento #1 para Barbearias, Salões & Estética</span>
+            <span>O Sistema de Agendamento #1 para Serviços por Hora</span>
           </div>
 
           <h1>
@@ -69,8 +72,8 @@ export default function LandingPage() {
           </h1>
 
           <p className="hero-description">
-            Diga adeus à desorganização do WhatsApp. O Encaixe é o aplicativo completo de agendamento online, 
-            gestão de profissionais, comissões e retenção de clientes direto no celular.
+            Diga adeus à desorganização no WhatsApp. O Encaixe é a solução moderna de agendamento online, 
+            gestão de equipe, comissões e fidelização de clientes direto no celular.
           </p>
 
           <div className="hero-buttons">
@@ -109,24 +112,34 @@ export default function LandingPage() {
                 <span className="dot yellow"></span>
                 <span className="dot green"></span>
               </div>
-              <div className="mockup-url">horahub.netlify.app/app</div>
+              <div className="mockup-url">encaixe.netlify.app/app</div>
             </div>
             <div className="mockup-body">
               <div className="preview-app-card">
-                <div className="preview-badge">
-                  <Scissors size={14} />
-                  <span>LuluBarber & Estética</span>
+                <div className="preview-brand-header">
+                  <img src={logoImg} alt="Encaixe" className="preview-logo-thumb" />
+                  <div>
+                    <h4>LuluBarber & Estética</h4>
+                    <span className="preview-status-online">● Online agora</span>
+                  </div>
                 </div>
-                <h3>Corte Degradê + Barba</h3>
-                <div className="preview-time-price">
-                  <span>⏱️ 45 min</span>
-                  <strong>R$ 80,00</strong>
+
+                <div className="preview-service-item">
+                  <div className="service-info">
+                    <h5>Corte Degradê + Barba</h5>
+                    <span className="service-duration">⏱️ 45 min</span>
+                  </div>
+                  <strong className="service-price">R$ 80,00</strong>
                 </div>
+
                 <div className="preview-slot-selected">
-                  <span>📅 Hoje às 15:30 • Profissional Bruno</span>
+                  <Calendar size={14} />
+                  <span>Hoje às 15:30 • Profissional Bruno</span>
                 </div>
+
                 <button className="btn-mockup-confirm">
-                  Agendar em 1 Clique
+                  <Check size={16} />
+                  <span>Agendar em 1 Clique</span>
                 </button>
               </div>
             </div>
@@ -161,7 +174,7 @@ export default function LandingPage() {
       <section id="recursos" className="features-section">
         <div className="section-title">
           <h2>Tudo o que seu estabelecimento precisa em um só lugar</h2>
-          <p>Recursos desenvolvidos para otimizar seu tempo e aumentar o faturamento do seu negócio.</p>
+          <p>Recursos pensados para economizar seu tempo e aumentar o faturamento do seu negócio.</p>
         </div>
 
         <div className="features-grid">
@@ -215,7 +228,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SEÇÃO PARA QUEM É */}
+      {/* SEÇÃO PARA QUEM É (ÍCONES PROFISSIONAIS REFINADOS) */}
       <section id="para-quem" className="nicho-section">
         <div className="section-title">
           <h2>Perfeito para qualquer tipo de serviço por agendamento</h2>
@@ -224,38 +237,48 @@ export default function LandingPage() {
 
         <div className="nicho-grid">
           <div className="nicho-card">
-            <span className="nicho-emoji">💈</span>
+            <div className="nicho-icon-box">
+              <Scissors size={26} />
+            </div>
             <h3>Barbearias</h3>
             <p>Cortes, barba, barboterapia e combos com controle de comissão de barbeiros.</p>
           </div>
 
           <div className="nicho-card">
-            <span className="nicho-emoji">💇‍♀️</span>
+            <div className="nicho-icon-box">
+              <Sparkle size={26} />
+            </div>
             <h3>Salões de Beleza</h3>
             <p>Cabelo, tintura, mechas e penteados com gestão da equipe por especialidade.</p>
           </div>
 
           <div className="nicho-card">
-            <span className="nicho-emoji">💅</span>
+            <div className="nicho-icon-box">
+              <HeartHandshake size={26} />
+            </div>
             <h3>Estética & Manicure</h3>
             <p>Design de sobrancelhas, harmonização, unhas e limpeza de pele.</p>
           </div>
 
           <div className="nicho-card">
-            <span className="nicho-emoji">🐾</span>
+            <div className="nicho-icon-box">
+              <Dog size={26} />
+            </div>
             <h3>Pet Shops & Banho</h3>
-            <p>Agendamento de banho e tosa para animais de estimação.</p>
+            <p>Agendamento de banho e tosa para animais de estimação com agilidade.</p>
           </div>
 
           <div className="nicho-card">
-            <span className="nicho-emoji">🩺</span>
+            <div className="nicho-icon-box">
+              <Stethoscope size={26} />
+            </div>
             <h3>Consultórios & Estúdios</h3>
             <p>Fisioterapia, pilates, personal trainer e consultas agendadas.</p>
           </div>
         </div>
       </section>
 
-      {/* PLANOS E PREÇOS (Estilo AppBarber Cards) */}
+      {/* PLANOS E PREÇOS */}
       <section id="planos" className="pricing-section">
         <div className="section-title">
           <h2>Planos transparentes que cabem no seu bolso</h2>
@@ -398,9 +421,7 @@ export default function LandingPage() {
         <div className="footer-content">
           <div className="footer-brand">
             <div className="landing-brand">
-              <div className="brand-icon">
-                <Sparkles size={20} />
-              </div>
+              <img src={logoImg} alt="Encaixe Logo" className="landing-logo-img" />
               <span className="brand-name">Encaixe</span>
             </div>
             <p>O aplicativo de agendamento online e gestão inteligente para estabelecimentos e profissionais de serviços.</p>
