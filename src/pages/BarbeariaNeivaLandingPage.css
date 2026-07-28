@@ -1,0 +1,1043 @@
+/* ==========================================================================
+   LANDING PAGE BARBEARIA NEIVA - PRD HORA HUB (/homeneiva)
+   ========================================================================== */
+
+.neiva-page-root {
+  /* Cores Principais - Extraídas do Logotipo Oficial */
+  --bg-primary: #0D0C0D;          /* Preto Ônix / Grafite Escuro */
+  --bg-surface: #171517;          /* Card Background */
+  --bg-surface-hover: #232023;    /* Card Hover */
+  --bg-glass: rgba(23, 21, 23, 0.85);
+
+  --color-primary: #C5A059;       /* Ouro Champanhe Nobre / Dourado do Logotipo */
+  --color-primary-hover: #DFBE7B; /* Champanhe Luminoso */
+  --color-primary-dark: #9A7B38;  /* Bronze Dourado */
+  --color-accent: #B38E46;        /* Marrom Dourado Pastel */
+  --color-accent-light: #EAE3D9;  /* Mármore Marfim */
+
+  --text-main: #F8F6F0;           /* Off-white Mármore */
+  --text-muted: #B8AF9F;          /* Cinza Pastel Dourado */
+  --text-dark: #0D0C0D;
+
+  --border-subtle: rgba(197, 160, 89, 0.2);
+  --border-glow: rgba(197, 160, 89, 0.45);
+
+  --gold-gradient: linear-gradient(135deg, #F3D999 0%, #C5A059 50%, #9A7B38 100%);
+  --gold-gradient-hover: linear-gradient(135deg, #FFF0C2 0%, #DFBE7B 50%, #B89343 100%);
+
+  --whatsapp-color: #25D366;
+  --whatsapp-hover: #20BA5A;
+
+  --font-heading: 'Outfit', 'Playfair Display', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.65);
+  --shadow-glow: 0 0 25px rgba(197, 160, 89, 0.22);
+
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.neiva-page-root *, .neiva-page-root *::before, .neiva-page-root *::after {
+  box-sizing: border-box;
+}
+
+/* Container */
+.neiva-page-root .neiva-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Utilitários de Texto */
+.neiva-page-root h1, 
+.neiva-page-root h2, 
+.neiva-page-root h3, 
+.neiva-page-root h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.neiva-page-root .text-gradient {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Botões */
+.neiva-page-root .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.9rem 2rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.neiva-page-root .btn-primary {
+  background: var(--gold-gradient);
+  color: var(--text-dark);
+  font-weight: 700;
+  box-shadow: var(--shadow-glow);
+}
+
+.neiva-page-root .btn-primary:hover {
+  background: var(--gold-gradient-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(197, 160, 89, 0.4);
+}
+
+.neiva-page-root .btn-outline {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+}
+
+.neiva-page-root .btn-outline:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(197, 160, 89, 0.08);
+  transform: translateY(-3px);
+}
+
+.neiva-page-root .btn-whatsapp {
+  background-color: var(--whatsapp-color);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.neiva-page-root .btn-whatsapp:hover {
+  background-color: var(--whatsapp-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
+}
+
+/* Cards Glass */
+.neiva-page-root .card-glass {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all var(--transition-normal);
+  backdrop-filter: blur(10px);
+}
+
+.neiva-page-root .card-glass:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Infobar Superior */
+.neiva-page-root .top-infobar {
+  background-color: #080708;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.15);
+  padding: 0.4rem 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.neiva-page-root .infobar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.neiva-page-root .infobar-left {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.neiva-page-root .infobar-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.neiva-page-root .infobar-whatsapp {
+  color: var(--color-primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 500;
+}
+
+/* Header */
+.neiva-page-root .site-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 0.8rem 0;
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+}
+
+.neiva-page-root .header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.neiva-page-root .official-logo-img {
+  max-height: 48px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+
+.neiva-page-root .main-nav ul {
+  display: flex;
+  gap: 1.8rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.neiva-page-root .main-nav a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.neiva-page-root .main-nav a:hover {
+  color: var(--color-primary);
+}
+
+.neiva-page-root .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.neiva-page-root .mobile-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.neiva-page-root .mobile-toggle span {
+  width: 25px;
+  height: 2px;
+  background-color: var(--text-main);
+}
+
+/* Hero Section */
+.neiva-page-root .hero-section {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  padding: 6rem 0 5rem;
+  background: radial-gradient(circle at 50% 20%, rgba(197, 160, 89, 0.18) 0%, transparent 60%),
+              url('/neiva-assets/foto_local_hero.jpg') center/cover no-repeat;
+}
+
+.neiva-page-root .hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13, 12, 13, 0.84) 0%, rgba(13, 12, 13, 0.98) 100%);
+}
+
+.neiva-page-root .hero-container {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 850px;
+}
+
+.neiva-page-root .hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  background: rgba(197, 160, 89, 0.12);
+  border: 1px solid var(--border-subtle);
+  border-radius: 30px;
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  margin-bottom: 1.2rem;
+}
+
+.neiva-page-root .badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}
+
+.neiva-page-root .hero-logo-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.neiva-page-root .hero-official-logo {
+  max-width: 280px;
+  height: auto;
+  filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.6));
+}
+
+.neiva-page-root .hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.2rem;
+  letter-spacing: -0.03em;
+}
+
+.neiva-page-root .hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+}
+
+.neiva-page-root .hero-buttons {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+  margin-bottom: 3.5rem;
+  flex-wrap: wrap;
+}
+
+.neiva-page-root .hero-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+  background: var(--bg-glass);
+  padding: 1.5rem 2.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(10px);
+}
+
+.neiva-page-root .stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.neiva-page-root .stat-number {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.neiva-page-root .stat-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.neiva-page-root .stat-divider {
+  width: 1px;
+  height: 35px;
+  background: var(--border-subtle);
+}
+
+/* Seções Gerais */
+.neiva-page-root section {
+  padding: 6rem 0;
+}
+
+.neiva-page-root .section-header {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 3.5rem;
+}
+
+.neiva-page-root .section-tag {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--color-primary);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.neiva-page-root .section-title {
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+}
+
+.neiva-page-root .section-description {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+/* História do Fundador */
+.neiva-page-root .story-wrapper {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 3.5rem;
+  align-items: center;
+  margin-bottom: 4rem;
+  padding: 3.5rem;
+  border: 1px solid var(--border-glow);
+  background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(26, 23, 26, 0.95) 100%);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.neiva-page-root .story-content h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.3;
+}
+
+.neiva-page-root .story-content p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.neiva-page-root .story-highlight {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 1.2rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--text-main) !important;
+}
+
+.neiva-page-root .story-img-wrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+}
+
+.neiva-page-root .story-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.neiva-page-root .story-img-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+/* Fotos Reais */
+.neiva-page-root .real-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.neiva-page-root .photo-card {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.neiva-page-root .photo-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.neiva-page-root .photo-card:hover img {
+  transform: scale(1.06);
+}
+
+.neiva-page-root .photo-info {
+  padding: 1.5rem;
+}
+
+.neiva-page-root .photo-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+}
+
+.neiva-page-root .photo-info p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Serviços */
+.neiva-page-root .services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.neiva-page-root .service-card {
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.neiva-page-root .service-img-wrapper {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.neiva-page-root .service-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.neiva-page-root .service-card:hover .service-img-wrapper img {
+  transform: scale(1.08);
+}
+
+.neiva-page-root .service-details {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.neiva-page-root .service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+.neiva-page-root .service-header h3 {
+  font-size: 1.2rem;
+}
+
+.neiva-page-root .service-price {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.neiva-page-root .service-details p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  flex: 1;
+}
+
+.neiva-page-root .btn-service-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.neiva-page-root .featured-service {
+  border-color: var(--color-primary);
+}
+
+.neiva-page-root .service-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--gold-gradient);
+  color: var(--text-dark);
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  z-index: 5;
+}
+
+/* Simulador */
+.neiva-page-root .simulator-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  padding: 3rem;
+  border: 1px solid var(--border-glow);
+  background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(35, 32, 35, 0.95) 100%);
+}
+
+.neiva-page-root .simulator-controls {
+  margin-top: 1.5rem;
+}
+
+.neiva-page-root .sim-select {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  background: var(--bg-primary);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.neiva-page-root .simulator-result {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.neiva-page-root .sim-box {
+  background: rgba(13, 12, 13, 0.7);
+  padding: 1.2rem 1.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.neiva-page-root .sim-box.highlight {
+  border-color: var(--color-primary);
+  background: rgba(197, 160, 89, 0.1);
+}
+
+.neiva-page-root .sim-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.neiva-page-root .sim-val {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  font-weight: 700;
+  display: block;
+}
+
+.neiva-page-root .val-avulso {
+  color: #E57373;
+  text-decoration: line-through;
+}
+
+.neiva-page-root .val-vip {
+  color: var(--color-primary);
+}
+
+.neiva-page-root .sim-savings {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+  color: #81C784;
+  font-weight: 600;
+}
+
+/* Planos */
+.neiva-page-root .plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  align-items: center;
+}
+
+.neiva-page-root .plan-card {
+  text-align: center;
+  position: relative;
+}
+
+.neiva-page-root .plan-name {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.neiva-page-root .plan-price {
+  margin-bottom: 1.5rem;
+}
+
+.neiva-page-root .plan-price .currency {
+  font-size: 1.2rem;
+  color: var(--color-primary);
+  vertical-align: top;
+}
+
+.neiva-page-root .plan-price .amount {
+  font-family: var(--font-heading);
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.neiva-page-root .plan-price .period {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.neiva-page-root .plan-features {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 2rem;
+  padding: 0;
+}
+
+.neiva-page-root .plan-features li {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.neiva-page-root .plan-vip {
+  border: 2px solid var(--color-primary);
+  box-shadow: var(--shadow-glow);
+  transform: scale(1.04);
+}
+
+.neiva-page-root .plan-ribbon {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold-gradient);
+  color: var(--text-dark);
+  padding: 0.4rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.neiva-page-root .btn-plan {
+  width: 100%;
+}
+
+/* Galeria */
+.neiva-page-root .gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.neiva-page-root .gallery-item {
+  position: relative;
+  height: 250px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.neiva-page-root .gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.neiva-page-root .gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(13, 12, 13, 0.92) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.neiva-page-root .gallery-item:hover img {
+  transform: scale(1.1);
+}
+
+.neiva-page-root .gallery-item:hover .gallery-overlay {
+  opacity: 1;
+}
+
+/* FAQ */
+.neiva-page-root .faq-accordion {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.neiva-page-root .faq-item {
+  padding: 0;
+  overflow: hidden;
+}
+
+.neiva-page-root .faq-question {
+  width: 100%;
+  padding: 1.4rem 1.8rem;
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.neiva-page-root .faq-icon {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  transition: transform 0.3s ease;
+}
+
+.neiva-page-root .faq-item.active .faq-icon {
+  transform: rotate(45deg);
+}
+
+.neiva-page-root .faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0, 1, 0, 1), padding 0.3s ease;
+  padding: 0 1.8rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.neiva-page-root .faq-item.active .faq-answer {
+  max-height: 300px;
+  padding: 0 1.8rem 1.4rem;
+}
+
+/* Contato */
+.neiva-page-root .contact-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  padding: 3.5rem;
+}
+
+.neiva-page-root .info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.neiva-page-root .info-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.neiva-page-root .info-icon {
+  font-size: 1.5rem;
+}
+
+.neiva-page-root .map-placeholder {
+  background: rgba(13, 12, 13, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem;
+}
+
+.neiva-page-root .map-logo {
+  max-width: 140px;
+  margin-bottom: 1rem;
+}
+
+.neiva-page-root .hours-box {
+  margin-top: 1.5rem;
+  padding: 1.2rem 1.5rem;
+  background: rgba(13, 12, 13, 0.7);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.neiva-page-root .hours-box h4 {
+  font-size: 0.95rem;
+  color: var(--color-primary);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.neiva-page-root .hours-list {
+  list-style: none;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  padding: 0;
+  margin: 0;
+}
+
+.neiva-page-root .hours-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed rgba(197, 160, 89, 0.15);
+}
+
+.neiva-page-root .hours-list li:last-child {
+  border-bottom: none;
+}
+
+/* Ícones Sociais no Estilo da Marca */
+.neiva-page-root .social-icons-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.neiva-page-root .social-icon-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-glow);
+  color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.neiva-page-root .social-icon-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  transition: transform var(--transition-fast);
+}
+
+.neiva-page-root .social-icon-btn:hover {
+  background: var(--gold-gradient);
+  color: var(--text-dark);
+  border-color: var(--color-primary-hover);
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: var(--shadow-glow);
+}
+
+.neiva-page-root .social-icon-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.neiva-page-root .social-icon-btn.whatsapp-hover:hover {
+  background: var(--whatsapp-color);
+  color: #ffffff;
+  border-color: var(--whatsapp-color);
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
+}
+
+.neiva-page-root .social-icon-btn.instagram-hover:hover {
+  background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 8px 25px rgba(253, 29, 29, 0.45);
+}
+
+/* Footer */
+.neiva-page-root .site-footer {
+  background-color: #080708;
+  padding: 4rem 0 2rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.neiva-page-root .footer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.neiva-page-root .footer-logo {
+  max-width: 160px;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+.neiva-page-root .footer-copy {
+  color: #666;
+  font-size: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 2rem;
+  width: 100%;
+}
+
+/* Botão Flutuante WhatsApp */
+.neiva-page-root .floating-whatsapp {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background-color: var(--whatsapp-color);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.neiva-page-root .floating-whatsapp:hover {
+  transform: scale(1.1);
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+  .neiva-page-root .simulator-card, 
+  .neiva-page-root .contact-wrapper, 
+  .neiva-page-root .story-wrapper {
+    grid-template-columns: 1fr;
+  }
+  .neiva-page-root .hero-title {
+    font-size: 2.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .neiva-page-root .hide-mobile {
+    display: none;
+  }
+  .neiva-page-root .main-nav {
+    display: none;
+  }
+  .neiva-page-root .mobile-toggle {
+    display: flex;
+  }
+  .neiva-page-root .hero-title {
+    font-size: 2rem;
+  }
+  .neiva-page-root .hero-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
