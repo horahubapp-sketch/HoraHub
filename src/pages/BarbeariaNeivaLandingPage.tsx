@@ -4,9 +4,18 @@ import './BarbeariaNeivaLandingPage.css';
 export default function BarbeariaNeivaLandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [freq, setFreq] = useState<number>(3);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   // Cálculo do simulador
@@ -45,27 +54,55 @@ export default function BarbeariaNeivaLandingPage() {
       {/* Header */}
       <header className="site-header" id="header">
         <div className="neiva-container header-container">
-          <a href="#home" className="brand-logo-official">
+          <a href="#home" className="brand-logo-official" onClick={closeMobileMenu}>
             <img src="/neiva-assets/logo_official.png" alt="Barbearia Neiva - Logotipo Oficial" className="official-logo-img" />
           </a>
 
-          <nav className="main-nav">
+          {/* Menu de Navegação & Menu Suspenso Mobile */}
+          <nav className={`main-nav ${mobileMenuOpen ? 'mobile-active' : ''}`}>
             <ul>
-              <li><a href="#home">Início</a></li>
-              <li><a href="#sobre">O Espaço</a></li>
-              <li><a href="#servicos">Serviços</a></li>
-              <li><a href="#simulador">Simulador VIP</a></li>
-              <li><a href="#planos">Assinatura</a></li>
-              <li><a href="#galeria">Fotos do Local</a></li>
-              <li><a href="#faq">FAQ</a></li>
-              <li><a href="#contato">Localização</a></li>
+              <li><a href="#home" onClick={closeMobileMenu}>Início</a></li>
+              <li><a href="#sobre" onClick={closeMobileMenu}>O Espaço</a></li>
+              <li><a href="#servicos" onClick={closeMobileMenu}>Serviços</a></li>
+              <li><a href="#simulador" onClick={closeMobileMenu}>Simulador VIP</a></li>
+              <li><a href="#planos" onClick={closeMobileMenu}>Assinatura</a></li>
+              <li><a href="#galeria" onClick={closeMobileMenu}>Fotos do Local</a></li>
+              <li><a href="#faq" onClick={closeMobileMenu}>FAQ</a></li>
+              <li><a href="#contato" onClick={closeMobileMenu}>Localização</a></li>
             </ul>
+
+            <div className="mobile-menu-cta">
+              <a 
+                href="https://wa.me/5541996453474?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio%20na%20Barbearia%20Neiva." 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn btn-primary"
+                onClick={closeMobileMenu}
+              >
+                Agendar pelo WhatsApp
+              </a>
+            </div>
           </nav>
 
           <div className="header-actions">
-            <a href="https://wa.me/5541996453474?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio%20na%20Barbearia%20Neiva." target="_blank" rel="noreferrer" className="btn btn-primary nav-cta">
+            <a 
+              href="https://wa.me/5541996453474?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio%20na%20Barbearia%20Neiva." 
+              target="_blank" 
+              rel="noreferrer" 
+              className="btn btn-primary nav-cta hide-mobile"
+            >
               Agendar pelo WhatsApp
             </a>
+
+            <button 
+              className={`mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
+              onClick={toggleMobileMenu}
+              aria-label="Abrir Menu de Navegação Mobile"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
           </div>
         </div>
       </header>
@@ -123,7 +160,7 @@ export default function BarbeariaNeivaLandingPage() {
               <span className="section-tag">NOSSA TRAJETÓRIA & HISTÓRIA</span>
               <h2 className="section-title">Do Vale do Jequitinhonha ao Alto Padrão em São José dos Pinhais</h2>
               <p>
-                Nascido em Araçuaí, no interior de Minas Gerais, o fundador <strong>Neiva</strong> partiu rumo a Curitiba e São José dos Pinhais em busca de novos horizons. No início de sua jornada, trabalhou por muitos anos como garçom antes de descobrir sua verdadeira vocação na arte da barbearia.
+                Nascido em Araçuaí, no interior de Minas Gerais, o fundador <strong>Neiva</strong> partiu rumo a Curitiba e São José dos Pinhais em busca de novos horizontes. No início de sua jornada, trabalhou por muitos anos como garçom antes de descobrir sua verdadeira vocação na arte da barbearia.
               </p>
               <p>
                 Com a oportunidade e a ajuda fundamental de seu cunhado, Neiva aprendeu a profissão do zero. Com dedicação incansável, tornou-se barbeiro e gerente de destaque, até adquirir o próprio estabelecimento — dando origem à <strong>Barbearia Neiva</strong>.
