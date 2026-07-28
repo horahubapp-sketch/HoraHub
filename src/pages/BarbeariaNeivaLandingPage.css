@@ -1041,7 +1041,11 @@
   transform: scale(1.1);
 }
 
-/* Botão MENU Estilo John Six */
+/* Ocultar elementos do Drawer Mobile no Desktop por padrão */
+.neiva-page-root .mobile-drawer-overlay {
+  display: none !important;
+}
+
 .neiva-page-root .mobile-toggle-btn {
   display: none;
   align-items: center;
@@ -1070,103 +1074,18 @@
   line-height: 1;
 }
 
-/* Header Drawer Categorizado Mobile */
-.neiva-page-root .mobile-drawer-header {
-  display: none;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 1.2rem;
-  border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: 1.5rem;
-}
-
-.neiva-page-root .drawer-title {
-  font-family: var(--font-heading);
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.15em;
-  color: var(--color-primary);
-}
-
-.neiva-page-root .drawer-close-btn {
-  background: rgba(197, 160, 89, 0.12);
-  border: 1px solid var(--border-subtle);
-  color: var(--color-primary);
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.neiva-page-root .mobile-menu-sections {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1.8rem;
-}
-
-.neiva-page-root .menu-cat {
-  width: 100%;
-  text-align: left;
-}
-
-.neiva-page-root .menu-cat-title {
-  display: block;
-  font-family: var(--font-heading);
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--color-primary);
-  margin-bottom: 0.8rem;
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: 0.4rem;
-}
-
-.neiva-page-root .menu-cat ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
-.neiva-page-root .menu-cat a {
-  color: var(--text-main);
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: color var(--transition-fast);
-  display: block;
-  padding: 0.2rem 0;
-}
-
-.neiva-page-root .menu-cat a:hover {
-  color: var(--color-primary);
-}
-
-.neiva-page-root .mobile-drawer-footer {
-  display: none;
-  width: 100%;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-subtle);
-  text-align: center;
-}
-
 /* Responsividade Mobile */
 @media (max-width: 992px) {
   .neiva-page-root .top-infobar {
-    display: none; /* Esconde infobar para dar destaque total ao logo e menu */
+    display: none;
   }
 
   .neiva-page-root .site-header {
     padding: 0.6rem 0;
+  }
+
+  .neiva-page-root .desktop-nav {
+    display: none !important;
   }
 
   .neiva-page-root .hide-mobile {
@@ -1174,17 +1093,11 @@
   }
 
   .neiva-page-root .mobile-toggle-btn {
-    display: inline-flex;
+    display: inline-flex !important;
   }
 
-  .neiva-page-root .mobile-drawer-header,
-  .neiva-page-root .mobile-drawer-footer {
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Drawer Modal Full Screen / Dropdown Suspenso Categorizado */
-  .neiva-page-root .main-nav {
+  /* Drawer Modal Full Screen Categorizado no Celular */
+  .neiva-page-root .mobile-drawer-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -1192,7 +1105,7 @@
     height: 100vh;
     background: rgba(13, 12, 13, 0.98);
     backdrop-filter: blur(25px);
-    display: none;
+    display: none !important;
     flex-direction: column;
     padding: 1.8rem 1.8rem 3rem;
     overflow-y: auto;
@@ -1200,8 +1113,97 @@
     animation: fadeInDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  .neiva-page-root .main-nav.mobile-active {
+  .neiva-page-root .mobile-drawer-overlay.mobile-active {
     display: flex !important;
+  }
+
+  .neiva-page-root .mobile-drawer-header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 1.5rem;
+  }
+
+  .neiva-page-root .drawer-title {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    color: var(--color-primary);
+  }
+
+  .neiva-page-root .drawer-close-btn {
+    background: rgba(197, 160, 89, 0.12);
+    border: 1px solid var(--border-subtle);
+    color: var(--color-primary);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .neiva-page-root .mobile-menu-sections {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+  }
+
+  .neiva-page-root .menu-cat {
+    width: 100%;
+    text-align: left;
+  }
+
+  .neiva-page-root .menu-cat-title {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--color-primary);
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 0.4rem;
+  }
+
+  .neiva-page-root .menu-cat ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .neiva-page-root .menu-cat a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+    display: block;
+    padding: 0.2rem 0;
+  }
+
+  .neiva-page-root .menu-cat a:hover {
+    color: var(--color-primary);
+  }
+
+  .neiva-page-root .mobile-drawer-footer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-subtle);
+    text-align: center;
   }
 
   /* Layout em Lista Única (1 Coluna) no Celular */

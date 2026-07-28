@@ -58,8 +58,22 @@ export default function BarbeariaNeivaLandingPage() {
             <img src="/neiva-assets/logo_official.png" alt="Barbearia Neiva - Logotipo Oficial" className="official-logo-img" />
           </a>
 
-          {/* Menu de Navegação & Drawer Categorizado Mobile */}
-          <nav className={`main-nav ${mobileMenuOpen ? 'mobile-active' : ''}`}>
+          {/* Menu Desktop (Visível apenas em Desktop) */}
+          <nav className="main-nav desktop-nav">
+            <ul>
+              <li><a href="#home">Início</a></li>
+              <li><a href="#sobre">O Espaço</a></li>
+              <li><a href="#servicos">Serviços</a></li>
+              <li><a href="#simulador">Simulador VIP</a></li>
+              <li><a href="#planos">Assinatura</a></li>
+              <li><a href="#galeria">Fotos do Local</a></li>
+              <li><a href="#faq">FAQ</a></li>
+              <li><a href="#contato">Localização</a></li>
+            </ul>
+          </nav>
+
+          {/* Menu Drawer Mobile (Visível apenas em Mobile qdo aberto) */}
+          <div className={`mobile-drawer-overlay ${mobileMenuOpen ? 'mobile-active' : ''}`}>
             <div className="mobile-drawer-header">
               <span className="drawer-title">NAVEGAÇÃO</span>
               <button className="drawer-close-btn" onClick={closeMobileMenu} aria-label="Fechar Menu">✕</button>
@@ -114,7 +128,7 @@ export default function BarbeariaNeivaLandingPage() {
                 Agendar pelo WhatsApp
               </a>
             </div>
-          </nav>
+          </div>
 
           <div className="header-actions">
             <a 
