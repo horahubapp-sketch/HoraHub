@@ -10,6 +10,7 @@ import CadastroPage from './pages/CadastroPage';
 import SuperAdminPage from './pages/SuperAdminPage';
 import ClientAppLauncherPage from './pages/ClientAppLauncherPage';
 import AniversariantesPage from './pages/AniversariantesPage';
+import LandingPage from './pages/LandingPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Clock, LogOut, ShieldAlert } from 'lucide-react';
@@ -114,6 +115,15 @@ function Layout() {
 
 // Configuração de rotas da aplicação
 const router = createBrowserRouter([
+  // Landing Page Oficial do Produto
+  {
+    path: '/landing',
+    element: <LandingPage />,
+  },
+  {
+    path: '/inicio',
+    element: <LandingPage />,
+  },
   // Rotas de Autenticação
   {
     path: '/login',
