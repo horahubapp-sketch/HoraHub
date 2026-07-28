@@ -58,25 +58,57 @@ export default function BarbeariaNeivaLandingPage() {
             <img src="/neiva-assets/logo_official.png" alt="Barbearia Neiva - Logotipo Oficial" className="official-logo-img" />
           </a>
 
-          {/* Menu de Navegação & Menu Suspenso Mobile */}
+          {/* Menu de Navegação & Drawer Categorizado Mobile */}
           <nav className={`main-nav ${mobileMenuOpen ? 'mobile-active' : ''}`}>
-            <ul>
-              <li><a href="#home" onClick={closeMobileMenu}>Início</a></li>
-              <li><a href="#sobre" onClick={closeMobileMenu}>O Espaço</a></li>
-              <li><a href="#servicos" onClick={closeMobileMenu}>Serviços</a></li>
-              <li><a href="#simulador" onClick={closeMobileMenu}>Simulador VIP</a></li>
-              <li><a href="#planos" onClick={closeMobileMenu}>Assinatura</a></li>
-              <li><a href="#galeria" onClick={closeMobileMenu}>Fotos do Local</a></li>
-              <li><a href="#faq" onClick={closeMobileMenu}>FAQ</a></li>
-              <li><a href="#contato" onClick={closeMobileMenu}>Localização</a></li>
-            </ul>
+            <div className="mobile-drawer-header">
+              <span className="drawer-title">NAVEGAÇÃO</span>
+              <button className="drawer-close-btn" onClick={closeMobileMenu} aria-label="Fechar Menu">✕</button>
+            </div>
 
-            <div className="mobile-menu-cta">
+            <div className="mobile-menu-sections">
+              <div className="menu-cat">
+                <span className="menu-cat-title">INSTITUCIONAL</span>
+                <ul>
+                  <li><a href="#home" onClick={closeMobileMenu}>Início</a></li>
+                  <li><a href="#sobre" onClick={closeMobileMenu}>O Espaço & História</a></li>
+                  <li><a href="#galeria" onClick={closeMobileMenu}>Fotos do Local</a></li>
+                </ul>
+              </div>
+
+              <div className="menu-cat">
+                <span className="menu-cat-title">PRODUTOS & SERVIÇOS</span>
+                <ul>
+                  <li><a href="#servicos" onClick={closeMobileMenu}>Menu de Serviços</a></li>
+                  <li><a href="#simulador" onClick={closeMobileMenu}>Simulador VIP</a></li>
+                  <li><a href="#planos" onClick={closeMobileMenu}>Planos de Assinatura</a></li>
+                </ul>
+              </div>
+
+              <div className="menu-cat">
+                <span className="menu-cat-title">CONTATO & LOCALIZAÇÃO</span>
+                <ul>
+                  <li><a href="#faq" onClick={closeMobileMenu}>Dúvidas (FAQ)</a></li>
+                  <li><a href="#contato" onClick={closeMobileMenu}>Localização & Horários</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mobile-drawer-footer">
+              <span className="menu-cat-title">REDES SOCIAIS</span>
+              <div className="social-icons-wrapper" style={{ justifyContent: 'center', margin: '0.8rem 0 1.2rem' }}>
+                <a href="https://wa.me/5541996453474?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio." target="_blank" rel="noreferrer" className="social-icon-btn whatsapp-hover" aria-label="WhatsApp">
+                  <svg viewBox="0 0 24 24"><path d="M19.005 3.175A10.673 10.673 0 0 0 11.5 0C5.158 0 .012 5.147.012 11.488c0 2.026.529 4.005 1.533 5.744L0 24l6.974-1.83a10.63 10.63 0 0 0 4.522 1.018h.005c6.342 0 11.487-5.147 11.487-11.489 0-3.07-1.196-5.955-3.37-8.128zM11.5 21.18c-1.74 0-3.447-.468-4.937-1.353l-.354-.21-3.673.963.98-3.58-.23-.367a9.475 9.475 0 0 1-1.455-5.145c0-5.234 4.258-9.492 9.493-9.492 2.535 0 4.918.988 6.711 2.782a9.426 9.426 0 0 1 2.777 6.713c0 5.235-4.259 9.493-9.494 9.493zm5.21-7.119c-.286-.143-1.693-.836-1.956-.931-.262-.095-.453-.143-.643.143-.19.286-.738.931-.905 1.121-.167.19-.333.214-.619.071-.286-.143-1.207-.445-2.299-1.419-.85-.758-1.424-1.693-1.59-1.978-.167-.286-.018-.44.125-.583.13-.129.286-.333.429-.5.143-.167.19-.286.286-.476.095-.19.048-.357-.024-.5-.071-.143-.643-1.547-.881-2.119-.232-.557-.468-.482-.643-.491l-.547-.01c-.19 0-.5.071-.762.357-.262.286-1 1.024-1 2.499 0 1.475 1.071 2.9 1.22 3.095.149.195 2.109 3.22 5.11 4.516.714.309 1.272.494 1.706.632.718.229 1.37.196 1.886.119.577-.086 1.693-.69 1.931-1.357.238-.667.238-1.238.167-1.357-.071-.119-.262-.19-.548-.333z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/barbearia_neiva/" target="_blank" rel="noreferrer" className="social-icon-btn instagram-hover" aria-label="Instagram">
+                  <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+              </div>
               <a 
-                href="https://wa.me/5541996453474?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio%20na%20Barbearia%20Neiva." 
+                href="https://wa.me/5541996453474?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio." 
                 target="_blank" 
                 rel="noreferrer" 
-                className="btn btn-primary"
+                className="btn btn-primary" 
+                style={{ width: '100%', textAlign: 'center' }}
                 onClick={closeMobileMenu}
               >
                 Agendar pelo WhatsApp
@@ -95,13 +127,12 @@ export default function BarbeariaNeivaLandingPage() {
             </a>
 
             <button 
-              className={`mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
+              className={`mobile-toggle-btn ${mobileMenuOpen ? 'active' : ''}`}
               onClick={toggleMobileMenu}
-              aria-label="Abrir Menu de Navegação Mobile"
+              aria-label="Abrir Menu"
             >
-              <span></span>
-              <span></span>
-              <span></span>
+              <span className="hamburger-icon">☰</span>
+              <span className="toggle-text">MENU</span>
             </button>
           </div>
         </div>
