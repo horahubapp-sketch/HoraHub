@@ -202,28 +202,51 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: nowrap;
+}
+
+.neiva-page-root .brand-logo-official {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
 }
 
 .neiva-page-root .official-logo-img {
-  max-height: 48px;
+  max-height: 44px;
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
 }
 
+.neiva-page-root .main-nav {
+  display: flex;
+  align-items: center;
+}
+
 .neiva-page-root .main-nav ul {
   display: flex;
-  gap: 1.8rem;
+  gap: 1.2rem;
+  align-items: center;
   list-style: none;
   margin: 0;
   padding: 0;
+  flex-wrap: nowrap;
+}
+
+.neiva-page-root .main-nav li {
+  list-style: none;
+  white-space: nowrap;
 }
 
 .neiva-page-root .main-nav a {
   color: var(--text-main);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
+  white-space: nowrap;
+  word-break: keep-all;
   transition: color var(--transition-fast);
 }
 
@@ -235,6 +258,13 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
+}
+
+.neiva-page-root .nav-cta {
+  white-space: nowrap;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.9rem;
 }
 
 .neiva-page-root .mobile-toggle {
