@@ -166,22 +166,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!authData.user) throw new Error('Não foi possível inicializar o usuário.');
 
     // 2. Criação automática da Empresa multi-tenant vinculada
-    const { data: empData, error: empError } = await supabase
+    const insertPayload: any = {
+      nome: nomeEmpresa,
+      email: email,
+      slug: slugDesejado,
+      dono_id: authData.user.id,
+      cor_primaria: '#00E676',
+      cor_secundaria: '#121214'
+    };
+
+    if (cpfCnpj) {
+      insertPayload.cpf_cnpj = cpfCnpj;
+    }
+
+    let { data: empData, error: empError } = await supabase
       .from('empresas')
-      .insert({
-        nome: nomeEmpresa,
-        email: email,
-        slug: slugDesejado,
-        cpf_cnpj: cpfCnpj || null,
-        dono_id: authData.user.id,
-        cor_primaria: '#00E676',
-        cor_secundaria: '#121214'
-      })
+      .insert(insertPayload)
       .select()
       .single();
 
+    // Fallback caso a coluna cpf_cnpj ainda não tenha sido aplicada no banco de dados
+    if (empError && empError.message?.includes('cpf_cnpj')) {
+      console.warn('[Encaixe] Coluna cpf_cnpj não encontrada no banco, tentando cadastro sem este campo...');
+      delete insertPayload.cpf_cnpj;
+      const retry = await supabase
+        .from('empresas')
+        .insert(insertPayload)
+        .select()
+        .single();
+
+      empData = retry.data;
+      empError = retry.error;
+    }
+
     if (empError) {
-      console.error('[Encaixe] Erro ao cadastrar empresa na trigger:', empError);
+      console.error('[Encaixe] Erro ao cadastrar empresa:', empError);
       throw empError;
     }
 
