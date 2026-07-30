@@ -489,6 +489,34 @@ export default function SuperAdminPage() {
                 />
               </div>
 
+              <div className="form-field" style={{ marginTop: '8px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <label>Segurança da Conta</label>
+                <button
+                  type="button"
+                  onClick={() => handleResetPassword(editingEmp)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    backgroundColor: 'rgba(255, 179, 0, 0.1)',
+                    color: '#FFB300',
+                    border: '1px solid rgba(255, 179, 0, 0.25)',
+                    padding: '10px 16px',
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgba(255, 179, 0, 0.2)'}
+                  onMouseOut={e => e.currentTarget.style.backgroundColor = 'rgba(255, 179, 0, 0.1)'}
+                >
+                  <KeyRound size={16} />
+                  <span>Zerar Senha do Usuário para @Mudar.123</span>
+                </button>
+              </div>
+
               <footer className="modal-card-footer">
                 <button type="button" className="btn-modal-cancel" onClick={() => setEditingEmp(null)}>
                   Cancelar
