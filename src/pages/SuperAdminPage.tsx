@@ -14,7 +14,8 @@ import {
   ArrowLeft,
   X,
   CreditCard,
-  Globe
+  Globe,
+  KeyRound
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './SuperAdminPage.css';
@@ -29,6 +30,7 @@ interface EmpresaAdmin {
   valor_mensalidade: number;
   saldo_devedor: number;
   data_renovacao: string | null;
+  dono_id: string | null;
 }
 
 export default function SuperAdminPage() {
@@ -55,7 +57,7 @@ export default function SuperAdminPage() {
     try {
       const { data, error } = await supabase
         .from('empresas')
-        .select('id, nome, email, slug, plano_status, plano_nome, valor_mensalidade, saldo_devedor, data_renovacao')
+        .select('id, nome, email, slug, plano_status, plano_nome, valor_mensalidade, saldo_devedor, data_renovacao, dono_id')
         .order('nome', { ascending: true });
 
       if (error) throw error;
@@ -87,6 +89,33 @@ export default function SuperAdminPage() {
       loadEmpresas();
     } catch (err: any) {
       setErroMsg(err.message || 'Erro ao alterar status da empresa.');
+    }
+  };
+
+  const handleResetPassword = async (emp: EmpresaAdmin) => {
+    if (!emp.dono_id) {
+      setErroMsg(`Não foi possível localizar o ID do usuário da empresa ${emp.nome}.`);
+      return;
+    }
+
+    const confirmou = window.confirm(`Deseja redefinir a senha do usuário da empresa "${emp.nome}" para @Mudar.123 ?`);
+    if (!confirmou) return;
+
+    setErroMsg(null);
+    setSucessoMsg(null);
+
+    try {
+      const { error } = await supabase.rpc('reset_user_password', {
+        target_dono_id: emp.dono_id,
+        new_password: '@Mudar.123'
+      });
+
+      if (error) throw error;
+
+      setSucessoMsg(`Senha do usuário da empresa "${emp.nome}" redefinida com sucesso para: @Mudar.123`);
+    } catch (err: any) {
+      console.error('Erro ao redefinir senha:', err);
+      setErroMsg(err.message || 'Erro ao redefinir a senha do usuário.');
     }
   };
 
@@ -372,6 +401,14 @@ export default function SuperAdminPage() {
                             <Ban size={14} />
                           </button>
                         )}
+
+                        <button 
+                          className="btn-action-round key" 
+                          onClick={() => handleResetPassword(emp)}
+                          title="Zerar Senha do Usuário para @Mudar.123"
+                        >
+                          <KeyRound size={14} />
+                        </button>
 
                         <button 
                           className="btn-action-round edit" 

@@ -377,6 +377,9 @@
 .btn-action-round.block { background-color: rgba(255, 82, 82, 0.08); color: #FF5252; border: 1px solid rgba(255, 82, 82, 0.15); }
 .btn-action-round.block:hover { background-color: #FF5252; color: #FFFFFF; }
 
+.btn-action-round.key { background-color: rgba(255, 179, 0, 0.08); color: #FFB300; border: 1px solid rgba(255, 179, 0, 0.15); }
+.btn-action-round.key:hover { background-color: #FFB300; color: #000000; }
+
 .btn-action-round.edit { background-color: rgba(255, 255, 255, 0.05); color: #A0A0B2; border: 1px solid rgba(255, 255, 255, 0.08); }
 .btn-action-round.edit:hover { background-color: rgba(255, 255, 255, 0.15); color: #FFFFFF; }
 
