@@ -23,8 +23,8 @@
     <!-- Script de registro do Service Worker -->
     <script>
       if ('serviceWorker' in navigator) {
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-          // Em ambiente de desenvolvimento local (localhost), desregistra o Service Worker e limpa o cache
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.pathname.includes('/superadmin')) {
+          // Em ambiente local ou no Superadmin, desregistra o Service Worker e limpa o cache
           navigator.serviceWorker.getRegistrations().then(registrations => {
             for (let registration of registrations) {
               registration.unregister();

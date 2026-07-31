@@ -1,4 +1,4 @@
-const CACHE_NAME = 'encaixe-cache-v4';
+const CACHE_NAME = 'encaixe-cache-v5';
 
 // Evento Install: Força a atualização imediata do Service Worker
 self.addEventListener('install', event => {
