@@ -375,14 +375,24 @@ export const CalendarView = () => {
     return dataSlot < agora;
   };
 
-  // Estatísticas Rápidas
-  const agendamentosReais = agendamentos.filter(a => a.status !== 'bloqueio');
-  const totalConfirmados = agendamentosReais.filter(a => a.status === 'confirmado' && !isSlotNoPassado(a.horarioFim, currentDate)).length;
+  // Estatísticas Rápidas (Refletindo agendamentos do profissional selecionado ou todos)
+  const agendamentosFiltrados = selectedProfId === 'all'
+    ? agendamentos
+    : agendamentos.filter(a => a.funcionarioId === selectedProfId);
+
+  const agendamentosReais = agendamentosFiltrados.filter(a => a.status !== 'bloqueio');
+  
+  // Total de agendamentos confirmados no dia (independentemente de o horário já ter passado)
+  const totalConfirmados = agendamentosReais.filter(a => a.status === 'confirmado').length;
+  
+  // Total de agendamentos pendentes
   const totalPendentes = agendamentosReais.filter(a => a.status === 'pendente').length;
+  
+  // Total de agendamentos confirmados cujo horário de término já passou no dia de hoje
   const totalExecutados = agendamentosReais.filter(a => a.status === 'confirmado' && isSlotNoPassado(a.horarioFim, currentDate)).length;
-  const faturamentoEstimado = agendamentos
-    .filter(a => a.status !== 'bloqueio')
-    .reduce((sum, a) => sum + (a.preco || 0), 0);
+  
+  // Faturamento estimado somando todos os agendamentos ativos
+  const faturamentoEstimado = agendamentosReais.reduce((sum, a) => sum + (a.preco || 0), 0);
 
   // VALIDAÇÕES
   const validarHorarios = (inicio: string, fim: string): string | null => {
