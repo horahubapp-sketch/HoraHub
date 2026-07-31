@@ -60,29 +60,59 @@ export const CalendarView = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [funcionarios, selectedProfId]);
 
-  // Carregar dados de Funcionários e Serviços do LocalStorage (ou mocks se vazios)
+  // Carregar dados de Funcionários e Serviços do Supabase por tenantId
   useEffect(() => {
+    // Limpar cache antigo do localStorage que continha IDs inválidos de mock (como 'f1')
     const localFuncs = localStorage.getItem('encaixe_funcionarios_demo');
-    if (localFuncs) {
-      setFuncionarios(JSON.parse(localFuncs));
-    } else {
-      setFuncionarios(FUNCIONARIOS_MOCK);
-      localStorage.setItem('encaixe_funcionarios_demo', JSON.stringify(FUNCIONARIOS_MOCK));
+    if (localFuncs && localFuncs.includes('"id":"f1"')) {
+      localStorage.removeItem('encaixe_funcionarios_demo');
+      localStorage.removeItem('encaixe_servicos_demo');
     }
 
-    const localServs = localStorage.getItem('encaixe_servicos_demo');
-    if (localServs) {
-      setCatalogoServicos(JSON.parse(localServs));
-    } else {
-      const mockServs = [
-        { id: 's-mock-1', nome: 'Corte Degradê', duracao_minutos: 45, preco: 60.00 },
-        { id: 's-mock-2', nome: 'Barboterapia', duracao_minutos: 30, preco: 40.00 },
-        { id: 's-mock-3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, preco: 90.00 }
-      ];
-      setCatalogoServicos(mockServs);
-      localStorage.setItem('encaixe_servicos_demo', JSON.stringify(mockServs));
+    async function loadProfissionaisEServicos() {
+      if (!tenantId) return;
+
+      try {
+        const { data: dbFuncs } = await supabase
+          .from('funcionarios')
+          .select('id, nome, especialidade, comissao_percentual, foto_url')
+          .eq('tenant_id', tenantId)
+          .order('nome', { ascending: true });
+
+        if (dbFuncs && dbFuncs.length > 0) {
+          setFuncionarios(dbFuncs);
+        } else {
+          setFuncionarios(FUNCIONARIOS_MOCK);
+        }
+
+        const { data: dbServs } = await supabase
+          .from('servicos')
+          .select('id, nome, duracao_minutos, preco')
+          .eq('tenant_id', tenantId)
+          .order('nome', { ascending: true });
+
+        if (dbServs && dbServs.length > 0) {
+          setCatalogoServicos(dbServs.map(s => ({
+            id: s.id,
+            nome: s.nome,
+            duracao_minutos: s.duracao_minutos || 30,
+            preco: Number(s.preco || 0)
+          })));
+        } else {
+          setCatalogoServicos([
+            { id: 'c1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', nome: 'Corte Degradê', duracao_minutos: 45, preco: 60.00 },
+            { id: 'c2a3bc08-cb86-4e55-926c-d2c6c06a3eb2', nome: 'Barboterapia', duracao_minutos: 30, preco: 40.00 },
+            { id: 'c3a3bc08-cb86-4e55-926c-d2c6c06a3eb3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, preco: 90.00 }
+          ]);
+        }
+      } catch (err) {
+        console.error('[Encaixe] Erro ao carregar profissionais/serviços:', err);
+        setFuncionarios(FUNCIONARIOS_MOCK);
+      }
     }
-  }, []);
+
+    loadProfissionaisEServicos();
+  }, [tenantId]);
 
   const formatarData = (date: Date): string => {
     const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -431,14 +461,28 @@ export const CalendarView = () => {
 
     const clienteNameFormatado = newClientCpfCnpj ? `${newClient} (CPF: ${newClientCpfCnpj})` : newClient;
 
+    // Tratamento de segurança para garantir que apenas UUIDs válidos sejam enviados ao PostgreSQL
+    const isUuid = (val: string) => /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val);
+    
+    // Se newFuncionario não for um UUID válido, tenta encontrar o primeiro funcionário com UUID válido no estado
+    let validFuncId = isUuid(newFuncionario) ? newFuncionario : (funcionarios.find(f => isUuid(f.id))?.id || null);
+    
+    // Se newServiceId não for um UUID válido (ex: 's-mock-1'), envia null no servico_id
+    let validServId = isUuid(newServiceId) ? newServiceId : null;
+
+    if (!validFuncId) {
+      setConflictError('Por favor, cadastre um profissional na aba "Profissionais" antes de criar agendamentos.');
+      return;
+    }
+
     try {
       const { data: inserted, error } = await supabase
         .from('agendamentos')
         .insert({
           tenant_id: tenantId,
-          funcionario_id: newFuncionario,
+          funcionario_id: validFuncId,
           cliente_name: clienteNameFormatado,
-          servico_id: newServiceId,
+          servico_id: validServId,
           horario_inicio: dInicio.toISOString(),
           horario_fim: dFim.toISOString(),
           status: 'confirmado'

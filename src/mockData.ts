@@ -19,28 +19,28 @@ export interface Agendamento {
 
 export const FUNCIONARIOS_MOCK: Funcionario[] = [
   {
-    id: 'f1',
+    id: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
     nome: 'Bruno Silva',
     especialidade: 'Cabelo & Barba Sênior',
     comissao_percentual: 50,
     foto_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150'
   },
   {
-    id: 'f2',
+    id: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2',
     nome: 'Lucas Nogueira',
     especialidade: 'Corte Moderno & Tintura',
     comissao_percentual: 40,
     foto_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150'
   },
   {
-    id: 'f3',
+    id: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb3',
     nome: 'Ana Costa',
     especialidade: 'Barba Clássica & Visagismo',
     comissao_percentual: 45,
     foto_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150'
   },
   {
-    id: 'f4',
+    id: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb4',
     nome: 'Mateus Santos',
     especialidade: 'Cortes Clássicos & Infantil',
     comissao_percentual: 50,
@@ -52,7 +52,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   // Bruno Silva
   {
     id: 'a1',
-    funcionarioId: 'f1',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
     clienteNome: 'Gustavo Santos',
     servicoNome: 'Corte Masculino + Barba',
     horarioInicio: '08:00',
@@ -62,7 +62,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a2',
-    funcionarioId: 'f1',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
     clienteNome: 'Carlos Almeida',
     servicoNome: 'Aparar Barba',
     horarioInicio: '10:00',
@@ -72,7 +72,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a3',
-    funcionarioId: 'f1',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
     clienteNome: 'Almoço',
     servicoNome: 'Intervalo',
     horarioInicio: '12:00',
@@ -81,7 +81,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a4',
-    funcionarioId: 'f1',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
     clienteNome: 'Rodrigo Lima',
     servicoNome: 'Corte degradê',
     horarioInicio: '14:30',
@@ -91,7 +91,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a5',
-    funcionarioId: 'f1',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
     clienteNome: 'Felipe Melo',
     servicoNome: 'Design de Barba',
     horarioInicio: '16:00',
@@ -103,7 +103,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   // Lucas Nogueira
   {
     id: 'a6',
-    funcionarioId: 'f2',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2',
     clienteNome: 'Roberto Souza',
     servicoNome: 'Corte Moderno',
     horarioInicio: '08:30',
@@ -113,7 +113,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a7',
-    funcionarioId: 'f2',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2',
     clienteNome: 'Almoço',
     servicoNome: 'Intervalo',
     horarioInicio: '13:00',
@@ -122,7 +122,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a8',
-    funcionarioId: 'f2',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2',
     clienteNome: 'Thiago Oliveira',
     servicoNome: 'Pintura de Cabelo',
     horarioInicio: '14:30',
@@ -132,7 +132,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a9',
-    funcionarioId: 'f2',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2',
     clienteNome: 'Gabriel Diniz',
     servicoNome: 'Corte Tesoura',
     horarioInicio: '17:00',
@@ -144,7 +144,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   // Ana Costa
   {
     id: 'a10',
-    funcionarioId: 'f3',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb3',
     clienteNome: 'Pedro Henrique',
     servicoNome: 'Barboterapia',
     horarioInicio: '09:00',
@@ -154,7 +154,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a11',
-    funcionarioId: 'f3',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb3',
     clienteNome: 'Ricardo Gomes',
     servicoNome: 'Visagismo Completo',
     horarioInicio: '10:30',
@@ -164,7 +164,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a12',
-    funcionarioId: 'f3',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb3',
     clienteNome: 'Almoço',
     servicoNome: 'Intervalo',
     horarioInicio: '12:30',
@@ -173,7 +173,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a13',
-    funcionarioId: 'f3',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb3',
     clienteNome: 'Henrique F.',
     servicoNome: 'Corte Masculino',
     horarioInicio: '15:00',
@@ -183,7 +183,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a14',
-    funcionarioId: 'f3',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb3',
     clienteNome: 'Júlio Cesar',
     servicoNome: 'Alinhamento Barba',
     horarioInicio: '18:00',
@@ -195,7 +195,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   // Mateus Santos
   {
     id: 'a15',
-    funcionarioId: 'f4',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb4',
     clienteNome: 'Almoço',
     servicoNome: 'Intervalo',
     horarioInicio: '12:00',
@@ -204,7 +204,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a16',
-    funcionarioId: 'f4',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb4',
     clienteNome: 'Enzo Rodrigues',
     servicoNome: 'Corte Infantil',
     horarioInicio: '14:00',
@@ -214,7 +214,7 @@ export const AGENDAMENTOS_MOCK: Agendamento[] = [
   },
   {
     id: 'a17',
-    funcionarioId: 'f4',
+    funcionarioId: 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb4',
     clienteNome: 'Diego Marques',
     servicoNome: 'Corte Clássico',
     horarioInicio: '16:30',
