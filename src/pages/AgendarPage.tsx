@@ -354,18 +354,37 @@ export default function AgendarPage() {
 
     const clienteNameTratado = clienteCpfCnpj ? `${clienteNome} (CPF: ${clienteCpfCnpj})` : clienteNome;
 
+    const insertPayload: any = {
+      tenant_id: empresa.id,
+      funcionario_id: funcionarioSelecionado!.id,
+      cliente_name: clienteNameTratado,
+      cliente_telefone: clienteWhatsapp || null,
+      servico_id: servicoSelecionado!.id,
+      horario_inicio: dataInicio.toISOString(),
+      horario_fim: dataFim.toISOString(),
+      status: 'confirmado'
+    };
+
+    if (clienteCpfCnpj) {
+      insertPayload.cliente_cpf_cnpj = clienteCpfCnpj;
+    }
+    if (clienteDataNascimento) {
+      insertPayload.cliente_data_nascimento = clienteDataNascimento;
+    }
+
     try {
-      const { error } = await supabase
+      let { error } = await supabase
         .from('agendamentos')
-        .insert({
-          tenant_id: empresa.id,
-          funcionario_id: funcionarioSelecionado!.id,
-          cliente_name: clienteNameTratado,
-          servico_id: servicoSelecionado!.id,
-          horario_inicio: dataInicio.toISOString(),
-          horario_fim: dataFim.toISOString(),
-          status: 'confirmado'
-        });
+        .insert(insertPayload);
+
+      // Fallback gracioso para colunas opcionais recentes
+      if (error && (error.message?.includes('cliente_telefone') || error.message?.includes('cliente_cpf_cnpj') || error.message?.includes('cliente_data_nascimento'))) {
+        delete insertPayload.cliente_telefone;
+        delete insertPayload.cliente_cpf_cnpj;
+        delete insertPayload.cliente_data_nascimento;
+        const retry = await supabase.from('agendamentos').insert(insertPayload);
+        error = retry.error;
+      }
 
       if (error) throw error;
       setPasso(5); // Sucesso!

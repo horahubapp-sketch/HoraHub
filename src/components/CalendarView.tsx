@@ -243,12 +243,25 @@ export const CalendarView = () => {
 
   // States do Formulário de Novo Agendamento
   const [newClient, setNewClient] = useState('');
+  const [newClientPhone, setNewClientPhone] = useState('');
   const [newClientCpfCnpj, setNewClientCpfCnpj] = useState('');
   const [newFuncionario, setNewFuncionario] = useState('');
   const [newServiceId, setNewServiceId] = useState('');
   const [newPrice, setNewPrice] = useState('50,00'); // Em R$
   const [newTimeStart, setNewTimeStart] = useState('09:00');
   const [newTimeEnd, setNewTimeEnd] = useState('09:45');
+
+  const handlePhoneMask = (val: string) => {
+    const cleaned = val.replace(/\D/g, '');
+    let formatted = cleaned;
+    if (cleaned.length <= 11) {
+      if (cleaned.length > 2) formatted = `(${cleaned.substring(0, 2)}) ${cleaned.substring(2)}`;
+      if (cleaned.length > 7) formatted = `(${cleaned.substring(0, 2)}) ${cleaned.substring(2, 7)}-${cleaned.substring(7, 11)}`;
+    } else {
+      formatted = `(${cleaned.substring(0, 2)}) ${cleaned.substring(2, 7)}-${cleaned.substring(7, 11)}`;
+    }
+    setNewClientPhone(formatted);
+  };
 
   const handleClientCpfCnpjMask = (val: string) => {
     const cleaned = val.replace(/\D/g, '');
@@ -485,20 +498,36 @@ export const CalendarView = () => {
       return;
     }
 
+    const insertPayload: any = {
+      tenant_id: tenantId,
+      funcionario_id: validFuncId,
+      cliente_name: clienteNameFormatado,
+      cliente_telefone: newClientPhone || null,
+      servico_id: validServId,
+      horario_inicio: dInicio.toISOString(),
+      horario_fim: dFim.toISOString(),
+      status: 'confirmado'
+    };
+
     try {
-      const { data: inserted, error } = await supabase
+      let { data: inserted, error } = await supabase
         .from('agendamentos')
-        .insert({
-          tenant_id: tenantId,
-          funcionario_id: validFuncId,
-          cliente_name: clienteNameFormatado,
-          servico_id: validServId,
-          horario_inicio: dInicio.toISOString(),
-          horario_fim: dFim.toISOString(),
-          status: 'confirmado'
-        })
+        .insert(insertPayload)
         .select()
         .single();
+
+      // Fallback caso a coluna cliente_telefone ainda não exista no banco PRD
+      if (error && error.message?.includes('cliente_telefone')) {
+        delete insertPayload.cliente_telefone;
+        const retry = await supabase
+          .from('agendamentos')
+          .insert(insertPayload)
+          .select()
+          .single();
+
+        inserted = retry.data;
+        error = retry.error;
+      }
 
       if (error) throw error;
 
@@ -515,6 +544,7 @@ export const CalendarView = () => {
 
       salvarAgendamentosDaData([...agendamentos, newAgenda]);
       setNewClient('');
+      setNewClientPhone('');
       setNewClientCpfCnpj('');
       setConflictError(null);
       setShowNewModal(false);
@@ -921,6 +951,16 @@ export const CalendarView = () => {
                   value={newClient} 
                   onChange={e => setNewClient(e.target.value)} 
                   required 
+                />
+              </div>
+
+              <div className="form-group">
+                <label>WhatsApp / Telefone para Notificações</label>
+                <input 
+                  type="text" 
+                  placeholder="(00) 00000-0000" 
+                  value={newClientPhone} 
+                  onChange={e => handlePhoneMask(e.target.value)} 
                 />
               </div>
 

@@ -1,0 +1,298 @@
+/* =========================================================================
+   ESTILOS PREMIUM DO ONBOARDING WIZARD MODAL (HORAHUB / ENCAIXE)
+   ========================================================================= */
+
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(9, 9, 11, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.onboarding-card {
+  width: 100%;
+  max-width: 520px;
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  color: #FFFFFF;
+  position: relative;
+  box-sizing: border-box;
+  animation: onboardingFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes onboardingFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.onboarding-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #A0A0B2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.onboarding-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+}
+
+/* Header */
+.onboarding-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.onboarding-sparkle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 230, 118, 0.1);
+  border: 1px solid rgba(0, 230, 118, 0.2);
+  color: #00E676;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.onboarding-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #FFFFFF;
+  letter-spacing: -0.4px;
+}
+
+.onboarding-header p {
+  font-size: 0.88rem;
+  color: #A0A0B2;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Stepper */
+.onboarding-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding: 0 12px;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.2s;
+}
+
+.stepper-step.active {
+  opacity: 1;
+}
+
+.step-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.stepper-step.active .step-circle {
+  background: #00E676;
+  color: #000000;
+  border-color: #00E676;
+  box-shadow: 0 0 12px rgba(0, 230, 118, 0.4);
+}
+
+.stepper-step.completed .step-circle {
+  background: rgba(0, 230, 118, 0.15);
+  color: #00E676;
+  border-color: rgba(0, 230, 118, 0.3);
+}
+
+.stepper-step span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #A0A0B2;
+}
+
+.stepper-step.active span {
+  color: #FFFFFF;
+}
+
+.stepper-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0 10px;
+  margin-bottom: 20px;
+}
+
+/* Step Content Body */
+.onboarding-step-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: stepFadeIn 0.3s ease-out;
+}
+
+@keyframes stepFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-icon-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.step-icon-circle.blue { background: rgba(0, 180, 216, 0.12); color: #00B4D8; }
+.step-icon-circle.green { background: rgba(0, 230, 118, 0.12); color: #00E676; }
+.step-icon-circle.emerald { background: rgba(16, 185, 129, 0.12); color: #10B981; }
+
+.onboarding-step-content h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #FFFFFF;
+}
+
+.onboarding-step-content p {
+  font-size: 0.88rem;
+  color: #A0A0B2;
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+}
+
+/* URL Box */
+.onboarding-url-box {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+}
+
+.onboarding-url-box code {
+  color: #00E676;
+  font-size: 0.82rem;
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-copy-url {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-copy-url:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Actions */
+.onboarding-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.btn-onboarding-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #00E676;
+  color: #09090B;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.btn-onboarding-primary:hover {
+  background: #00C865;
+  transform: translateY(-1px);
+}
+
+.btn-onboarding-next,
+.btn-onboarding-finish {
+  background: transparent;
+  color: #A0A0B2;
+  border: 1px solid transparent;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.btn-onboarding-next:hover,
+.btn-onboarding-finish:hover {
+  color: #FFFFFF;
+}

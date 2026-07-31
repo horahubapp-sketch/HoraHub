@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import Header from './components/Header';
 import AgendaPage from './pages/AgendaPage';
@@ -13,6 +14,7 @@ import AniversariantesPage from './pages/AniversariantesPage';
 import LandingPage from './pages/LandingPage';
 import BarbeariaNeivaLandingPage from './pages/BarbeariaNeivaLandingPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import OnboardingWizardModal from './components/OnboardingWizardModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Clock, LogOut, ShieldAlert } from 'lucide-react';
 
@@ -30,6 +32,25 @@ function Layout() {
   const isPendente = !isAtivo && (!empresa || empresa.plano_status === 'pendente');
   const isBloqueado = !isAtivo && empresa && empresa.plano_status === 'bloqueado';
 
+  // Controle do Onboarding Wizard para novos clientes
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (isAtivo && empresa) {
+      const visto = localStorage.getItem(`encaixe_onboarding_visto_${empresa.id}`);
+      if (!visto) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [isAtivo, empresa]);
+
+  const handleCloseOnboarding = () => {
+    if (empresa) {
+      localStorage.setItem(`encaixe_onboarding_visto_${empresa.id}`, 'true');
+    }
+    setShowOnboarding(false);
+  };
+
   return (
     <div className="app-container-relative" style={{ width: '100%' }}>
       <div className={`app-layout ${aplicarBlur ? 'pending-blur' : ''}`}>
@@ -38,6 +59,14 @@ function Layout() {
           <Outlet />
         </main>
       </div>
+
+      {showOnboarding && (
+        <OnboardingWizardModal 
+          empresaNome={empresa?.nome || 'sua empresa'} 
+          slug={empresa?.slug || null} 
+          onClose={handleCloseOnboarding} 
+        />
+      )}
 
       {isPendente && (
         <div className="pending-overlay">
