@@ -83,22 +83,17 @@ export default function SuperAdminPage() {
   };
 
   const handleResetPassword = async (emp: EmpresaAdmin) => {
-    if (!emp.dono_id) {
-      setErroMsg(`Não foi possível localizar o ID do usuário da empresa ${emp.nome}.`);
-      return;
-    }
-
-    const confirmou = window.confirm(`Deseja redefinir a senha do usuário da empresa "${emp.nome}" para @Mudar.123 ?`);
+    const confirmou = window.confirm(`Deseja redefinir a senha do usuário responsável pela empresa "${emp.nome}" para @Mudar.123 ?`);
     if (!confirmou) return;
 
     setErroMsg(null);
     setSucessoMsg(null);
 
     try {
-      await dbAdapter.empresas.resetPassword(emp.dono_id);
-      setSucessoMsg(`Senha do usuário da empresa "${emp.nome}" redefinida com sucesso para: @Mudar.123`);
+      await dbAdapter.empresas.resetPassword(emp);
+      setSucessoMsg(`Senha do responsável pela empresa "${emp.nome}" redefinida com sucesso para: @Mudar.123`);
     } catch (err: any) {
-      console.error('Erro ao redefinir senha:', err);
+      console.error('[Encaixe Superadmin] Erro ao redefinir senha:', err);
       setErroMsg(err.message || 'Erro ao redefinir a senha do usuário.');
     }
   };

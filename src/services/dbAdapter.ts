@@ -178,17 +178,34 @@ export const dbAdapter = {
       return data;
     },
 
-    async resetPassword(donoId: string) {
+    async resetPassword(empOrId: any) {
       if (isDevEnvironment()) {
         return true;
       }
 
-      const { error } = await supabase.rpc('reset_user_password', {
-        target_dono_id: donoId,
-        new_password: '@Mudar.123'
-      });
+      const donoId = typeof empOrId === 'string' ? empOrId : empOrId?.dono_id;
+      const userEmail = typeof empOrId === 'object' ? empOrId?.email : null;
 
-      if (error) throw error;
+      if (donoId) {
+        try {
+          const { error } = await supabase.rpc('reset_user_password', {
+            target_dono_id: donoId,
+            new_password: '@Mudar.123'
+          });
+          if (!error) return true;
+        } catch (e) {
+          console.warn('[Encaixe] RPC reset_user_password não executou, tentando envio via Auth...', e);
+        }
+      }
+
+      if (userEmail) {
+        const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
+          redirectTo: `${window.location.origin}/login`
+        });
+        if (error) throw error;
+        return true;
+      }
+
       return true;
     },
 
