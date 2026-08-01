@@ -553,6 +553,26 @@ export const CalendarView = () => {
       return;
     }
 
+    if (isDevEnvironment()) {
+      const novoAgendamento: Agendamento = {
+        id: `ag-local-${Date.now()}`,
+        funcionarioId: newFuncionario,
+        clienteNome: clienteNameFormatado,
+        servicoNome: servObj?.nome || 'Serviço',
+        horarioInicio: newTimeStart,
+        horarioFim: newTimeEnd,
+        preco: isNaN(precoTratado) ? 0 : precoTratado,
+        status: 'confirmado'
+      };
+      const novaLista = [...agendamentos, novoAgendamento];
+      salvarAgendamentosDaData(novaLista);
+      setShowNewModal(false);
+      setNewClient('');
+      setNewClientPhone('');
+      setNewClientCpfCnpj('');
+      return;
+    }
+
     const insertPayload: any = {
       tenant_id: tenantId,
       funcionario_id: validFuncId,
