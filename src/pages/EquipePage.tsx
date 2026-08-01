@@ -400,6 +400,41 @@ export default function EquipePage() {
     }
 
     const especialidadeFinal = cpf ? `${especialidade} (CPF: ${cpf})` : especialidade;
+    const keyFuncs = `${LOCAL_STORAGE_KEY_FUNCS}_${tenantId}`;
+
+    if (isDevEnvironment()) {
+      if (editingFunc) {
+        const novaLista = funcionarios.map(f => f.id === editingFunc.id ? {
+          ...f,
+          nome,
+          especialidade: especialidadeFinal,
+          cpf,
+          comissao_percentual: Number(comissao),
+          servicos_ids: servicosSelecionados,
+          jornada: jornada,
+          foto_url: fotoUrl
+        } : f);
+        setFuncionarios(novaLista);
+        localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
+        showSuccess('Profissional atualizado no ambiente de homologação local!');
+      } else {
+        const novo = {
+          id: `f-local-${Date.now()}`,
+          nome,
+          especialidade: especialidadeFinal,
+          comissao_percentual: Number(comissao),
+          servicos_ids: servicosSelecionados,
+          jornada: jornada,
+          foto_url: fotoUrl
+        };
+        const novaLista = [...funcionarios, novo];
+        setFuncionarios(novaLista);
+        localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
+        showSuccess('Profissional criado no ambiente de homologação local!');
+      }
+      setShowModal(false);
+      return;
+    }
 
     try {
       let funcId = editingFunc?.id;
@@ -417,7 +452,7 @@ export default function EquipePage() {
             foto_url: fotoUrl
           } : f);
           setFuncionarios(novaLista);
-          localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
+          localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
           showSuccess('Modo Demo: Profissional atualizado localmente!');
           setShowModal(false);
           return;
@@ -446,7 +481,7 @@ export default function EquipePage() {
               foto_url: fotoUrl
             } : f);
             setFuncionarios(novaLista);
-            localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
+            localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
             showSuccess('Modo Demo: Profissional atualizado localmente!');
             setShowModal(false);
             return;
@@ -480,7 +515,7 @@ export default function EquipePage() {
             };
             const novaLista = [...funcionarios, novo];
             setFuncionarios(novaLista);
-            localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
+            localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
             showSuccess('Modo Demo: Profissional criado localmente!');
             setShowModal(false);
             return;
@@ -555,13 +590,23 @@ export default function EquipePage() {
       return;
     }
 
+    const keyFuncs = `${LOCAL_STORAGE_KEY_FUNCS}_${tenantId}`;
+
+    if (isDevEnvironment()) {
+      const novaLista = funcionarios.filter(f => f.id !== id);
+      setFuncionarios(novaLista);
+      localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
+      showSuccess('Profissional removido no ambiente de homologação local!');
+      return;
+    }
+
     setErrorMsg(null);
     try {
       // Se for um ID mockado (não-UUID), deleta diretamente local
       if (!isUUID(id)) {
         const novaLista = funcionarios.filter(f => f.id !== id);
         setFuncionarios(novaLista);
-        localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
+        localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
         showSuccess('Modo Demo: Profissional removido localmente!');
         return;
       }
@@ -576,7 +621,7 @@ export default function EquipePage() {
         if (error.message.includes('API key') || error.message.includes('JWT') || error.message.includes('fetch')) {
           const novaLista = funcionarios.filter(f => f.id !== id);
           setFuncionarios(novaLista);
-          localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(novaLista));
+          localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
           showSuccess('Modo Demo: Profissional removido localmente!');
           return;
         }
