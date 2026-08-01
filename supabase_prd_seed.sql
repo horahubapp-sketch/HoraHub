@@ -3,7 +3,7 @@
 -- Encaixe / HoraHub - Versão de Deploy
 -- ============================================================
 -- ATENÇÃO: Execute este script no SQL Editor do seu Dashboard Supabase Cloud PRD.
--- Ele irá zerar os dados de teste em PRD e recriar a Empresa Master do SuperAdmin.
+-- Ele irá zerar os dados de teste em PRD e recriar a Empresa Master e o Usuário do SuperAdmin.
 -- ============================================================
 
 -- 1. LIMPEZA CONTROLADA DAS TABELAS LEGADAS DE PRODUÇÃO
@@ -14,12 +14,54 @@ TRUNCATE TABLE funcionarios CASCADE;
 TRUNCATE TABLE servicos CASCADE;
 TRUNCATE TABLE empresas CASCADE;
 
--- (Opcional) Limpar contas registradas no Supabase Auth caso queira zerar emails antigos:
--- TRUNCATE auth.users CASCADE;
+-- (Opcional) Limpeza de usuários de teste no módulo Auth:
+TRUNCATE auth.users CASCADE;
 
--- 2. CRIAÇÃO DA EMPRESA PADRÃO DO SUPERADMIN (EMPRESA TESTES ENCAIXE)
+-- 2. RE-CRIAÇÃO DO USUÁRIO SUPERADMIN NO MODULE SUPABASE AUTH (AUTH.USERS)
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+INSERT INTO auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  recovery_sent_at,
+  last_sign_in_at,
+  raw_app_meta_data,
+  raw_user_meta_data,
+  created_at,
+  updated_at,
+  confirmation_token,
+  email_change,
+  email_change_token_new,
+  recovery_token
+) VALUES (
+  '00000000-0000-0000-0000-000000000000',
+  'a1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
+  'authenticated',
+  'authenticated',
+  'horahubapp@gmail.com',
+  crypt('@Mudar.123', gen_salt('bf')),
+  NOW(),
+  NOW(),
+  NOW(),
+  '{"provider":"email","providers":["email"]}',
+  '{"nome_dono":"Super Admin"}',
+  NOW(),
+  NOW(),
+  '',
+  '',
+  '',
+  ''
+) ON CONFLICT (id) DO NOTHING;
+
+-- 3. CRIAÇÃO DA EMPRESA PADRÃO DO SUPERADMIN (EMPRESA TESTES ENCAIXE)
 INSERT INTO empresas (
   id,
+  dono_id,
   nome,
   email,
   slug,
@@ -35,6 +77,7 @@ INSERT INTO empresas (
   created_at
 ) VALUES (
   'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
+  'a1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
   'Empresa Testes Encaixe',
   'horahubapp@gmail.com',
   'encaixe-teste',
@@ -50,7 +93,7 @@ INSERT INTO empresas (
   NOW()
 );
 
--- 3. CRIAÇÃO DE SERVIÇOS INICIAIS DA EMPRESA MASTER
+-- 4. CRIAÇÃO DE SERVIÇOS INICIAIS DA EMPRESA MASTER
 INSERT INTO servicos (
   id,
   tenant_id,
@@ -84,7 +127,7 @@ INSERT INTO servicos (
   NOW()
 );
 
--- 4. CRIAÇÃO DE PROFISSIONAIS INICIAIS DA EMPRESA MASTER
+-- 5. CRIAÇÃO DE PROFISSIONAIS INICIAIS DA EMPRESA MASTER
 INSERT INTO funcionarios (
   id,
   tenant_id,
@@ -110,7 +153,7 @@ INSERT INTO funcionarios (
   NOW()
 );
 
--- 5. VINCULAÇÃO DE PROFISSIONAIS AOS SERVIÇOS (TABELA PIVOT COM TENANT_ID)
+-- 6. VINCULAÇÃO DE PROFISSIONAIS AOS SERVIÇOS (TABELA PIVOT COM TENANT_ID)
 INSERT INTO funcionario_servicos (tenant_id, funcionario_id, servico_id) VALUES
 ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', 'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb1'),
 ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', 'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb2'),
@@ -118,7 +161,7 @@ INSERT INTO funcionario_servicos (tenant_id, funcionario_id, servico_id) VALUES
 ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2', 'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb1'),
 ('e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', 'f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2', 'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb3');
 
--- 6. JORNADAS DE TRABALHO PADRÃO (SEGUNDA A SÁBADO, 08:00 ÀS 18:00)
+-- 7. JORNADAS DE TRABALHO PADRÃO (SEGUNDA A SÁBADO, 08:00 ÀS 18:00)
 INSERT INTO jornadas_trabalho (funcionario_id, dia_semana, hora_inicio, hora_fim, almoco_inicio, almoco_fim) VALUES
 -- Carlos (Segunda a Sábado = 1 a 6)
 ('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', 1, '08:00', '18:00', '12:00', '13:00'),
