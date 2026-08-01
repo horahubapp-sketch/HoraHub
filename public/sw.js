@@ -1,4 +1,4 @@
-const CACHE_NAME = 'encaixe-cache-v5';
+const CACHE_NAME = 'encaixe-cache-v6';
 
 // Evento Install: Força a atualização imediata do Service Worker
 self.addEventListener('install', event => {
@@ -25,8 +25,8 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(event.request.url);
 
-  // Ignora requisições de APIs externas (ex: Supabase)
-  if (url.origin !== self.location.origin) return;
+  // Ignora requisições do superadmin ou de APIs externas (ex: Supabase)
+  if (url.origin !== self.location.origin || url.pathname.includes('/superadmin')) return;
 
   // Busca sempre da rede primeiro para garantir código atualizado
   event.respondWith(
