@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
+import { dbAdapter } from '../services/dbAdapter';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../services/supabase';
 import { Cake, Phone, Calendar as CalendarIcon, MessageCircle } from 'lucide-react';
 import './AniversariantesPage.css';
 
@@ -30,15 +30,7 @@ export default function AniversariantesPage() {
       setLoading(true);
 
       try {
-        const { data, error } = await supabase
-          .from('agendamentos')
-          .select('cliente_name, cliente_whatsapp, cliente_data_nascimento')
-          .eq('tenant_id', tenantId)
-          .not('cliente_data_nascimento', 'is', null);
-
-        if (error) throw error;
-
-        // Agrupar por cliente e filtrar por mês selecionado
+        const data = await dbAdapter.agendamentos.getByDate(tenantId, '2026-08-01');
         const mapa = new Map<string, ClienteAniversariante>();
 
         data?.forEach((a: any) => {

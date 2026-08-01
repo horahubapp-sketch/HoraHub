@@ -41,11 +41,17 @@ export interface AgendamentoCreado {
  * @param servicoId     - UUID do serviço desejado
  * @returns Array de strings com horários livres (ex: ['09:00', '09:45', '10:30'])
  */
+import { isDevEnvironment } from '../config/env';
+
 export async function getSlotsDisponiveis(
   funcionarioId: string,
   dataDesejada: string, // 'YYYY-MM-DD'
   servicoId: string
 ): Promise<string[]> {
+  if (isDevEnvironment()) {
+    return ['09:00', '09:45', '10:30', '11:15', '14:00', '14:45', '15:30', '16:15'];
+  }
+
   const { data, error } = await supabase.rpc('get_slots_disponiveis', {
     p_funcionario_id: funcionarioId,
     p_data_desejada: dataDesejada,
@@ -81,6 +87,15 @@ export async function getSlotsDisponiveis(
 export async function criarAgendamento(
   params: CriarAgendamentoParams
 ): Promise<AgendamentoCreado> {
+  if (isDevEnvironment()) {
+    return {
+      id: `ag-local-${Date.now()}`,
+      status: 'pendente',
+      horarioInicio: params.horarioInicio.toISOString(),
+      horarioFim: params.horarioFim.toISOString()
+    };
+  }
+
   const { data, error } = await supabase
     .from('agendamentos')
     .insert({

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../services/supabase';
+import { dbAdapter } from '../services/dbAdapter';
 import { User, Mail, Lock, Building, Link2, AlertCircle, CheckCircle, Eye, EyeOff, FileText } from 'lucide-react';
 import './CadastroPage.css';
 import logoImg from '../assets/logo.jpg';
@@ -56,13 +56,8 @@ export default function CadastroPage() {
           setSlug(normalized);
         }
 
-        const { data, error } = await supabase
-          .from('empresas')
-          .select('id')
-          .eq('slug', normalized);
-
-        if (error) throw error;
-        setSlugDisponivel(data.length === 0);
+        const disponivel = await dbAdapter.empresas.checkSlug(normalized);
+        setSlugDisponivel(disponivel);
       } catch (err) {
         console.error('Erro ao validar slug:', err);
       } finally {

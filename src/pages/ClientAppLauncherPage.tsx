@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../services/supabase';
+import { dbAdapter } from '../services/dbAdapter';
 import { Search, Clock, ArrowRight, Sparkles, Building2, Store } from 'lucide-react';
 import './ClientAppLauncherPage.css';
 import logoImg from '../assets/logo.jpg';
@@ -37,14 +37,9 @@ export default function ClientAppLauncherPage() {
       }
     }
 
-    // 2. Carregar lista de empresas cadastradas na plataforma Encaixe
     async function loadEmpresas() {
       try {
-        const { data, error } = await supabase
-          .from('empresas')
-          .select('id, nome, slug, logo_url')
-          .order('nome', { ascending: true });
-        if (error) throw error;
+        const data = await dbAdapter.empresas.getAll();
         setEmpresas(data || []);
       } catch (e) {
         console.error('Erro ao buscar empresas:', e);

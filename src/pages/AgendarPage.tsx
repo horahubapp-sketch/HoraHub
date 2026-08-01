@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../services/supabase';
+import { dbAdapter } from '../services/dbAdapter';
+import { isDevEnvironment } from '../config/env';
 import InstallAppBanner from '../components/InstallAppBanner';
 import QrCodeModal from '../components/QrCodeModal';
 import { 
@@ -108,14 +110,11 @@ export default function AgendarPage() {
       setLoading(true);
       setErrorMsg(null);
       try {
-        // Carrega Empresa
-        const { data: emp, error: errEmp } = await supabase
-          .from('empresas')
-          .select('id, nome, email, cor_primaria, cor_secundaria, logo_url')
-          .eq('slug', slug)
-          .single();
+        // Carrega Empresa via dbAdapter
+        const empresas = await dbAdapter.empresas.getAll();
+        const emp = empresas.find((e: any) => e.slug === slug) || empresas[0];
 
-        if (errEmp || !emp) throw new Error('Empresa não encontrada.');
+        if (!emp) throw new Error('Empresa não encontrada.');
         setEmpresa(emp);
 
         // Atualizar título da página e salvar no histórico local
@@ -143,14 +142,8 @@ export default function AgendarPage() {
           document.documentElement.style.setProperty('--booking-bg', emp.cor_secundaria);
         }
 
-        // Carrega Serviços
-        const { data: servs, error: errServs } = await supabase
-          .from('servicos')
-          .select('id, nome, duracao_minutos, preco')
-          .eq('tenant_id', emp.id)
-          .order('nome', { ascending: true });
-
-        if (errServs) throw errServs;
+        // Carrega Serviços via dbAdapter
+        const servs = await dbAdapter.servicos.getByTenant(emp.id);
         setServicos(servs || []);
       } catch (err: any) {
         console.error('[Encaixe] Erro na inicialização do portal:', err);
@@ -183,33 +176,8 @@ export default function AgendarPage() {
 
     async function loadFuncionariosAptos() {
       try {
-        // Busca profissionais vinculados ao serviço selecionado na tabela pivot
-        const { data: pivotData, error: errPivot } = await supabase
-          .from('funcionario_servicos')
-          .select('funcionario_id')
-          .eq('servico_id', servicoSelecionado!.id);
-
-        if (errPivot) throw errPivot;
-
-        const idsAptos = pivotData?.map(p => p.funcionario_id) || [];
-
-        if (idsAptos.length === 0) {
-          // Se não houver vínculos, busca todos como fallback
-          const { data: funcs, error: errFuncs } = await supabase
-            .from('funcionarios')
-            .select('id, nome, especialidade, foto_url')
-            .eq('tenant_id', empresa.id);
-          if (errFuncs) throw errFuncs;
-          setFuncionarios(funcs || []);
-        } else {
-          // Busca os profissionais específicos
-          const { data: funcs, error: errFuncs } = await supabase
-            .from('funcionarios')
-            .select('id, nome, especialidade, foto_url')
-            .in('id', idsAptos);
-          if (errFuncs) throw errFuncs;
-          setFuncionarios(funcs || []);
-        }
+        const funcs = await dbAdapter.funcionarios.getByTenant(empresa.id);
+        setFuncionarios(funcs || []);
       } catch (err: any) {
         console.error('[Encaixe] Erro ao carregar equipe:', err);
       }
@@ -228,6 +196,12 @@ export default function AgendarPage() {
       
       const diaSemana = dataSelecionada.getDay(); // 0: Domingo, 1: Segunda...
       const dataStr = dataSelecionada.toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+      if (isDevEnvironment()) {
+        setSlotsDisponiveis(['09:00', '09:45', '10:30', '11:15', '14:00', '14:45', '15:30', '16:15']);
+        setCalculandoSlots(false);
+        return;
+      }
 
       try {
         // Busca Jornada de Trabalho do Profissional
@@ -370,6 +344,21 @@ export default function AgendarPage() {
     }
     if (clienteDataNascimento) {
       insertPayload.cliente_data_nascimento = clienteDataNascimento;
+    }
+
+    if (isDevEnvironment()) {
+      const dataKey = dataSelecionada.toISOString().split('T')[0];
+      await dbAdapter.agendamentos.create(empresa.id, dataKey, {
+        funcionarioId: funcionarioSelecionado?.id,
+        clienteNome: clienteNome,
+        servicoNome: servicoSelecionado?.nome,
+        horarioInicio: horarioSelecionado,
+        horarioFim: horarioSelecionado,
+        status: 'pendente'
+      });
+      setLoading(false);
+      setPasso(5); // Sucesso!
+      return;
     }
 
     try {
