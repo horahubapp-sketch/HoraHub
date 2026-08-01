@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
+import { isDevEnvironment } from '../config/env';
 
 interface Empresa {
   id: string;
@@ -151,6 +152,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     slugDesejado: string,
     cpfCnpj?: string
   ) => {
+    if (isDevEnvironment()) {
+      const mockId = `e-local-${Date.now()}`;
+      const novaEmpresa: any = {
+        id: mockId,
+        nome: nomeEmpresa,
+        email: email,
+        slug: slugDesejado,
+        cpf_cnpj: cpfCnpj || null,
+        plano_status: 'pendente',
+        plano_nome: 'Bronze',
+        valor_mensalidade: 99.90,
+        saldo_devedor: 0,
+        data_renovacao: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        cor_primaria: '#00E676',
+        cor_secundaria: '#121214'
+      };
+
+      const localEmpresasStr = localStorage.getItem('encaixe_superadmin_empresas');
+      const empresasExistentes = localEmpresasStr ? JSON.parse(localEmpresasStr) : [];
+      const listaAtualizada = [novaEmpresa, ...empresasExistentes];
+      localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(listaAtualizada));
+
+      const mockUser: any = {
+        id: `u-local-${Date.now()}`,
+        email: email,
+        user_metadata: { nome_dono: nomeDono }
+      };
+
+      setUser(mockUser);
+      setEmpresa(novaEmpresa);
+      setTenantId(mockId);
+
+      return { user: mockUser, empresa: novaEmpresa };
+    }
+
     // 1. Cadastro no Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
