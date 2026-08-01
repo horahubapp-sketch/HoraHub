@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { isDevEnvironment } from '../config/env';
 
 // ============================================================
 // Inicialização centralizada do cliente Supabase (Singleton)
@@ -14,5 +15,14 @@ const defaultKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 const activeUrl = supabaseUrl || defaultUrl;
 const activeKey = supabaseAnonKey || defaultKey;
 
+if (typeof window !== 'undefined') {
+  if (isDevEnvironment()) {
+    console.log('%c[Encaixe AMBIENTE]%c HOMOLOGAÇÃO LOCAL (localhost:5173)', 'background: #FFB300; color: #000; font-weight: bold; padding: 2px 6px; border-radius: 4px;', 'color: #FFB300; font-weight: bold;');
+  } else {
+    console.log('%c[Encaixe AMBIENTE]%c PRODUÇÃO (PRD - Netlify/horahub.com.br)', 'background: #00E676; color: #000; font-weight: bold; padding: 2px 6px; border-radius: 4px;', 'color: #00E676; font-weight: bold;');
+  }
+}
+
 export const supabase = createClient(activeUrl, activeKey);
 export const MOCK_TENANT_ID = 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7'; // Usado enquanto não há login
+
