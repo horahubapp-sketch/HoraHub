@@ -15,9 +15,8 @@ import {
 } from 'lucide-react';
 import { FUNCIONARIOS_MOCK } from '../mockData';
 import type { Funcionario, Agendamento } from '../mockData';
-import { supabase } from '../services/supabase';
+import { dbAdapter } from '../services/dbAdapter';
 import { useAuth } from '../contexts/AuthContext';
-import { isDevEnvironment } from '../config/env';
 import './CalendarView.css';
 
 const START_HOUR = 8;
@@ -73,54 +72,13 @@ export const CalendarView = () => {
     async function loadProfissionaisEServicos() {
       if (!tenantId) return;
 
-      if (isDevEnvironment()) {
-        const localKeyFuncs = `encaixe_funcionarios_demo_${tenantId}`;
-        const localKeyServs = `encaixe_servicos_demo_${tenantId}`;
-        const localFuncs = localStorage.getItem(localKeyFuncs);
-        const localServs = localStorage.getItem(localKeyServs);
-
-        if (localFuncs) {
-          setFuncionarios(JSON.parse(localFuncs));
-        } else {
-          setFuncionarios(FUNCIONARIOS_MOCK);
-          localStorage.setItem(localKeyFuncs, JSON.stringify(FUNCIONARIOS_MOCK));
-        }
-
-        if (localServs) {
-          setCatalogoServicos(JSON.parse(localServs));
-        } else {
-          const defaultServs = [
-            { id: 'c1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', nome: 'Corte Degradê', duracao_minutos: 45, preco: 60.00 },
-            { id: 'c2a3bc08-cb86-4e55-926c-d2c6c06a3eb2', nome: 'Barboterapia', duracao_minutos: 30, preco: 45.00 },
-            { id: 'c3a3bc08-cb86-4e55-926c-d2c6c06a3eb3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, preco: 95.00 }
-          ];
-          setCatalogoServicos(defaultServs);
-          localStorage.setItem(localKeyServs, JSON.stringify(defaultServs));
-        }
-        return;
-      }
-
       try {
-        const { data: dbFuncs } = await supabase
-          .from('funcionarios')
-          .select('id, nome, especialidade, comissao_percentual, foto_url')
-          .eq('tenant_id', tenantId)
-          .order('nome', { ascending: true });
+        const dbFuncs = await dbAdapter.funcionarios.getByTenant(tenantId);
+        setFuncionarios(dbFuncs && dbFuncs.length > 0 ? dbFuncs : FUNCIONARIOS_MOCK);
 
-        if (dbFuncs && dbFuncs.length > 0) {
-          setFuncionarios(dbFuncs);
-        } else {
-          setFuncionarios(FUNCIONARIOS_MOCK);
-        }
-
-        const { data: dbServs } = await supabase
-          .from('servicos')
-          .select('id, nome, duracao_minutos, preco')
-          .eq('tenant_id', tenantId)
-          .order('nome', { ascending: true });
-
+        const dbServs = await dbAdapter.servicos.getByTenant(tenantId);
         if (dbServs && dbServs.length > 0) {
-          setCatalogoServicos(dbServs.map(s => ({
+          setCatalogoServicos(dbServs.map((s: any) => ({
             id: s.id,
             nome: s.nome,
             duracao_minutos: s.duracao_minutos || 30,
@@ -168,121 +126,18 @@ export const CalendarView = () => {
     
     async function loadAgendamentos() {
       if (!tenantId) return;
-
-      if (isDevEnvironment()) {
-        const localKey = `encaixe_agendamentos_${tenantId}_${dataKey}`;
-        const agendamentosSalvos = localStorage.getItem(localKey);
-        if (agendamentosSalvos) {
-          setAgendamentos(JSON.parse(agendamentosSalvos));
-        } else {
-          const bloqueiosPadrao = funcionarios.map((f, index) => {
-            const horasAlmoco = [['12:00', '13:00'], ['13:00', '14:00'], ['12:30', '13:30'], ['12:00', '13:00']];
-            const [inicio, fim] = horasAlmoco[index % horasAlmoco.length];
-            return {
-              id: `bloqueio-almoco-${f.id}-${dataKey}`,
-              funcionarioId: f.id,
-              clienteNome: 'Almoço',
-              servicoNome: 'Intervalo',
-              horarioInicio: inicio,
-              horarioFim: fim,
-              status: 'bloqueio' as const
-            };
-          });
-          setAgendamentos(bloqueiosPadrao);
-          localStorage.setItem(localKey, JSON.stringify(bloqueiosPadrao));
-        }
-        return;
-      }
-
       try {
-        const inicioDia = `${dataKey}T00:00:00Z`;
-        const fimDia = `${dataKey}T23:59:59Z`;
-
-        const { data: dbAgends, error } = await supabase
-          .from('agendamentos')
-          .select(`
-            id,
-            funcionario_id,
-            cliente_name,
-            horario_inicio,
-            horario_fim,
-            status,
-            servicos ( nome, preco )
-          `)
-          .eq('tenant_id', tenantId)
-          .gte('horario_inicio', inicioDia)
-          .lte('horario_inicio', fimDia)
-          .neq('status', 'cancelado');
-
-        if (error) throw error;
-
-        // Mapear dados do banco para o formato de Agendamento local (HH:MM)
-        const dbMapeados: Agendamento[] = (dbAgends || []).map(a => {
-          const dInicio = new Date(a.horario_inicio);
-          const dFim = new Date(a.horario_fim);
-          
-          const pad = (n: number) => String(n).padStart(2, '0');
-          const hInicio = `${pad(dInicio.getUTCHours())}:${pad(dInicio.getUTCMinutes())}`;
-          const hFim = `${pad(dFim.getUTCHours())}:${pad(dFim.getUTCMinutes())}`;
-
-          return {
-            id: a.id,
-            funcionarioId: a.funcionario_id,
-            clienteNome: a.cliente_name,
-            servicoNome: (a.servicos as any)?.nome || 'Serviço',
-            horarioInicio: hInicio,
-            horarioFim: hFim,
-            status: a.status as 'confirmado' | 'pendente' | 'bloqueio',
-            preco: (a.servicos as any)?.preco ? Number((a.servicos as any).preco) : undefined
-          };
-        });
-
-        // Combinar os agendamentos do Supabase com os bloqueios de almoço locais do localStorage
-        const agendamentosSalvos = localStorage.getItem(`encaixe_agendamentos_${dataKey}`);
-        let locais = agendamentosSalvos ? JSON.parse(agendamentosSalvos) : [];
-        
-        // Filtrar locais para manter apenas os que são do tipo 'bloqueio'
-        const bloqueiosLocais = locais.filter((l: any) => l.status === 'bloqueio');
-
-        // Se for a primeira vez e não tiver bloqueios locais salvos, cria os bloqueios padrão
-        if (bloqueiosLocais.length === 0) {
-          const bloqueiosPadrao = funcionarios.map((f, index) => {
-            const horasAlmoco = [['12:00', '13:00'], ['13:00', '14:00'], ['12:30', '13:30'], ['12:00', '13:00']];
-            const [inicio, fim] = horasAlmoco[index % horasAlmoco.length];
-            return {
-              id: `bloqueio-almoco-${f.id}-${dataKey}`,
-              funcionarioId: f.id,
-              clienteNome: 'Almoço',
-              servicoNome: 'Intervalo',
-              horarioInicio: inicio,
-              horarioFim: fim,
-              status: 'bloqueio' as const
-            };
-          });
-          setAgendamentos([...bloqueiosPadrao, ...dbMapeados]);
-          localStorage.setItem(`encaixe_agendamentos_${dataKey}`, JSON.stringify([...bloqueiosPadrao, ...dbMapeados]));
-        } else {
-          setAgendamentos([...bloqueiosLocais, ...dbMapeados]);
-        }
+        const agends = await dbAdapter.agendamentos.getByDate(tenantId, dataKey);
+        setAgendamentos(agends || []);
       } catch (err) {
-        console.error('[Encaixe] Erro ao carregar agendamentos do Supabase:', err);
-        // Fallback completo do localStorage se estiver offline
-        const agendamentosSalvos = localStorage.getItem(`encaixe_agendamentos_${dataKey}`);
-        if (agendamentosSalvos) {
-          setAgendamentos(JSON.parse(agendamentosSalvos));
-        }
+        console.error('[Encaixe] Erro ao carregar agendamentos:', err);
       }
     }
 
     loadAgendamentos();
   }, [currentDate, funcionarios, tenantId]);
 
-  const salvarAgendamentosDaData = (novaLista: Agendamento[]) => {
-    const dataKey = obterDataKey(currentDate);
-    setAgendamentos(novaLista);
-    const localKey = tenantId ? `encaixe_agendamentos_${tenantId}_${dataKey}` : `encaixe_agendamentos_${dataKey}`;
-    localStorage.setItem(localKey, JSON.stringify(novaLista));
-  };
+
 
   const handlePrevDay = () => {
     const nova = new Date(currentDate);
@@ -513,173 +368,67 @@ export const CalendarView = () => {
     const servObj = catalogoServicos.find(s => s.id === newServiceId);
     const precoTratado = Number(newPrice.replace('R$', '').replace(',', '.').trim());
 
-    // Gerar DateTimes corretos em UTC para gravação no Supabase
-    const [hStart, mStart] = newTimeStart.split(':').map(Number);
-    const [hEnd, mEnd] = newTimeEnd.split(':').map(Number);
-
-    const dInicio = new Date(Date.UTC(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate(),
-      hStart,
-      mStart,
-      0,
-      0
-    ));
-
-    const dFim = new Date(Date.UTC(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate(),
-      hEnd,
-      mEnd,
-      0,
-      0
-    ));
-
     const clienteNameFormatado = newClientCpfCnpj ? `${newClient} (CPF: ${newClientCpfCnpj})` : newClient;
 
-    // Tratamento de segurança para garantir que apenas UUIDs válidos sejam enviados ao PostgreSQL
-    const isUuid = (val: string) => /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val);
-    
-    // Se newFuncionario não for um UUID válido, tenta encontrar o primeiro funcionário com UUID válido no estado
-    let validFuncId = isUuid(newFuncionario) ? newFuncionario : (funcionarios.find(f => isUuid(f.id))?.id || null);
-    
-    // Se newServiceId não for um UUID válido (ex: 's-mock-1'), envia null no servico_id
-    let validServId = isUuid(newServiceId) ? newServiceId : null;
-
-    if (!validFuncId) {
-      setConflictError('Por favor, cadastre um profissional na aba "Profissionais" antes de criar agendamentos.');
+    if (!newFuncionario) {
+      setConflictError('Por favor, selecione um profissional.');
       return;
     }
 
-    if (isDevEnvironment()) {
-      const novoAgendamento: Agendamento = {
-        id: `ag-local-${Date.now()}`,
-        funcionarioId: newFuncionario,
-        clienteNome: clienteNameFormatado,
-        servicoNome: servObj?.nome || 'Serviço',
-        horarioInicio: newTimeStart,
-        horarioFim: newTimeEnd,
-        preco: isNaN(precoTratado) ? 0 : precoTratado,
-        status: 'confirmado'
-      };
-      const novaLista = [...agendamentos, novoAgendamento];
-      salvarAgendamentosDaData(novaLista);
-      setShowNewModal(false);
-      setNewClient('');
-      setNewClientPhone('');
-      setNewClientCpfCnpj('');
-      return;
-    }
-
-    const insertPayload: any = {
-      tenant_id: tenantId,
-      funcionario_id: validFuncId,
-      cliente_name: clienteNameFormatado,
-      cliente_telefone: newClientPhone || null,
-      servico_id: validServId,
-      horario_inicio: dInicio.toISOString(),
-      horario_fim: dFim.toISOString(),
+    const dataKey = obterDataKey(currentDate);
+    const novoAgendamento: any = {
+      funcionarioId: newFuncionario,
+      clienteNome: clienteNameFormatado,
+      servicoNome: servObj?.nome || 'Serviço',
+      horarioInicio: newTimeStart,
+      horarioFim: newTimeEnd,
+      preco: isNaN(precoTratado) ? (servObj?.preco || 50) : precoTratado,
       status: 'confirmado'
     };
 
     try {
-      let { data: inserted, error } = await supabase
-        .from('agendamentos')
-        .insert(insertPayload)
-        .select()
-        .single();
-
-      // Fallback caso a coluna cliente_telefone ainda não exista no banco PRD
-      if (error && error.message?.includes('cliente_telefone')) {
-        delete insertPayload.cliente_telefone;
-        const retry = await supabase
-          .from('agendamentos')
-          .insert(insertPayload)
-          .select()
-          .single();
-
-        inserted = retry.data;
-        error = retry.error;
-      }
-
-      if (error) throw error;
-
-      const newAgenda: Agendamento = {
-        id: inserted.id,
-        funcionarioId: newFuncionario,
-        clienteNome: clienteNameFormatado,
-        servicoNome: servObj?.nome || 'Serviço',
-        horarioInicio: newTimeStart,
-        horarioFim: newTimeEnd,
-        status: 'confirmado',
-        preco: isNaN(precoTratado) ? (servObj?.preco || 50) : precoTratado
-      };
-
-      salvarAgendamentosDaData([...agendamentos, newAgenda]);
+      await dbAdapter.agendamentos.create(tenantId!, dataKey, novoAgendamento);
+      const agendsAtualizados = await dbAdapter.agendamentos.getByDate(tenantId!, dataKey);
+      setAgendamentos(agendsAtualizados || []);
+      setShowNewModal(false);
       setNewClient('');
       setNewClientPhone('');
       setNewClientCpfCnpj('');
-      setConflictError(null);
-      setShowNewModal(false);
     } catch (err: any) {
-      console.error('[Encaixe] Erro ao gravar agendamento no Supabase:', err);
-      setConflictError(`Erro ao salvar no banco: ${err.message || 'Verifique a conexão.'}`);
+      console.error('Erro ao salvar agendamento:', err);
+      setConflictError('Não foi possível salvar o agendamento.');
     }
   };
 
   // Alterar Status
   const handleToggleStatus = async (id: string) => {
-    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     const nextStatus: 'confirmado' | 'pendente' = selectedAgendamento?.status === 'confirmado' ? 'pendente' : 'confirmado';
-    
-    if (isUUID) {
-      try {
-        await supabase
-          .from('agendamentos')
-          .update({ status: nextStatus })
-          .eq('id', id);
-      } catch (err) {
-        console.error('[Encaixe] Erro ao alterar status no Supabase:', err);
-      }
-    }
+    const dataKey = obterDataKey(currentDate);
 
-    const novaLista = agendamentos.map(a => {
-      if (a.id === id && a.status !== 'bloqueio') {
-        return { ...a, status: nextStatus };
+    try {
+      await dbAdapter.agendamentos.updateStatus(tenantId!, dataKey, id, nextStatus);
+      const agendsAtualizados = await dbAdapter.agendamentos.getByDate(tenantId!, dataKey);
+      setAgendamentos(agendsAtualizados || []);
+
+      if (selectedAgendamento && selectedAgendamento.id === id) {
+        setSelectedAgendamento(prev => prev ? { ...prev, status: nextStatus } : null);
       }
-      return a;
-    });
-    
-    salvarAgendamentosDaData(novaLista);
-    
-    if (selectedAgendamento && selectedAgendamento.id === id) {
-      setSelectedAgendamento(prev => prev ? { 
-        ...prev, 
-        status: nextStatus 
-      } : null);
+    } catch (err) {
+      console.error('[Encaixe] Erro ao alterar status:', err);
     }
   };
 
-  // Deletar
+  // Deletar Agendamento
   const handleDeleteAgendamento = async (id: string) => {
-    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-    
-    if (isUUID) {
-      try {
-        await supabase
-          .from('agendamentos')
-          .update({ status: 'cancelado' })
-          .eq('id', id);
-      } catch (err) {
-        console.error('[Encaixe] Erro ao cancelar agendamento no Supabase:', err);
-      }
+    const dataKey = obterDataKey(currentDate);
+    try {
+      await dbAdapter.agendamentos.delete(tenantId!, dataKey, id);
+      const agendsAtualizados = await dbAdapter.agendamentos.getByDate(tenantId!, dataKey);
+      setAgendamentos(agendsAtualizados || []);
+      setSelectedAgendamento(null);
+    } catch (err) {
+      console.error('[Encaixe] Erro ao excluir agendamento:', err);
     }
-
-    const novaLista = agendamentos.filter(a => a.id !== id);
-    salvarAgendamentosDaData(novaLista);
-    setSelectedAgendamento(null);
   };
 
   const handleCloseNewModal = () => {

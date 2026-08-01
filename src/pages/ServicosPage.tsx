@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, AlertCircle, Sparkles, Clock, Check } from 'lucide-react';
-import { supabase } from '../services/supabase';
+import { dbAdapter } from '../services/dbAdapter';
 import { useAuth } from '../contexts/AuthContext';
-import { isDevEnvironment } from '../config/env';
 import './ServicosPage.css';
 
 interface Servico {
@@ -12,12 +11,7 @@ interface Servico {
   preco: number;
 }
 
-const LOCAL_STORAGE_KEY = 'encaixe_servicos_demo';
 
-const isUUID = (str: string): boolean => {
-  const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  return regex.test(str);
-};
 
 export default function ServicosPage() {
   const { tenantId } = useAuth();
@@ -38,45 +32,12 @@ export default function ServicosPage() {
     if (!tenantId) return;
     setLoading(true);
     setErrorMsg(null);
-
-    // Em ambiente de Homologação Local (localhost:5173), isola 100% no LocalStorage para não tocar no PRD
-    if (isDevEnvironment()) {
-      const localKey = `${LOCAL_STORAGE_KEY}_${tenantId}`;
-      const localData = localStorage.getItem(localKey);
-      if (localData) {
-        setServicos(JSON.parse(localData));
-      } else {
-        const inicialMock = [
-          { id: 's-mock-1', nome: 'Corte Degradê', duracao_minutos: 45, preco: 60.00 },
-          { id: 's-mock-2', nome: 'Barboterapia', duracao_minutos: 30, preco: 45.00 },
-          { id: 's-mock-3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, preco: 95.00 }
-        ];
-        setServicos(inicialMock);
-        localStorage.setItem(localKey, JSON.stringify(inicialMock));
-      }
-      setLoading(false);
-      return;
-    }
-
     try {
-      const { data, error } = await supabase
-        .from('servicos')
-        .select('id, nome, duracao_minutos, preco')
-        .eq('tenant_id', tenantId)
-        .order('nome', { ascending: true });
-
-      if (error) throw error;
-      
+      const data = await dbAdapter.servicos.getByTenant(tenantId);
       setServicos(data || []);
-      if (data) {
-        localStorage.setItem(`${LOCAL_STORAGE_KEY}_${tenantId}`, JSON.stringify(data));
-      }
     } catch (err: any) {
-      console.warn('[Encaixe] Carregando dados do LocalStorage.');
-      const localData = localStorage.getItem(`${LOCAL_STORAGE_KEY}_${tenantId}`);
-      if (localData) {
-        setServicos(JSON.parse(localData));
-      }
+      console.error('[Encaixe] Erro ao carregar serviços:', err);
+      setErrorMsg('Falha ao carregar catálogo de serviços.');
     } finally {
       setLoading(false);
     }
@@ -135,76 +96,16 @@ export default function ServicosPage() {
       return;
     }
 
-    const localKey = `${LOCAL_STORAGE_KEY}_${tenantId}`;
-
-    if (isDevEnvironment()) {
-      if (editingServico) {
-        const novaLista = servicos.map(s => s.id === editingServico.id ? {
-          ...s,
-          nome,
-          duracao_minutos: Number(duracao),
-          preco: precoNumerico
-        } : s);
-        setServicos(novaLista);
-        localStorage.setItem(localKey, JSON.stringify(novaLista));
-        showSuccess('Serviço atualizado no ambiente de homologação local!');
-      } else {
-        const novo = {
-          id: `s-local-${Date.now()}`,
-          nome,
-          duracao_minutos: Number(duracao),
-          preco: precoNumerico
-        };
-        const novaLista = [...servicos, novo];
-        setServicos(novaLista);
-        localStorage.setItem(localKey, JSON.stringify(novaLista));
-        showSuccess('Serviço criado no ambiente de homologação local!');
-      }
-      setShowModal(false);
-      return;
-    }
-
     try {
-      if (editingServico) {
-        if (!isUUID(editingServico.id)) {
-          const novaLista = servicos.map(s => s.id === editingServico.id ? {
-            ...s,
-            nome,
-            duracao_minutos: Number(duracao),
-            preco: precoNumerico
-          } : s);
-          setServicos(novaLista);
-          localStorage.setItem(localKey, JSON.stringify(novaLista));
-          showSuccess('Modo Demo: Serviço atualizado localmente!');
-          setShowModal(false);
-          return;
-        }
+      const payload = {
+        id: editingServico?.id,
+        nome,
+        duracao_minutos: Number(duracao),
+        preco: precoNumerico
+      };
 
-        const { error } = await supabase
-          .from('servicos')
-          .update({
-            nome,
-            duracao_minutos: Number(duracao),
-            preco: precoNumerico
-          })
-          .eq('id', editingServico.id);
-
-        if (error) throw error;
-        showSuccess('Serviço atualizado com sucesso!');
-      } else {
-        const { error } = await supabase
-          .from('servicos')
-          .insert({
-            tenant_id: tenantId,
-            nome,
-            duracao_minutos: Number(duracao),
-            preco: precoNumerico
-          });
-
-        if (error) throw error;
-        showSuccess('Serviço criado com sucesso!');
-      }
-
+      await dbAdapter.servicos.save(tenantId!, payload);
+      showSuccess(editingServico ? 'Serviço atualizado com sucesso!' : 'Serviço criado com sucesso!');
       setShowModal(false);
       loadServicos();
     } catch (err: any) {
@@ -219,32 +120,9 @@ export default function ServicosPage() {
       return;
     }
 
-    const localKey = `${LOCAL_STORAGE_KEY}_${tenantId}`;
-
-    if (isDevEnvironment()) {
-      const novaLista = servicos.filter(s => s.id !== id);
-      setServicos(novaLista);
-      localStorage.setItem(localKey, JSON.stringify(novaLista));
-      showSuccess('Serviço removido no ambiente de homologação local!');
-      return;
-    }
-
     setErrorMsg(null);
     try {
-      if (!isUUID(id)) {
-        const novaLista = servicos.filter(s => s.id !== id);
-        setServicos(novaLista);
-        localStorage.setItem(localKey, JSON.stringify(novaLista));
-        showSuccess('Modo Demo: Serviço removido localmente!');
-        return;
-      }
-
-      const { error } = await supabase
-        .from('servicos')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      await dbAdapter.servicos.delete(tenantId!, id);
       showSuccess('Serviço removido com sucesso!');
       loadServicos();
     } catch (err: any) {

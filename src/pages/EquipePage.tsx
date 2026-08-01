@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, AlertCircle, Sparkles, Check, Scissors } from 'lucide-react';
-import { supabase } from '../services/supabase';
+import { dbAdapter } from '../services/dbAdapter';
 import { useAuth } from '../contexts/AuthContext';
-import { isDevEnvironment } from '../config/env';
 import './EquipePage.css';
 
 interface Funcionario {
@@ -38,13 +37,7 @@ const DIAS_SEMANA_NOMES = [
   'Sábado'
 ];
 
-const LOCAL_STORAGE_KEY_FUNCS = 'encaixe_funcionarios_demo';
-const LOCAL_STORAGE_KEY_SERVS = 'encaixe_servicos_demo';
 
-const isUUID = (str: string): boolean => {
-  const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  return regex.test(str);
-};
 
 const parseEspecialidadeECpf = (espStr: string) => {
   if (!espStr) return { especialidadeLimpa: '', cpfExtraido: '' };
@@ -106,101 +99,20 @@ export default function EquipePage() {
     }))
   );
 
-  // Carregar dados (Supabase com fallback de LocalStorage)
+  // Carregar dados via dbAdapter
   const loadDados = async () => {
     if (!tenantId) return;
     setLoading(true);
     setErrorMsg(null);
-
-    // Em ambiente de Homologação Local (localhost:5173), isola 100% no LocalStorage para não tocar no PRD
-    if (isDevEnvironment()) {
-      const keyFuncs = `${LOCAL_STORAGE_KEY_FUNCS}_${tenantId}`;
-      const keyServs = `encaixe_servicos_demo_${tenantId}`;
-      const localFuncs = localStorage.getItem(keyFuncs);
-      const localServs = localStorage.getItem(keyServs);
-
-      if (localFuncs) {
-        setFuncionarios(JSON.parse(localFuncs));
-      } else {
-        const funcsMock = [
-          { id: 'f-mock-1', nome: 'Bruno Silva', especialidade: 'Cabelo & Barba Sênior', comissao_percentual: 50, foto_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150' },
-          { id: 'f-mock-2', nome: 'Lucas Nogueira', especialidade: 'Corte Moderno & Tintura', comissao_percentual: 40, foto_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150' },
-          { id: 'f-mock-3', nome: 'Ana Costa', especialidade: 'Barba Clássica & Visagismo', comissao_percentual: 45, foto_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150' },
-          { id: 'f-mock-4', nome: 'Mateus Santos', especialidade: 'Cortes Clássicos & Infantil', comissao_percentual: 50, foto_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=150&h=150' }
-        ];
-        setFuncionarios(funcsMock);
-        localStorage.setItem(keyFuncs, JSON.stringify(funcsMock));
-      }
-
-      if (localServs) {
-        setTodosServicos(JSON.parse(localServs));
-      } else {
-        setTodosServicos([
-          { id: 's-mock-1', nome: 'Corte Degradê' },
-          { id: 's-mock-2', nome: 'Barboterapia' },
-          { id: 's-mock-3', nome: 'Corte Degradê + Barba' }
-        ]);
-      }
-      setLoading(false);
-      return;
-    }
-
     try {
-      // 1. Carregar Funcionários
-      const { data: funcs, error: errFuncs } = await supabase
-        .from('funcionarios')
-        .select('id, nome, especialidade, comissao_percentual, foto_url')
-        .eq('tenant_id', tenantId)
-        .order('nome', { ascending: true });
-
-      if (errFuncs) throw errFuncs;
+      const funcs = await dbAdapter.funcionarios.getByTenant(tenantId);
       setFuncionarios(funcs || []);
-      if (funcs) {
-        localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(funcs));
-      }
 
-      // 2. Carregar todos os Serviços
-      const { data: servs, error: errServs } = await supabase
-        .from('servicos')
-        .select('id, nome')
-        .eq('tenant_id', tenantId)
-        .order('nome', { ascending: true });
-
-      if (errServs) throw errServs;
+      const servs = await dbAdapter.servicos.getByTenant(tenantId);
       setTodosServicos(servs || []);
     } catch (err: any) {
-      console.warn('[Encaixe] Erro ao carregar dados da equipe. Usando LocalStorage.');
-      
-      // Carregar do LocalStorage
-      const localFuncs = localStorage.getItem(LOCAL_STORAGE_KEY_FUNCS);
-      const localServs = localStorage.getItem(LOCAL_STORAGE_KEY_SERVS);
-
-      if (localFuncs) {
-        setFuncionarios(JSON.parse(localFuncs));
-      } else {
-        const funcsMock = [
-          { id: 'f-mock-1', nome: 'Bruno Silva', especialidade: 'Cabelo & Barba Sênior', comissao_percentual: 50, foto_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150' },
-          { id: 'f-mock-2', nome: 'Lucas Nogueira', especialidade: 'Corte Moderno & Tintura', comissao_percentual: 40, foto_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150' },
-          { id: 'f-mock-3', nome: 'Ana Costa', especialidade: 'Barba Clássica & Visagismo', comissao_percentual: 45, foto_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150' },
-          { id: 'f-mock-4', nome: 'Mateus Santos', especialidade: 'Cortes Clássicos & Infantil', comissao_percentual: 50, foto_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=150&h=150' }
-        ];
-        setFuncionarios(funcsMock);
-        localStorage.setItem(LOCAL_STORAGE_KEY_FUNCS, JSON.stringify(funcsMock));
-      }
-
-      if (localServs) {
-        setTodosServicos(JSON.parse(localServs));
-      } else {
-        setTodosServicos([
-          { id: 's-mock-1', nome: 'Corte Degradê' },
-          { id: 's-mock-2', nome: 'Barboterapia' },
-          { id: 's-mock-3', nome: 'Corte Degradê + Barba' }
-        ]);
-      }
-
-      if (!err.message?.includes('API key') && !err.message?.includes('JWT')) {
-        setErrorMsg('Conexão instável. Operando equipe em modo offline.');
-      }
+      console.error('[Encaixe] Erro ao carregar dados da equipe:', err);
+      setErrorMsg('Falha ao carregar equipe e serviços.');
     } finally {
       setLoading(false);
     }
@@ -265,26 +177,12 @@ export default function EquipePage() {
         return;
       }
 
-      // 1. Carregar Vínculos de Serviços
-      const { data: vs, error: errVs } = await supabase
-        .from('funcionario_servicos')
-        .select('servico_id')
-        .eq('funcionario_id', func.id);
+      const vs = await dbAdapter.funcionarios.getVinculos(func.id);
+      setServicosSelecionados(vs || []);
 
-      if (errVs) throw errVs;
-      setServicosSelecionados(vs?.map(v => v.servico_id) || []);
-
-      // 2. Carregar Jornadas Cadastradas
-      const { data: js, error: errJs } = await supabase
-        .from('jornadas_trabalho')
-        .select('dia_semana, hora_inicio, hora_fim, almoco_inicio, almoco_fim')
-        .eq('funcionario_id', func.id);
-
-      if (errJs) throw errJs;
-
-      // Mesclar jornada cadastrada com a estrutura vazia de 7 dias
+      const js = await dbAdapter.funcionarios.getJornadas(func.id);
       const novaJornada = Array.from({ length: 7 }, (_, i) => {
-        const jExist = js?.find(j => j.dia_semana === i);
+        const jExist = js?.find((j: any) => j.dia_semana === i);
         if (jExist) {
           return {
             dia_semana: i,
@@ -341,28 +239,13 @@ export default function EquipePage() {
     };
     reader.readAsDataURL(file);
 
-    // 2. Tenta fazer o upload para o Supabase Storage se conectado
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `${tenantId || 'global'}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) {
-        console.warn('[Encaixe] Falha no storage do Supabase local. Mantendo Base64 offline:', uploadError.message);
-        setUploading(false);
-        return;
-      }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
+      const publicUrl = await dbAdapter.storage.upload('avatars', filePath, file);
       setFotoUrl(publicUrl);
-      showSuccess('Foto enviada e vinculada com sucesso no banco local!');
     } catch (err: any) {
       console.warn('[Encaixe] Erro de rede no upload do arquivo. Usando fallback offline.');
     } finally {
@@ -400,181 +283,20 @@ export default function EquipePage() {
     }
 
     const especialidadeFinal = cpf ? `${especialidade} (CPF: ${cpf})` : especialidade;
-    const keyFuncs = `${LOCAL_STORAGE_KEY_FUNCS}_${tenantId}`;
-
-    if (isDevEnvironment()) {
-      if (editingFunc) {
-        const novaLista = funcionarios.map(f => f.id === editingFunc.id ? {
-          ...f,
-          nome,
-          especialidade: especialidadeFinal,
-          cpf,
-          comissao_percentual: Number(comissao),
-          servicos_ids: servicosSelecionados,
-          jornada: jornada,
-          foto_url: fotoUrl
-        } : f);
-        setFuncionarios(novaLista);
-        localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
-        showSuccess('Profissional atualizado no ambiente de homologação local!');
-      } else {
-        const novo = {
-          id: `f-local-${Date.now()}`,
-          nome,
-          especialidade: especialidadeFinal,
-          comissao_percentual: Number(comissao),
-          servicos_ids: servicosSelecionados,
-          jornada: jornada,
-          foto_url: fotoUrl
-        };
-        const novaLista = [...funcionarios, novo];
-        setFuncionarios(novaLista);
-        localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
-        showSuccess('Profissional criado no ambiente de homologação local!');
-      }
-      setShowModal(false);
-      return;
-    }
 
     try {
-      let funcId = editingFunc?.id;
+      const payload = {
+        id: editingFunc?.id,
+        nome,
+        especialidade: especialidadeFinal,
+        cpf,
+        comissao_percentual: Number(comissao),
+        servicos_ids: servicosSelecionados,
+        jornada: jornada,
+        foto_url: fotoUrl
+      };
 
-      if (editingFunc) {
-        if (!isUUID(editingFunc.id)) {
-          const novaLista = funcionarios.map(f => f.id === editingFunc.id ? {
-            ...f,
-            nome,
-            especialidade: especialidadeFinal,
-            cpf,
-            comissao_percentual: Number(comissao),
-            servicos_ids: servicosSelecionados,
-            jornada: jornada,
-            foto_url: fotoUrl
-          } : f);
-          setFuncionarios(novaLista);
-          localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
-          showSuccess('Modo Demo: Profissional atualizado localmente!');
-          setShowModal(false);
-          return;
-        }
-
-        const { error: errFunc } = await supabase
-          .from('funcionarios')
-          .update({
-            nome,
-            especialidade: especialidadeFinal,
-            comissao_percentual: Number(comissao),
-            foto_url: fotoUrl
-          })
-          .eq('id', editingFunc.id);
-
-        if (errFunc) {
-          if (errFunc.message.includes('API key') || errFunc.message.includes('JWT') || errFunc.message.includes('fetch')) {
-            const novaLista = funcionarios.map(f => f.id === editingFunc.id ? {
-              ...f,
-              nome,
-              especialidade: especialidadeFinal,
-              cpf,
-              comissao_percentual: Number(comissao),
-              servicos_ids: servicosSelecionados,
-              jornada: jornada,
-              foto_url: fotoUrl
-            } : f);
-            setFuncionarios(novaLista);
-            localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
-            showSuccess('Modo Demo: Profissional atualizado localmente!');
-            setShowModal(false);
-            return;
-          }
-          throw errFunc;
-        }
-      } else {
-        const { data: newFunc, error: errFunc } = await supabase
-          .from('funcionarios')
-          .insert({
-            tenant_id: tenantId,
-            nome,
-            especialidade: especialidadeFinal,
-            comissao_percentual: Number(comissao),
-            foto_url: fotoUrl
-          })
-          .select('id')
-          .single();
-
-        if (errFunc) {
-          // Fallback para rede/API Key inválida
-          if (errFunc.message.includes('API key') || errFunc.message.includes('JWT') || errFunc.message.includes('fetch')) {
-            const novo = {
-              id: `f-mock-${Date.now()}`,
-              nome,
-              especialidade,
-              comissao_percentual: Number(comissao),
-              servicos_ids: servicosSelecionados,
-              jornada: jornada,
-              foto_url: fotoUrl
-            };
-            const novaLista = [...funcionarios, novo];
-            setFuncionarios(novaLista);
-            localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
-            showSuccess('Modo Demo: Profissional criado localmente!');
-            setShowModal(false);
-            return;
-          }
-          throw errFunc;
-        }
-        funcId = newFunc.id;
-      }
-
-      if (!funcId) throw new Error('ID do funcionário não foi localizado.');
-
-      // 3. Atualizar Jornadas de Trabalho (Supabase)
-      const { error: errDeleteJornadas } = await supabase
-        .from('jornadas_trabalho')
-        .delete()
-        .eq('funcionario_id', funcId);
-
-      if (errDeleteJornadas) throw errDeleteJornadas;
-
-      const jornadasAtivas = jornada.filter(j => j.ativo);
-      if (jornadasAtivas.length > 0) {
-        const { error: errInsertJornadas } = await supabase
-          .from('jornadas_trabalho')
-          .insert(
-            jornadasAtivas.map(j => ({
-              funcionario_id: funcId,
-              dia_semana: j.dia_semana,
-              hora_inicio: j.hora_inicio,
-              hora_fim: j.hora_fim,
-              almoco_inicio: j.almoco_inicio || null,
-              almoco_fim: j.almoco_fim || null
-            }))
-          );
-
-        if (errInsertJornadas) throw errInsertJornadas;
-      }
-
-      // 4. Atualizar Vínculos de Serviços (Supabase)
-      const { error: errDeleteServicos } = await supabase
-        .from('funcionario_servicos')
-        .delete()
-        .eq('funcionario_id', funcId);
-
-      if (errDeleteServicos) throw errDeleteServicos;
-
-      if (servicosSelecionados.length > 0) {
-        const { error: errInsertServicos } = await supabase
-          .from('funcionario_servicos')
-          .insert(
-            servicosSelecionados.map(sid => ({
-              tenant_id: tenantId,
-              funcionario_id: funcId,
-              servico_id: sid
-            }))
-          );
-
-        if (errInsertServicos) throw errInsertServicos;
-      }
-
+      await dbAdapter.funcionarios.save(tenantId!, payload);
       showSuccess(editingFunc ? 'Profissional atualizado com sucesso!' : 'Profissional criado com sucesso!');
       setShowModal(false);
       loadDados();
@@ -590,48 +312,14 @@ export default function EquipePage() {
       return;
     }
 
-    const keyFuncs = `${LOCAL_STORAGE_KEY_FUNCS}_${tenantId}`;
-
-    if (isDevEnvironment()) {
-      const novaLista = funcionarios.filter(f => f.id !== id);
-      setFuncionarios(novaLista);
-      localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
-      showSuccess('Profissional removido no ambiente de homologação local!');
-      return;
-    }
-
     setErrorMsg(null);
     try {
-      // Se for um ID mockado (não-UUID), deleta diretamente local
-      if (!isUUID(id)) {
-        const novaLista = funcionarios.filter(f => f.id !== id);
-        setFuncionarios(novaLista);
-        localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
-        showSuccess('Modo Demo: Profissional removido localmente!');
-        return;
-      }
-
-      const { error } = await supabase
-        .from('funcionarios')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        // Fallback para rede/API Key inválida
-        if (error.message.includes('API key') || error.message.includes('JWT') || error.message.includes('fetch')) {
-          const novaLista = funcionarios.filter(f => f.id !== id);
-          setFuncionarios(novaLista);
-          localStorage.setItem(keyFuncs, JSON.stringify(novaLista));
-          showSuccess('Modo Demo: Profissional removido localmente!');
-          return;
-        }
-        throw error;
-      }
+      await dbAdapter.funcionarios.delete(tenantId!, id);
       showSuccess('Profissional removido com sucesso!');
       loadDados();
     } catch (err: any) {
       console.error('Erro ao deletar:', err);
-      setErrorMsg('Não foi possível excluir o profissional do banco.');
+      setErrorMsg('Não foi possível excluir o profissional.');
     }
   };
 

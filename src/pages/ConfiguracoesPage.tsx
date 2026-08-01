@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../services/supabase';
+import { dbAdapter } from '../services/dbAdapter';
 import { useAuth } from '../contexts/AuthContext';
-import { isDevEnvironment } from '../config/env';
 import { Link } from 'react-router-dom';
 import { 
   Building, 
@@ -52,55 +51,9 @@ export default function ConfiguracoesPage() {
       setLoading(true);
       setErroMsg(null);
 
-      if (isDevEnvironment()) {
-        const localKey = `encaixe_empresa_${tenantId}`;
-        const localData = localStorage.getItem(localKey);
-        if (localData) {
-          const parsed = JSON.parse(localData);
-          setEmpresaId(parsed.id || tenantId);
-          setNome(parsed.nome || 'Empresa de Homologação');
-          setEmail(parsed.email || 'homolog@encaixe.com.br');
-          setSlug(parsed.slug || 'homolog');
-          setCpfCnpj(parsed.cpf_cnpj || '00.000.000/0001-00');
-          setCorPrimaria(parsed.cor_primaria || '#00E676');
-          setCorSecundaria(parsed.cor_secundaria || '#121214');
-          setLogoUrl(parsed.logo_url || '');
-        } else {
-          setEmpresaId(tenantId);
-          setNome('Empresa de Homologação');
-          setEmail('homolog@encaixe.com.br');
-          setSlug('homolog');
-          setCpfCnpj('00.000.000/0001-00');
-        }
-        setLoading(false);
-        return;
-      }
-
       try {
-        const { data, error } = await supabase
-          .from('empresas')
-          .select('id, nome, email, slug, cpf_cnpj, cor_primaria, cor_secundaria, logo_url, regra_sem_preferencia, profissional_indicado_padrao_id')
-          .eq('id', tenantId)
-          .maybeSingle();
-
-        if (error) {
-          console.warn('[Encaixe] Fallback para colunas básicas:', error);
-          const { data: basicData } = await supabase
-            .from('empresas')
-            .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url')
-            .eq('id', tenantId)
-            .maybeSingle();
-
-          if (basicData) {
-            setEmpresaId(basicData.id);
-            setNome(basicData.nome);
-            setEmail(basicData.email || '');
-            setSlug(basicData.slug || '');
-            setCorPrimaria(basicData.cor_primaria || '#00E676');
-            setCorSecundaria(basicData.cor_secundaria || '#121214');
-            setLogoUrl(basicData.logo_url || '');
-          }
-        } else if (data) {
+        const data = await dbAdapter.empresas.getById(tenantId);
+        if (data) {
           setEmpresaId(data.id);
           setNome(data.nome);
           setEmail(data.email || '');
@@ -113,18 +66,16 @@ export default function ConfiguracoesPage() {
           setProfissionalIndicadoId(data.profissional_indicado_padrao_id || '');
         }
 
-        // Carrega Lista de Profissionais estritamente vinculados ao tenantId do usuário
-        const { data: funcs } = await supabase
-          .from('funcionarios')
-          .select('id, nome')
-          .eq('tenant_id', tenantId);
+        const funcs = await dbAdapter.funcionarios.getByTenant(tenantId);
         setFuncionarios(funcs || []);
       } catch (err: any) {
-        console.error('[Encaixe] Erro ao carregar configurações:', err);
+        console.error('[Encaixe] Erro ao carregar empresa:', err);
+        setErroMsg('Não foi possível carregar as configurações do estabelecimento.');
       } finally {
         setLoading(false);
       }
     }
+
     loadConfig();
   }, [tenantId]);
 
@@ -144,16 +95,8 @@ export default function ConfiguracoesPage() {
           setSlug(normalized);
         }
 
-        const { data, error } = await supabase
-          .from('empresas')
-          .select('id')
-          .eq('slug', normalized)
-          .neq('id', empresaId);
-
-        if (error) throw error;
-
-        // Se encontrar registros, o slug está ocupado
-        setSlugDisponivel(data.length === 0);
+        const disponivel = await dbAdapter.empresas.checkSlug(normalized, empresaId);
+        setSlugDisponivel(disponivel);
       } catch (err) {
         console.error('Erro ao validar slug:', err);
       } finally {
@@ -191,26 +134,12 @@ export default function ConfiguracoesPage() {
     };
     reader.readAsDataURL(file);
 
-    // 2. Upload real no storage do Supabase
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `logo-${Date.now()}.${fileExt}`;
       const filePath = `${tenantId || 'global'}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) {
-        console.warn('[Encaixe] Falha no storage do Supabase local. Mantendo Base64 offline:', uploadError.message);
-        setUploadingLogo(false);
-        return;
-      }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
+      const publicUrl = await dbAdapter.storage.upload('avatars', filePath, file);
       setLogoUrl(publicUrl);
     } catch (err) {
       console.warn('[Encaixe] Erro no upload da logo. Preservado Base64.');
@@ -236,50 +165,26 @@ export default function ConfiguracoesPage() {
     setSucessoMsg(null);
     setErroMsg(null);
 
-    if (isDevEnvironment()) {
-      const localKey = `encaixe_empresa_${tenantId}`;
+    try {
       const payload = {
-        id: empresaId || tenantId,
         nome,
         email,
         slug,
         cpf_cnpj: cpfCnpj,
         cor_primaria: corPrimaria,
         cor_secundaria: corSecundaria,
-        logo_url: logoUrl
+        logo_url: logoUrl,
+        regra_sem_preferencia: regraSemPreferencia,
+        profissional_indicado_padrao_id: profissionalIndicadoId || null
       };
-      localStorage.setItem(localKey, JSON.stringify(payload));
-      setSucessoMsg('Configurações da empresa atualizadas no ambiente de homologação local!');
-      setSalvando(false);
-      return;
-    }
 
-    try {
-      const { error } = await supabase
-        .from('empresas')
-        .update({
-          nome,
-          email,
-          slug,
-          cpf_cnpj: cpfCnpj,
-          cor_primaria: corPrimaria,
-          cor_secundaria: corSecundaria,
-          logo_url: logoUrl,
-          regra_sem_preferencia: regraSemPreferencia,
-          profissional_indicado_padrao_id: profissionalIndicadoId || null
-        })
-        .eq('id', empresaId);
-
-      if (error) throw error;
-
+      await dbAdapter.empresas.saveConfig(tenantId!, payload);
       await refreshEmpresa();
       setSucessoMsg('Configurações salvas e aplicadas com sucesso!');
-      
-      // Esconder a mensagem de sucesso após 3 segundos
       setTimeout(() => setSucessoMsg(null), 3000);
     } catch (err: any) {
       console.error('[Encaixe] Erro ao salvar configurações:', err);
-      setErroMsg(err.message || 'Erro de conexão ao gravar dados.');
+      setErroMsg(err.message || 'Erro ao gravar dados.');
     } finally {
       setSalvando(false);
     }

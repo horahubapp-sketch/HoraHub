@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../services/supabase';
-import { isDevEnvironment } from '../config/env';
+import { dbAdapter } from '../services/dbAdapter';
 import { 
   Building2, 
   DollarSign, 
@@ -55,35 +54,12 @@ export default function SuperAdminPage() {
   const loadEmpresas = async () => {
     setLoading(true);
     setErroMsg(null);
-
-    if (isDevEnvironment()) {
-      const localData = localStorage.getItem('encaixe_superadmin_empresas');
-      if (localData) {
-        setEmpresas(JSON.parse(localData));
-      } else {
-        const defaultEmpresas = [
-          { id: 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', nome: 'Empresa Testes Encaixe', email: 'horahubapp@gmail.com', slug: 'encaixe-teste', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-15' },
-          { id: '7e89dc5a-e809-46cd-8a82-737c6f148f43', nome: 'Barbearia Neiva', email: 'weber@encaixe.com.br', slug: 'barbearianeiva', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-22' },
-          { id: '46d49ef1-448b-4f16-a812-ddb9bfc38583', nome: 'Estudio Le', email: 'le@studio.com.br', slug: 'estudiole', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-29' }
-        ];
-        setEmpresas(defaultEmpresas as any);
-        localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(defaultEmpresas));
-      }
-      setLoading(false);
-      return;
-    }
-
     try {
-      const { data, error } = await supabase
-        .from('empresas')
-        .select('id, nome, email, slug, plano_status, plano_nome, valor_mensalidade, saldo_devedor, data_renovacao, dono_id')
-        .order('nome', { ascending: true });
-
-      if (error) throw error;
+      const data = await dbAdapter.empresas.getAll();
       setEmpresas(data || []);
     } catch (err: any) {
       console.error('[Encaixe Superadmin] Erro ao carregar empresas:', err);
-      setErroMsg(err.message || 'Falha ao buscar empresas no banco de dados.');
+      setErroMsg(err.message || 'Falha ao buscar empresas.');
     } finally {
       setLoading(false);
     }
@@ -96,26 +72,12 @@ export default function SuperAdminPage() {
   const handleUpdateStatus = async (id: string, novoStatus: 'ativo' | 'bloqueado' | 'pendente') => {
     setErroMsg(null);
     setSucessoMsg(null);
-
-    if (isDevEnvironment()) {
-      const novaLista = empresas.map(e => e.id === id ? { ...e, plano_status: novoStatus } : e);
-      setEmpresas(novaLista);
-      localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(novaLista));
-      setSucessoMsg(`Status da empresa atualizado para '${novoStatus}' no ambiente de homologação local!`);
-      return;
-    }
-
     try {
-      const { error } = await supabase
-        .from('empresas')
-        .update({ plano_status: novoStatus })
-        .eq('id', id);
-
-      if (error) throw error;
-      
+      await dbAdapter.empresas.updateStatus(id, novoStatus);
       setSucessoMsg(`Status da empresa atualizado para '${novoStatus}' com sucesso!`);
       loadEmpresas();
     } catch (err: any) {
+      console.error('[Encaixe Superadmin] Erro ao atualizar status:', err);
       setErroMsg(err.message || 'Erro ao alterar status da empresa.');
     }
   };
@@ -133,13 +95,7 @@ export default function SuperAdminPage() {
     setSucessoMsg(null);
 
     try {
-      const { error } = await supabase.rpc('reset_user_password', {
-        target_dono_id: emp.dono_id,
-        new_password: '@Mudar.123'
-      });
-
-      if (error) throw error;
-
+      await dbAdapter.empresas.resetPassword(emp.dono_id);
       setSucessoMsg(`Senha do usuário da empresa "${emp.nome}" redefinida com sucesso para: @Mudar.123`);
     } catch (err: any) {
       console.error('Erro ao redefinir senha:', err);
@@ -177,18 +133,14 @@ export default function SuperAdminPage() {
     }
 
     try {
-      const { error } = await supabase
-        .from('empresas')
-        .update({
-          plano_nome: planoNome,
-          valor_mensalidade: valMensal,
-          saldo_devedor: valDebito,
-          data_renovacao: dataRenovacao ? new Date(dataRenovacao).toISOString() : null
-        })
-        .eq('id', editingEmp.id);
+      const payload = {
+        plano_nome: planoNome,
+        valor_mensalidade: valMensal,
+        saldo_devedor: valDebito,
+        data_renovacao: dataRenovacao ? new Date(dataRenovacao).toISOString() : null
+      };
 
-      if (error) throw error;
-
+      await dbAdapter.empresas.saveConfig(editingEmp.id, payload);
       setSucessoMsg('Cobrança e plano da empresa atualizados com sucesso!');
       setEditingEmp(null);
       loadEmpresas();
