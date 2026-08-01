@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { isDevEnvironment } from '../config/env';
 import { Link } from 'react-router-dom';
 import { 
   Building, 
@@ -50,6 +51,31 @@ export default function ConfiguracoesPage() {
 
       setLoading(true);
       setErroMsg(null);
+
+      if (isDevEnvironment()) {
+        const localKey = `encaixe_empresa_${tenantId}`;
+        const localData = localStorage.getItem(localKey);
+        if (localData) {
+          const parsed = JSON.parse(localData);
+          setEmpresaId(parsed.id || tenantId);
+          setNome(parsed.nome || 'Empresa de Homologação');
+          setEmail(parsed.email || 'homolog@encaixe.com.br');
+          setSlug(parsed.slug || 'homolog');
+          setCpfCnpj(parsed.cpf_cnpj || '00.000.000/0001-00');
+          setCorPrimaria(parsed.cor_primaria || '#00E676');
+          setCorSecundaria(parsed.cor_secundaria || '#121214');
+          setLogoUrl(parsed.logo_url || '');
+        } else {
+          setEmpresaId(tenantId);
+          setNome('Empresa de Homologação');
+          setEmail('homolog@encaixe.com.br');
+          setSlug('homolog');
+          setCpfCnpj('00.000.000/0001-00');
+        }
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data, error } = await supabase
           .from('empresas')
@@ -209,6 +235,24 @@ export default function ConfiguracoesPage() {
     setSalvando(true);
     setSucessoMsg(null);
     setErroMsg(null);
+
+    if (isDevEnvironment()) {
+      const localKey = `encaixe_empresa_${tenantId}`;
+      const payload = {
+        id: empresaId || tenantId,
+        nome,
+        email,
+        slug,
+        cpf_cnpj: cpfCnpj,
+        cor_primaria: corPrimaria,
+        cor_secundaria: corSecundaria,
+        logo_url: logoUrl
+      };
+      localStorage.setItem(localKey, JSON.stringify(payload));
+      setSucessoMsg('Configurações da empresa atualizadas no ambiente de homologação local!');
+      setSalvando(false);
+      return;
+    }
 
     try {
       const { error } = await supabase

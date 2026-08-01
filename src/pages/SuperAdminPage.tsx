@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
+import { isDevEnvironment } from '../config/env';
 import { 
   Building2, 
   DollarSign, 
@@ -54,6 +55,24 @@ export default function SuperAdminPage() {
   const loadEmpresas = async () => {
     setLoading(true);
     setErroMsg(null);
+
+    if (isDevEnvironment()) {
+      const localData = localStorage.getItem('encaixe_superadmin_empresas');
+      if (localData) {
+        setEmpresas(JSON.parse(localData));
+      } else {
+        const defaultEmpresas = [
+          { id: 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', nome: 'Empresa Testes Encaixe', email: 'horahubapp@gmail.com', slug: 'encaixe-teste', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-15' },
+          { id: '7e89dc5a-e809-46cd-8a82-737c6f148f43', nome: 'Barbearia Neiva', email: 'weber@encaixe.com.br', slug: 'barbearianeiva', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-22' },
+          { id: '46d49ef1-448b-4f16-a812-ddb9bfc38583', nome: 'Estudio Le', email: 'le@studio.com.br', slug: 'estudiole', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-29' }
+        ];
+        setEmpresas(defaultEmpresas as any);
+        localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(defaultEmpresas));
+      }
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('empresas')
@@ -77,6 +96,15 @@ export default function SuperAdminPage() {
   const handleUpdateStatus = async (id: string, novoStatus: 'ativo' | 'bloqueado' | 'pendente') => {
     setErroMsg(null);
     setSucessoMsg(null);
+
+    if (isDevEnvironment()) {
+      const novaLista = empresas.map(e => e.id === id ? { ...e, plano_status: novoStatus } : e);
+      setEmpresas(novaLista);
+      localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(novaLista));
+      setSucessoMsg(`Status da empresa atualizado para '${novoStatus}' no ambiente de homologação local!`);
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('empresas')

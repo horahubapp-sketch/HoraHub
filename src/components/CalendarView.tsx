@@ -17,6 +17,7 @@ import { FUNCIONARIOS_MOCK } from '../mockData';
 import type { Funcionario, Agendamento } from '../mockData';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { isDevEnvironment } from '../config/env';
 import './CalendarView.css';
 
 const START_HOUR = 8;
@@ -71,6 +72,33 @@ export const CalendarView = () => {
 
     async function loadProfissionaisEServicos() {
       if (!tenantId) return;
+
+      if (isDevEnvironment()) {
+        const localKeyFuncs = `encaixe_funcionarios_demo_${tenantId}`;
+        const localKeyServs = `encaixe_servicos_demo_${tenantId}`;
+        const localFuncs = localStorage.getItem(localKeyFuncs);
+        const localServs = localStorage.getItem(localKeyServs);
+
+        if (localFuncs) {
+          setFuncionarios(JSON.parse(localFuncs));
+        } else {
+          setFuncionarios(FUNCIONARIOS_MOCK);
+          localStorage.setItem(localKeyFuncs, JSON.stringify(FUNCIONARIOS_MOCK));
+        }
+
+        if (localServs) {
+          setCatalogoServicos(JSON.parse(localServs));
+        } else {
+          const defaultServs = [
+            { id: 'c1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', nome: 'Corte Degradê', duracao_minutos: 45, preco: 60.00 },
+            { id: 'c2a3bc08-cb86-4e55-926c-d2c6c06a3eb2', nome: 'Barboterapia', duracao_minutos: 30, preco: 45.00 },
+            { id: 'c3a3bc08-cb86-4e55-926c-d2c6c06a3eb3', nome: 'Corte Degradê + Barba', duracao_minutos: 60, preco: 95.00 }
+          ];
+          setCatalogoServicos(defaultServs);
+          localStorage.setItem(localKeyServs, JSON.stringify(defaultServs));
+        }
+        return;
+      }
 
       try {
         const { data: dbFuncs } = await supabase
@@ -140,6 +168,32 @@ export const CalendarView = () => {
     
     async function loadAgendamentos() {
       if (!tenantId) return;
+
+      if (isDevEnvironment()) {
+        const localKey = `encaixe_agendamentos_${tenantId}_${dataKey}`;
+        const agendamentosSalvos = localStorage.getItem(localKey);
+        if (agendamentosSalvos) {
+          setAgendamentos(JSON.parse(agendamentosSalvos));
+        } else {
+          const bloqueiosPadrao = funcionarios.map((f, index) => {
+            const horasAlmoco = [['12:00', '13:00'], ['13:00', '14:00'], ['12:30', '13:30'], ['12:00', '13:00']];
+            const [inicio, fim] = horasAlmoco[index % horasAlmoco.length];
+            return {
+              id: `bloqueio-almoco-${f.id}-${dataKey}`,
+              funcionarioId: f.id,
+              clienteNome: 'Almoço',
+              servicoNome: 'Intervalo',
+              horarioInicio: inicio,
+              horarioFim: fim,
+              status: 'bloqueio' as const
+            };
+          });
+          setAgendamentos(bloqueiosPadrao);
+          localStorage.setItem(localKey, JSON.stringify(bloqueiosPadrao));
+        }
+        return;
+      }
+
       try {
         const inicioDia = `${dataKey}T00:00:00Z`;
         const fimDia = `${dataKey}T23:59:59Z`;
@@ -226,7 +280,8 @@ export const CalendarView = () => {
   const salvarAgendamentosDaData = (novaLista: Agendamento[]) => {
     const dataKey = obterDataKey(currentDate);
     setAgendamentos(novaLista);
-    localStorage.setItem(`encaixe_agendamentos_${dataKey}`, JSON.stringify(novaLista));
+    const localKey = tenantId ? `encaixe_agendamentos_${tenantId}_${dataKey}` : `encaixe_agendamentos_${dataKey}`;
+    localStorage.setItem(localKey, JSON.stringify(novaLista));
   };
 
   const handlePrevDay = () => {

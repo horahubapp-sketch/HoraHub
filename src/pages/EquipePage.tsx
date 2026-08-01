@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, AlertCircle, Sparkles, Check, Scissors } from 'lucide-react';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { isDevEnvironment } from '../config/env';
 import './EquipePage.css';
 
 interface Funcionario {
@@ -110,6 +111,40 @@ export default function EquipePage() {
     if (!tenantId) return;
     setLoading(true);
     setErrorMsg(null);
+
+    // Em ambiente de Homologação Local (localhost:5173), isola 100% no LocalStorage para não tocar no PRD
+    if (isDevEnvironment()) {
+      const keyFuncs = `${LOCAL_STORAGE_KEY_FUNCS}_${tenantId}`;
+      const keyServs = `encaixe_servicos_demo_${tenantId}`;
+      const localFuncs = localStorage.getItem(keyFuncs);
+      const localServs = localStorage.getItem(keyServs);
+
+      if (localFuncs) {
+        setFuncionarios(JSON.parse(localFuncs));
+      } else {
+        const funcsMock = [
+          { id: 'f-mock-1', nome: 'Bruno Silva', especialidade: 'Cabelo & Barba Sênior', comissao_percentual: 50, foto_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150' },
+          { id: 'f-mock-2', nome: 'Lucas Nogueira', especialidade: 'Corte Moderno & Tintura', comissao_percentual: 40, foto_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150' },
+          { id: 'f-mock-3', nome: 'Ana Costa', especialidade: 'Barba Clássica & Visagismo', comissao_percentual: 45, foto_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150' },
+          { id: 'f-mock-4', nome: 'Mateus Santos', especialidade: 'Cortes Clássicos & Infantil', comissao_percentual: 50, foto_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=150&h=150' }
+        ];
+        setFuncionarios(funcsMock);
+        localStorage.setItem(keyFuncs, JSON.stringify(funcsMock));
+      }
+
+      if (localServs) {
+        setTodosServicos(JSON.parse(localServs));
+      } else {
+        setTodosServicos([
+          { id: 's-mock-1', nome: 'Corte Degradê' },
+          { id: 's-mock-2', nome: 'Barboterapia' },
+          { id: 's-mock-3', nome: 'Corte Degradê + Barba' }
+        ]);
+      }
+      setLoading(false);
+      return;
+    }
+
     try {
       // 1. Carregar Funcionários
       const { data: funcs, error: errFuncs } = await supabase
