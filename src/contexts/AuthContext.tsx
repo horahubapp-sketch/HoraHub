@@ -65,6 +65,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
+      const emailLower = userEmail?.toLowerCase() || '';
+
+      // 1. Mapeamento explícito de contas SuperAdmin para a Empresa Testes Encaixe em Produção
+      if (emailLower === 'admin@horahub.com' || emailLower === 'admin@encaixe.com' || emailLower === 'horahubapp@gmail.com') {
+        const { data: adminEmp } = await supabase
+          .from('empresas')
+          .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url, plano_status')
+          .or(`id.eq.e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7,dono_id.eq.${userId},slug.eq.encaixe-teste`)
+          .limit(1)
+          .maybeSingle();
+
+        if (adminEmp) return adminEmp;
+      }
+
+      // 2. Busca padrão por dono_id
       const { data, error } = await supabase
         .from('empresas')
         .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url, plano_status')
@@ -73,9 +88,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         console.error('[Encaixe] Erro ao buscar empresa do dono:', error);
-        return null;
       }
-      return data;
+      if (data) return data;
+
+      // 3. Fallback por E-mail
+      if (userEmail) {
+        const { data: empByEmail } = await supabase
+          .from('empresas')
+          .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url, plano_status')
+          .eq('email', userEmail)
+          .maybeSingle();
+
+        if (empByEmail) return empByEmail;
+      }
+
+      return null;
     } catch (err) {
       console.error('[Encaixe] Erro ao buscar empresa do dono:', err);
       return null;
