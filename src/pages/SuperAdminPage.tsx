@@ -15,7 +15,7 @@ import {
   X,
   CreditCard,
   Globe,
-  KeyRound
+  Key
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './SuperAdminPage.css';
@@ -381,8 +381,21 @@ export default function SuperAdminPage() {
                           className="btn-action-round key" 
                           onClick={() => handleResetPassword(emp)}
                           title="Zerar Senha do Usuário para @Mudar.123"
+                          style={{ 
+                            display: 'inline-flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            backgroundColor: 'rgba(255, 179, 0, 0.2)', 
+                            color: '#FFB300', 
+                            border: '1px solid rgba(255, 179, 0, 0.4)',
+                            margin: '0 4px',
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '6px',
+                            cursor: 'pointer'
+                          }}
                         >
-                          <KeyRound size={14} />
+                          <Key size={14} />
                         </button>
 
                         <button 
@@ -487,7 +500,7 @@ export default function SuperAdminPage() {
                   onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgba(255, 179, 0, 0.2)'}
                   onMouseOut={e => e.currentTarget.style.backgroundColor = 'rgba(255, 179, 0, 0.1)'}
                 >
-                  <KeyRound size={16} />
+                  <Key size={16} />
                   <span>Zerar Senha do Usuário para @Mudar.123</span>
                 </button>
               </div>
