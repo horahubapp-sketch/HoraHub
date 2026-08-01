@@ -41,18 +41,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isDevEnvironment()) {
       const empresas = await dbAdapter.empresas.getAll();
 
-      if (userEmail) {
-        const empByEmail = empresas.find((e: any) => e.email?.toLowerCase() === userEmail.toLowerCase());
+      const emailLower = userEmail?.toLowerCase() || '';
+
+      // 1. Mapeamento explícito de contas SuperAdmin para a Empresa Testes Encaixe
+      if (emailLower === 'admin@horahub.com' || emailLower === 'admin@encaixe.com' || emailLower === 'horahubapp@gmail.com') {
+        const adminEmp = empresas.find((e: any) => e.id === 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7' || e.email === 'horahubapp@gmail.com');
+        if (adminEmp) return adminEmp;
+      }
+
+      // 2. Busca direta por E-mail do Estabelecimento
+      if (emailLower) {
+        const empByEmail = empresas.find((e: any) => e.email?.toLowerCase() === emailLower);
         if (empByEmail) return empByEmail;
       }
 
+      // 3. Busca por ID da Empresa / Dono ID
       const empById = empresas.find((e: any) => e.id === userId || e.dono_id === userId);
       if (empById) return empById;
 
-      const empJoao = empresas.find((e: any) => e.nome?.toLowerCase().includes('joão') || e.nome?.toLowerCase().includes('joao'));
-      if (empJoao) return empJoao;
-
-      return empresas[0] || null;
+      // 4. Retorna a empresa padrão do seed (Empresa Testes Encaixe) sem forçar outra empresa de clientes
+      const defaultAdmin = empresas.find((e: any) => e.id === 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7') || empresas[0];
+      return defaultAdmin || null;
     }
 
     try {
