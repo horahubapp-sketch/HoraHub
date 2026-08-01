@@ -14,6 +14,9 @@ TRUNCATE TABLE funcionarios CASCADE;
 TRUNCATE TABLE servicos CASCADE;
 TRUNCATE TABLE empresas CASCADE;
 
+-- (Opcional) Limpar contas registradas no Supabase Auth caso queira zerar emails antigos:
+-- TRUNCATE auth.users CASCADE;
+
 -- 2. CRIAÇÃO DA EMPRESA PADRÃO DO SUPERADMIN (EMPRESA TESTES ENCAIXE)
 INSERT INTO empresas (
   id,

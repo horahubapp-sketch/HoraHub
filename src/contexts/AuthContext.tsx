@@ -241,7 +241,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { user: mockUser, empresa: novaEmpresa };
     }
 
-    // 1. Cadastro no Auth
+    // 1. Cadastro no Auth com suporte a re-vínculo se a conta já existir no Supabase Auth
+    let authUser: any = null;
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password: senha,
@@ -252,15 +253,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    if (authError) throw authError;
-    if (!authData.user) throw new Error('Não foi possível inicializar o usuário.');
+    if (authError && (authError.message?.includes('User already registered') || authError.message?.includes('already registered'))) {
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password: senha
+      });
+      if (signInError) {
+        throw new Error('Este e-mail já possui um registro de conta. Digite a senha correta para acessar ou use outro e-mail.');
+      }
+      authUser = signInData.user;
+    } else if (authError) {
+      throw authError;
+    } else {
+      authUser = authData.user;
+    }
+
+    if (!authUser) throw new Error('Não foi possível inicializar o usuário.');
+
+    // Verificar se a empresa já existe para este dono
+    const { data: empExistente } = await supabase
+      .from('empresas')
+      .select('*')
+      .eq('dono_id', authUser.id)
+      .maybeSingle();
+
+    if (empExistente) {
+      setEmpresa(empExistente);
+      setTenantId(empExistente.id);
+      return { user: authUser, empresa: empExistente };
+    }
 
     // 2. Criação automática da Empresa multi-tenant vinculada
     const insertPayload: any = {
       nome: nomeEmpresa,
       email: email,
       slug: slugDesejado,
-      dono_id: authData.user.id,
+      dono_id: authUser.id,
       cor_primaria: '#00E676',
       cor_secundaria: '#121214'
     };
