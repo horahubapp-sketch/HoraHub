@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
+import { dbAdapter } from '../services/dbAdapter';
 import { isDevEnvironment } from '../config/env';
 
 interface Empresa {
@@ -35,8 +36,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Carregar Empresa baseada no dono_id
-  const fetchEmpresaParaUsuario = async (userId: string): Promise<Empresa | null> => {
+  // Carregar Empresa baseada no dono_id ou email (via dbAdapter)
+  const fetchEmpresaParaUsuario = async (userId: string, userEmail?: string): Promise<Empresa | null> => {
+    if (isDevEnvironment()) {
+      const empresas = await dbAdapter.empresas.getAll();
+
+      if (userEmail) {
+        const empByEmail = empresas.find((e: any) => e.email?.toLowerCase() === userEmail.toLowerCase());
+        if (empByEmail) return empByEmail;
+      }
+
+      const empById = empresas.find((e: any) => e.id === userId || e.dono_id === userId);
+      if (empById) return empById;
+
+      const empJoao = empresas.find((e: any) => e.nome?.toLowerCase().includes('joão') || e.nome?.toLowerCase().includes('joao'));
+      if (empJoao) return empJoao;
+
+      return empresas[0] || null;
+    }
+
     try {
       const { data, error } = await supabase
         .from('empresas')
@@ -58,10 +76,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Buscar empresa com retry automático para tratar a assincronia pós-cadastro
   const fetchEmpresaComRetry = async (userId: string, userEmail?: string, retries = 5, delay = 500): Promise<Empresa | null> => {
     for (let i = 0; i < retries; i++) {
-      const emp = await fetchEmpresaParaUsuario(userId);
+      const emp = await fetchEmpresaParaUsuario(userId, userEmail);
       if (emp) return emp;
       
-      // Se for o admin mock do seed local, não precisa esperar retry de insert
       if (userEmail === 'admin@encaixe.com' || userEmail === 'admin@horahub.com') {
         break;
       }
@@ -74,12 +91,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshEmpresa = async () => {
-    if (user) {
-      const emp = await fetchEmpresaParaUsuario(user.id);
-      if (emp) {
-        setEmpresa(emp);
-        setTenantId(emp.id);
-      }
+    const currentEmail = user?.email || undefined;
+    const currentId = user?.id || tenantId || '';
+    const emp = await fetchEmpresaParaUsuario(currentId, currentEmail);
+    if (emp) {
+      setEmpresa(emp);
+      setTenantId(emp.id);
     }
   };
 
@@ -136,6 +153,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Helpers de Autenticação
   const signIn = async (email: string, senha: string) => {
+    if (isDevEnvironment()) {
+      const mockUser: any = {
+        id: `u-local-${Date.now()}`,
+        email,
+        user_metadata: {}
+      };
+
+      const empresas = await dbAdapter.empresas.getAll();
+      const emp = empresas.find((e: any) => e.email?.toLowerCase() === email.toLowerCase()) || 
+                  empresas.find((e: any) => e.nome?.toLowerCase().includes('joão') || e.nome?.toLowerCase().includes('joao')) || 
+                  empresas[0];
+
+      setUser(mockUser);
+      setSession({ user: mockUser } as any);
+      setEmpresa(emp);
+      setTenantId(emp.id);
+
+      return { user: mockUser, session: { user: mockUser } };
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password: senha

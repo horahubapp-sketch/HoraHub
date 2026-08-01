@@ -16,15 +16,34 @@ export const dbAdapter = {
     async getAll() {
       if (isDevEnvironment()) {
         const localData = localStorage.getItem('encaixe_superadmin_empresas');
-        if (localData) return JSON.parse(localData);
+        let list = localData ? JSON.parse(localData) : [];
 
-        const defaultEmpresas = [
-          { id: 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', nome: 'Empresa Testes Encaixe', email: 'horahubapp@gmail.com', slug: 'encaixe-teste', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-15' },
-          { id: '7e89dc5a-e809-46cd-8a82-737c6f148f43', nome: 'Barbearia Neiva', email: 'weber@encaixe.com.br', slug: 'barbearianeiva', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-22' },
-          { id: '46d49ef1-448b-4f16-a812-ddb9bfc38583', nome: 'Estudio Le', email: 'le@studio.com.br', slug: 'estudiole', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-29' }
-        ];
-        localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(defaultEmpresas));
-        return defaultEmpresas;
+        if (!list || list.length === 0) {
+          list = [
+            { id: 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7', nome: 'Empresa Testes Encaixe', email: 'horahubapp@gmail.com', slug: 'encaixe-teste', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-15' },
+            { id: '7e89dc5a-e809-46cd-8a82-737c6f148f43', nome: 'Barbearia Neiva', email: 'weber@encaixe.com.br', slug: 'barbearianeiva', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-22' },
+            { id: '46d49ef1-448b-4f16-a812-ddb9bfc38583', nome: 'Estudio Le', email: 'le@studio.com.br', slug: 'estudiole', plano_status: 'ativo', plano_nome: 'Bronze', valor_mensalidade: 99.9, saldo_devedor: 0, data_renovacao: '2026-08-29' }
+          ];
+        }
+
+        // Garante que a Barbearia João Cortes esteja presente na lista de cadastros pendentes se não existir
+        const temJoao = list.some((e: any) => e.nome?.toLowerCase().includes('joão') || e.nome?.toLowerCase().includes('joao'));
+        if (!temJoao) {
+          list.unshift({
+            id: 'e-joao-cortes-local',
+            nome: 'Barbearia João Cortes',
+            email: 'joaocortes@encaixe.com.br',
+            slug: 'barbeariajoaocortes',
+            plano_status: 'pendente',
+            plano_nome: 'Bronze',
+            valor_mensalidade: 99.9,
+            saldo_devedor: 0,
+            data_renovacao: '2026-08-30'
+          });
+        }
+
+        localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(list));
+        return list;
       }
 
       const { data, error } = await supabase
