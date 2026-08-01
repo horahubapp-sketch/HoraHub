@@ -16,7 +16,7 @@ export const dbAdapter = {
     async getAll() {
       if (isDevEnvironment()) {
         const localData = localStorage.getItem('encaixe_superadmin_empresas');
-        let list = localData ? JSON.parse(localData) : [];
+        let list: any[] = localData ? JSON.parse(localData) : [];
 
         if (!list || list.length === 0) {
           list = [
@@ -26,10 +26,10 @@ export const dbAdapter = {
           ];
         }
 
-        // Garante que a Barbearia João Cortes esteja presente na lista de cadastros pendentes se não existir
-        const temJoao = list.some((e: any) => e.nome?.toLowerCase().includes('joão') || e.nome?.toLowerCase().includes('joao'));
+        // Garante que a Barbearia João Cortes esteja presente como cadastro pendente no final da lista
+        const temJoao = list.some((e: any) => e.id === 'e-joao-cortes-local' || e.nome?.toLowerCase().includes('joão') || e.nome?.toLowerCase().includes('joao'));
         if (!temJoao) {
-          list.unshift({
+          list.push({
             id: 'e-joao-cortes-local',
             nome: 'Barbearia João Cortes',
             email: 'joaocortes@encaixe.com.br',
@@ -42,8 +42,24 @@ export const dbAdapter = {
           });
         }
 
-        localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(list));
-        return list;
+        // Deduplicação estrita por ID
+        const uniqueMap = new Map<string, any>();
+        list.forEach((item: any) => {
+          if (item && item.id) {
+            uniqueMap.set(item.id, item);
+          }
+        });
+        const dedupedList = Array.from(uniqueMap.values());
+
+        // Garante que a Empresa Testes Encaixe do SuperAdmin seja a posição 0 do array
+        const adminIndex = dedupedList.findIndex((e: any) => e.id === 'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7');
+        if (adminIndex > 0) {
+          const [adminItem] = dedupedList.splice(adminIndex, 1);
+          dedupedList.unshift(adminItem);
+        }
+
+        localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(dedupedList));
+        return dedupedList;
       }
 
       const { data, error } = await supabase
@@ -64,15 +80,7 @@ export const dbAdapter = {
         const localData = localStorage.getItem(localKey);
         if (localData) return JSON.parse(localData);
 
-        return {
-          id: tenantId,
-          nome: 'Empresa de Homologação',
-          email: 'homolog@encaixe.com.br',
-          slug: 'homolog',
-          cpf_cnpj: '00.000.000/0001-00',
-          cor_primaria: '#00E676',
-          cor_secundaria: '#121214'
-        };
+        return empresas[0] || null;
       }
 
       const { data, error } = await supabase
@@ -104,17 +112,30 @@ export const dbAdapter = {
 
     async saveConfig(tenantId: string, payload: any) {
       if (isDevEnvironment()) {
+        const empresas = await this.getAll();
+        const existing = empresas.find((e: any) => e.id === tenantId) || {};
+        const finalData = { ...existing, id: tenantId, ...payload };
+
         const localKey = `encaixe_empresa_${tenantId}`;
-        const finalData = { id: tenantId, ...payload };
         localStorage.setItem(localKey, JSON.stringify(finalData));
 
-        const empresasStr = localStorage.getItem('encaixe_superadmin_empresas');
-        if (empresasStr) {
-          const list = JSON.parse(empresasStr);
-          const updated = list.map((e: any) => e.id === tenantId ? { ...e, ...payload } : e);
-          localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(updated));
+        const listStr = localStorage.getItem('encaixe_superadmin_empresas');
+        let list: any[] = listStr ? JSON.parse(listStr) : empresas;
+        
+        let found = false;
+        list = list.map((e: any) => {
+          if (e.id === tenantId) {
+            found = true;
+            return { ...e, ...payload };
+          }
+          return e;
+        });
+
+        if (!found) {
+          list.push(finalData);
         }
 
+        localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(list));
         return finalData;
       }
 
@@ -134,6 +155,15 @@ export const dbAdapter = {
         const list = await this.getAll();
         const updated = list.map((e: any) => e.id === tenantId ? { ...e, plano_status: novoStatus } : e);
         localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(updated));
+
+        const localKey = `encaixe_empresa_${tenantId}`;
+        const stored = localStorage.getItem(localKey);
+        if (stored) {
+          const item = JSON.parse(stored);
+          item.plano_status = novoStatus;
+          localStorage.setItem(localKey, JSON.stringify(item));
+        }
+
         return updated;
       }
 

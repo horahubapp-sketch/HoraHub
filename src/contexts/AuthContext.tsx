@@ -128,8 +128,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setTenantId(prev => prev ? prev : null);
         }
       } else {
-        setEmpresa(null);
-        setTenantId(null);
+        if (isDevEnvironment()) {
+          const emp = await fetchEmpresaParaUsuario('', 'admin@horahub.com');
+          if (emp) {
+            setEmpresa(emp);
+            setTenantId(emp.id);
+          }
+        } else {
+          setEmpresa(null);
+          setTenantId(null);
+        }
       }
       setLoading(false);
     });
