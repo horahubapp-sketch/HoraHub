@@ -92,14 +92,14 @@ export default function Header() {
                   <div className="profile-dropdown-header">
                     <span className="profile-email">{user?.email}</span>
                     <span className="profile-role">
-                      {(user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com') ? 'Super Administrador' : 'Administrador'}
+                      {(user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com' || user?.email === 'horahubapp@gmail.com') ? 'Super Administrador' : 'Administrador'}
                     </span>
                   </div>
                   
                   <div className="profile-dropdown-divider" />
                   
                   <div className="profile-dropdown-body">
-                    {(user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com') && (
+                    {(user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com' || user?.email === 'horahubapp@gmail.com') && (
                       <NavLink 
                         to="/superadmin" 
                         className="dropdown-item superadmin-item"

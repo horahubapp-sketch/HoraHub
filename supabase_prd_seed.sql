@@ -14,17 +14,69 @@ TRUNCATE TABLE funcionarios CASCADE;
 TRUNCATE TABLE servicos CASCADE;
 TRUNCATE TABLE empresas CASCADE;
 
--- 2. RE-CRIAÇÃO OU ATUALIZAÇÃO DA SENHA DO SUPERADMIN NO SUPABASE AUTH
+-- 2. RE-CRIAÇÃO OU ATUALIZAÇÃO DAS CONTAS DO SUPERADMIN NO SUPABASE AUTH
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+-- Conta 1: admin@horahub.com (Senha: Hor@.hub.123)
 DO $$
-DECLARE
-  new_user_id uuid := 'a1a3bc08-cb86-4e55-926c-d2c6c06a3eb7';
+BEGIN
+  IF EXISTS (SELECT 1 FROM auth.users WHERE email = 'admin@horahub.com') THEN
+    UPDATE auth.users
+    SET 
+      encrypted_password = crypt('Hor@.hub.123', gen_salt('bf', 10)),
+      email_confirmed_at = NOW(),
+      updated_at = NOW(),
+      raw_app_meta_data = '{"provider":"email","providers":["email"]}'::jsonb,
+      raw_user_meta_data = '{"nome_dono":"Super Admin"}'::jsonb
+    WHERE email = 'admin@horahub.com';
+  ELSE
+    INSERT INTO auth.users (
+      instance_id,
+      id,
+      aud,
+      role,
+      email,
+      encrypted_password,
+      email_confirmed_at,
+      recovery_sent_at,
+      last_sign_in_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      created_at,
+      updated_at,
+      confirmation_token,
+      email_change,
+      email_change_token_new,
+      recovery_token
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000',
+      'a1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
+      'authenticated',
+      'authenticated',
+      'admin@horahub.com',
+      crypt('Hor@.hub.123', gen_salt('bf', 10)),
+      NOW(),
+      NOW(),
+      NOW(),
+      '{"provider":"email","providers":["email"]}'::jsonb,
+      '{"nome_dono":"Super Admin"}'::jsonb,
+      NOW(),
+      NOW(),
+      '',
+      '',
+      '',
+      ''
+    );
+  END IF;
+END $$;
+
+-- Conta 2: horahubapp@gmail.com (Senha: Hor@.hub.123)
+DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM auth.users WHERE email = 'horahubapp@gmail.com') THEN
     UPDATE auth.users
     SET 
-      encrypted_password = crypt('@Mudar.123', gen_salt('bf', 10)),
+      encrypted_password = crypt('Hor@.hub.123', gen_salt('bf', 10)),
       email_confirmed_at = NOW(),
       updated_at = NOW(),
       raw_app_meta_data = '{"provider":"email","providers":["email"]}'::jsonb,
@@ -51,11 +103,11 @@ BEGIN
       recovery_token
     ) VALUES (
       '00000000-0000-0000-0000-000000000000',
-      new_user_id,
+      'a2a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
       'authenticated',
       'authenticated',
       'horahubapp@gmail.com',
-      crypt('@Mudar.123', gen_salt('bf', 10)),
+      crypt('Hor@.hub.123', gen_salt('bf', 10)),
       NOW(),
       NOW(),
       NOW(),
@@ -90,9 +142,9 @@ INSERT INTO empresas (
   created_at
 ) VALUES (
   'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
-  (SELECT id FROM auth.users WHERE email = 'horahubapp@gmail.com' LIMIT 1),
+  (SELECT id FROM auth.users WHERE email = 'admin@horahub.com' LIMIT 1),
   'Empresa Testes Encaixe',
-  'horahubapp@gmail.com',
+  'admin@horahub.com',
   'encaixe-teste',
   '00.000.000/0001-00',
   '#00E676',

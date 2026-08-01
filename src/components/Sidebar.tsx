@@ -87,7 +87,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        {(user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com') && (
+        {(user?.email === 'admin@encaixe.com' || user?.email === 'admin@horahub.com' || user?.email === 'horahubapp@gmail.com') && (
           <NavLink 
             to="/superadmin" 
             className="sidebar-link btn-superadmin-link"
