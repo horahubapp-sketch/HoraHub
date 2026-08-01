@@ -14,49 +14,62 @@ TRUNCATE TABLE funcionarios CASCADE;
 TRUNCATE TABLE servicos CASCADE;
 TRUNCATE TABLE empresas CASCADE;
 
--- (Opcional) Limpeza de usuários de teste no módulo Auth:
-TRUNCATE auth.users CASCADE;
-
--- 2. RE-CRIAÇÃO DO USUÁRIO SUPERADMIN NO MODULE SUPABASE AUTH (AUTH.USERS)
+-- 2. RE-CRIAÇÃO OU ATUALIZAÇÃO DA SENHA DO SUPERADMIN NO SUPABASE AUTH
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-INSERT INTO auth.users (
-  instance_id,
-  id,
-  aud,
-  role,
-  email,
-  encrypted_password,
-  email_confirmed_at,
-  recovery_sent_at,
-  last_sign_in_at,
-  raw_app_meta_data,
-  raw_user_meta_data,
-  created_at,
-  updated_at,
-  confirmation_token,
-  email_change,
-  email_change_token_new,
-  recovery_token
-) VALUES (
-  '00000000-0000-0000-0000-000000000000',
-  'a1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
-  'authenticated',
-  'authenticated',
-  'horahubapp@gmail.com',
-  crypt('@Mudar.123', gen_salt('bf')),
-  NOW(),
-  NOW(),
-  NOW(),
-  '{"provider":"email","providers":["email"]}',
-  '{"nome_dono":"Super Admin"}',
-  NOW(),
-  NOW(),
-  '',
-  '',
-  '',
-  ''
-) ON CONFLICT (id) DO NOTHING;
+DO $$
+DECLARE
+  new_user_id uuid := 'a1a3bc08-cb86-4e55-926c-d2c6c06a3eb7';
+BEGIN
+  IF EXISTS (SELECT 1 FROM auth.users WHERE email = 'horahubapp@gmail.com') THEN
+    UPDATE auth.users
+    SET 
+      encrypted_password = crypt('@Mudar.123', gen_salt('bf', 10)),
+      email_confirmed_at = NOW(),
+      updated_at = NOW(),
+      raw_app_meta_data = '{"provider":"email","providers":["email"]}'::jsonb,
+      raw_user_meta_data = '{"nome_dono":"Super Admin"}'::jsonb
+    WHERE email = 'horahubapp@gmail.com';
+  ELSE
+    INSERT INTO auth.users (
+      instance_id,
+      id,
+      aud,
+      role,
+      email,
+      encrypted_password,
+      email_confirmed_at,
+      recovery_sent_at,
+      last_sign_in_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      created_at,
+      updated_at,
+      confirmation_token,
+      email_change,
+      email_change_token_new,
+      recovery_token
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000',
+      new_user_id,
+      'authenticated',
+      'authenticated',
+      'horahubapp@gmail.com',
+      crypt('@Mudar.123', gen_salt('bf', 10)),
+      NOW(),
+      NOW(),
+      NOW(),
+      '{"provider":"email","providers":["email"]}'::jsonb,
+      '{"nome_dono":"Super Admin"}'::jsonb,
+      NOW(),
+      NOW(),
+      '',
+      '',
+      '',
+      ''
+    );
+  END IF;
+END $$;
 
 -- 3. CRIAÇÃO DA EMPRESA PADRÃO DO SUPERADMIN (EMPRESA TESTES ENCAIXE)
 INSERT INTO empresas (
@@ -77,7 +90,7 @@ INSERT INTO empresas (
   created_at
 ) VALUES (
   'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
-  'a1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
+  (SELECT id FROM auth.users WHERE email = 'horahubapp@gmail.com' LIMIT 1),
   'Empresa Testes Encaixe',
   'horahubapp@gmail.com',
   'encaixe-teste',
