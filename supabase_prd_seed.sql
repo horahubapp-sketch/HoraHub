@@ -57,7 +57,7 @@ INSERT INTO servicos (
   created_at
 ) VALUES 
 (
-  's1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
+  'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb1',
   'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
   'Corte de Cabelo Masculino',
   45,
@@ -65,7 +65,7 @@ INSERT INTO servicos (
   NOW()
 ),
 (
-  's1a3bc08-cb86-4e55-926c-d2c6c06a3eb2',
+  'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb2',
   'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
   'Barba Completa com Toalha Quente',
   30,
@@ -73,7 +73,7 @@ INSERT INTO servicos (
   NOW()
 ),
 (
-  's1a3bc08-cb86-4e55-926c-d2c6c06a3eb3',
+  'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb3',
   'e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7',
   'Combo Corte + Barba Premium',
   60,
@@ -109,11 +109,11 @@ INSERT INTO funcionarios (
 
 -- 5. VINCULAÇÃO DE PROFISSIONAIS AOS SERVIÇOS (TABELA PIVOT)
 INSERT INTO funcionario_servicos (funcionario_id, servico_id) VALUES
-('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', 's1a3bc08-cb86-4e55-926c-d2c6c06a3eb1'),
-('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', 's1a3bc08-cb86-4e55-926c-d2c6c06a3eb2'),
-('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', 's1a3bc08-cb86-4e55-926c-d2c6c06a3eb3'),
-('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2', 's1a3bc08-cb86-4e55-926c-d2c6c06a3eb1'),
-('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2', 's1a3bc08-cb86-4e55-926c-d2c6c06a3eb3');
+('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', 'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb1'),
+('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', 'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb2'),
+('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb1', 'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb3'),
+('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2', 'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb1'),
+('f1a3bc08-cb86-4e55-926c-d2c6c06a3eb2', 'b1a3bc08-cb86-4e55-926c-d2c6c06a3eb3');
 
 -- 6. JORNADAS DE TRABALHO PADRÃO (SEGUNDA A SÁBADO, 08:00 ÀS 18:00)
 INSERT INTO jornadas_trabalho (funcionario_id, dia_semana, hora_inicio, hora_fim, almoco_inicio, almoco_fim) VALUES
