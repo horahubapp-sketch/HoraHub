@@ -164,15 +164,24 @@ export const dbAdapter = {
         return finalData;
       }
 
-      const { data, error } = await supabase
-        .from('empresas')
-        .update(payload)
-        .eq('id', tenantId)
-        .select()
-        .single();
+      // Usa RPC com SECURITY DEFINER para bypass de RLS
+      // Elimina falhas silenciosas de UPDATE bloqueado por políticas RLS
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('save_empresa_config', {
+        p_empresa_id: tenantId,
+        p_payload: payload
+      });
 
-      if (error) throw error;
-      return data;
+      if (rpcError) {
+        console.error('[HoraHub] Erro na RPC save_empresa_config:', rpcError);
+        throw new Error(`Falha ao salvar configurações: ${rpcError.message}`);
+      }
+
+      if (rpcResult && !rpcResult.success) {
+        console.error('[HoraHub] save_empresa_config retornou erro:', rpcResult.error);
+        throw new Error(rpcResult.error || 'Erro desconhecido ao salvar configurações.');
+      }
+
+      return rpcResult?.data || payload;
     },
 
     async updateStatus(tenantId: string, novoStatus: 'ativo' | 'bloqueado' | 'pendente') {
@@ -192,15 +201,22 @@ export const dbAdapter = {
         return updated;
       }
 
-      const { data, error } = await supabase
-        .from('empresas')
-        .update({ plano_status: novoStatus })
-        .eq('id', tenantId)
-        .select()
-        .single();
+      // Usa RPC com SECURITY DEFINER para bypass de RLS (SuperAdmin não é dono das empresas)
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('update_empresa_status', {
+        p_empresa_id: tenantId,
+        p_novo_status: novoStatus
+      });
 
-      if (error) throw error;
-      return data;
+      if (rpcError) {
+        console.error('[HoraHub] Erro na RPC update_empresa_status:', rpcError);
+        throw new Error(`Falha ao atualizar status: ${rpcError.message}`);
+      }
+
+      if (rpcResult && !rpcResult.success) {
+        throw new Error(rpcResult.error || 'Erro ao atualizar status da empresa.');
+      }
+
+      return { plano_status: novoStatus };
     },
 
     async resetPassword(empOrId: any) {
