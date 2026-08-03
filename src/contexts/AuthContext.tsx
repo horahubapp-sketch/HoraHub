@@ -254,6 +254,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const empresasExistentes = localEmpresasStr ? JSON.parse(localEmpresasStr) : [];
       const listaAtualizada = [novaEmpresa, ...empresasExistentes];
       localStorage.setItem('encaixe_superadmin_empresas', JSON.stringify(listaAtualizada));
+      localStorage.setItem(`encaixe_empresa_${mockId}`, JSON.stringify(novaEmpresa));
 
       const mockUser: any = {
         id: `u-local-${Date.now()}`,

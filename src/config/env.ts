@@ -19,13 +19,13 @@ export const isProdEnvironment = (): boolean => {
 /**
  * Retorna a URL Base dinâmica da aplicação respeitando o ambiente atual:
  * Dev / Homologação: http://localhost:5173
- * Produção: https://horahub.com.br ou https://horahub.netlify.app
+ * Produção (PRD): https://horahub.netlify.app (ou domínios customizados)
  */
 export const getAppBaseUrl = (): string => {
   if (typeof window !== 'undefined') {
     return window.location.origin;
   }
-  return isDevEnvironment() ? 'http://localhost:5173' : 'https://horahub.com.br';
+  return isDevEnvironment() ? 'http://localhost:5173' : 'https://horahub.netlify.app';
 };
 
 /**

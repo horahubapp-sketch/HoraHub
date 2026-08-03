@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { isDevEnvironment } from '../config/env';
+import { compressImageFile } from '../utils/imageUtils';
 
 // ============================================================
 // ADAPTADOR CENTRALIZADO DE BANCO DE DADOS (dbAdapter)
@@ -42,10 +43,20 @@ export const dbAdapter = {
           });
         }
 
-        // Deduplicação estrita por ID
+        // Deduplicação estrita por ID e mesclagem de overrides por tenantId (encaixe_empresa_${id})
         const uniqueMap = new Map<string, any>();
         list.forEach((item: any) => {
           if (item && item.id) {
+            const localKey = `encaixe_empresa_${item.id}`;
+            const storedOverride = localStorage.getItem(localKey);
+            if (storedOverride) {
+              try {
+                const parsedOverride = JSON.parse(storedOverride);
+                item = { ...item, ...parsedOverride };
+              } catch (e) {
+                // ignore
+              }
+            }
             uniqueMap.set(item.id, item);
           }
         });
@@ -74,11 +85,19 @@ export const dbAdapter = {
       if (isDevEnvironment()) {
         const empresas = await this.getAll();
         const emp = empresas.find((e: any) => e.id === tenantId);
-        if (emp) return emp;
 
         const localKey = `encaixe_empresa_${tenantId}`;
         const localData = localStorage.getItem(localKey);
-        if (localData) return JSON.parse(localData);
+        let localObj = null;
+        if (localData) {
+          try {
+            localObj = JSON.parse(localData);
+          } catch (e) {}
+        }
+
+        if (emp || localObj) {
+          return { ...(emp || {}), ...(localObj || {}) };
+        }
 
         return empresas[0] || null;
       }
@@ -580,18 +599,19 @@ export const dbAdapter = {
   storage: {
     async upload(bucket: string, path: string, file: File) {
       if (isDevEnvironment()) {
-        return new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(file);
-        });
+        return compressImageFile(file, 400, 400, 0.8);
       }
 
-      const { error: uploadError } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
-      if (uploadError) throw uploadError;
+      try {
+        const { error: uploadError } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+        if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(path);
-      return publicUrl;
+        const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(path);
+        return publicUrl;
+      } catch (err) {
+        console.warn('[Encaixe Storage] Falha no upload Supabase Cloud, aplicando fallback de imagem comprimida:', err);
+        return compressImageFile(file, 400, 400, 0.8);
+      }
     }
   }
 };

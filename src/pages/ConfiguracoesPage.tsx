@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { dbAdapter } from '../services/dbAdapter';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { compressImageFile } from '../utils/imageUtils';
 import { 
   Building, 
   Mail, 
@@ -107,7 +108,7 @@ export default function ConfiguracoesPage() {
     return () => clearTimeout(timer);
   }, [slug, empresaId]);
 
-  // Upload Híbrido de Logotipo local/online
+  // Upload Híbrido de Logotipo local/online com otimização em Canvas
   const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const handleLogoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,20 +120,13 @@ export default function ConfiguracoesPage() {
       return;
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-      setErroMsg('A imagem deve ter no máximo 2MB.');
+    if (file.size > 5 * 1024 * 1024) {
+      setErroMsg('A imagem deve ter no máximo 5MB.');
       return;
     }
 
     setUploadingLogo(true);
     setErroMsg(null);
-
-    // 1. Fallback visual Base64
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setLogoUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
 
     try {
       const fileExt = file.name.split('.').pop();
@@ -141,8 +135,14 @@ export default function ConfiguracoesPage() {
 
       const publicUrl = await dbAdapter.storage.upload('avatars', filePath, file);
       setLogoUrl(publicUrl);
-    } catch (err) {
-      console.warn('[Encaixe] Erro no upload da logo. Preservado Base64.');
+    } catch (err: any) {
+      console.warn('[Encaixe] Erro no upload da logo, aplicando compressão local:', err);
+      try {
+        const fallbackUrl = await compressImageFile(file);
+        setLogoUrl(fallbackUrl);
+      } catch (cErr) {
+        setErroMsg('Falha ao processar a imagem selecionada.');
+      }
     } finally {
       setUploadingLogo(false);
     }
