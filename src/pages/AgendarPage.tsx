@@ -112,7 +112,8 @@ export default function AgendarPage() {
       try {
         // Carrega Empresa via dbAdapter
         const empresas = await dbAdapter.empresas.getAll();
-        const emp = empresas.find((e: any) => e.slug === slug) || empresas[0];
+        const targetSlug = slug.toLowerCase();
+        const emp = empresas.find((e: any) => e.slug?.toLowerCase() === targetSlug || e.id === slug) || empresas[0];
 
         if (!emp) throw new Error('Empresa não encontrada.');
         setEmpresa(emp);

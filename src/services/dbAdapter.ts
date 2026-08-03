@@ -113,17 +113,23 @@ export const dbAdapter = {
     },
 
     async checkSlug(slug: string, currentEmpresaId?: string) {
+      const slugNorm = slug.trim().toLowerCase();
       if (isDevEnvironment()) {
         const empresas = await this.getAll();
-        const ocupado = empresas.some((e: any) => e.slug === slug && e.id !== currentEmpresaId);
+        const ocupado = empresas.some((e: any) => e.slug?.toLowerCase() === slugNorm && e.id !== currentEmpresaId);
         return !ocupado;
       }
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('empresas')
         .select('id')
-        .eq('slug', slug)
-        .neq('id', currentEmpresaId || '');
+        .ilike('slug', slugNorm);
+
+      if (currentEmpresaId) {
+        query = query.neq('id', currentEmpresaId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       return (data || []).length === 0;

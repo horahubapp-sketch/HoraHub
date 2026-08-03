@@ -29,6 +29,7 @@ export default function ConfiguracoesPage() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [slug, setSlug] = useState('');
+  const [initialSlug, setInitialSlug] = useState('');
   const [cpfCnpj, setCpfCnpj] = useState('');
   const [corPrimaria, setCorPrimaria] = useState('#00E676');
   const [corSecundaria, setCorSecundaria] = useState('#121214');
@@ -59,6 +60,7 @@ export default function ConfiguracoesPage() {
           setNome(data.nome);
           setEmail(data.email || '');
           setSlug(data.slug || '');
+          setInitialSlug(data.slug || '');
           setCpfCnpj(data.cpf_cnpj || '');
           setCorPrimaria(data.cor_primaria || '#00E676');
           setCorSecundaria(data.cor_secundaria || '#121214');
@@ -87,6 +89,12 @@ export default function ConfiguracoesPage() {
       return;
     }
 
+    // Se o slug for idêntico ao cadastrado originalmente para esta empresa, está liberado
+    if (initialSlug && slug.toLowerCase() === initialSlug.toLowerCase()) {
+      setSlugDisponivel(true);
+      return;
+    }
+
     const timer = setTimeout(async () => {
       setValidandoSlug(true);
       try {
@@ -96,7 +104,8 @@ export default function ConfiguracoesPage() {
           setSlug(normalized);
         }
 
-        const disponivel = await dbAdapter.empresas.checkSlug(normalized, empresaId);
+        const targetEmpId = empresaId || tenantId || undefined;
+        const disponivel = await dbAdapter.empresas.checkSlug(normalized, targetEmpId);
         setSlugDisponivel(disponivel);
       } catch (err) {
         console.error('Erro ao validar slug:', err);
@@ -106,7 +115,7 @@ export default function ConfiguracoesPage() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [slug, empresaId]);
+  }, [slug, initialSlug, empresaId, tenantId]);
 
   // Upload Híbrido de Logotipo local/online com otimização em Canvas
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -179,6 +188,7 @@ export default function ConfiguracoesPage() {
       };
 
       await dbAdapter.empresas.saveConfig(tenantId!, payload);
+      setInitialSlug(slug);
       await refreshEmpresa();
       setSucessoMsg('Configurações salvas e aplicadas com sucesso!');
       setTimeout(() => setSucessoMsg(null), 3000);
