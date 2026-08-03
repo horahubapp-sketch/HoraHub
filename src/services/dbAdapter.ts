@@ -205,30 +205,56 @@ export const dbAdapter = {
 
     async resetPassword(empOrId: any) {
       if (isDevEnvironment()) {
+        console.log('[HoraHub HML] resetPassword simulado com sucesso.');
         return true;
       }
 
-      const donoId = typeof empOrId === 'string' ? empOrId : empOrId?.dono_id;
+      let donoId = typeof empOrId === 'string' ? empOrId : empOrId?.dono_id;
       const userEmail = typeof empOrId === 'object' ? empOrId?.email : null;
+      const empNome = typeof empOrId === 'object' ? empOrId?.nome : '?';
 
-      if (donoId) {
+      // Se dono_id for null, tenta buscar via email usando a helper RPC
+      if (!donoId && userEmail) {
+        console.log(`[HoraHub] dono_id ausente para "${empNome}", buscando via email...`);
         try {
-          const { error } = await supabase.rpc('reset_user_password', {
-            target_dono_id: donoId,
-            new_password: '@Mudar.123'
+          const { data: fetchedId, error: fetchErr } = await supabase.rpc('get_dono_id_by_empresa_email', {
+            empresa_email: userEmail
           });
-          if (!error) return true;
+          if (!fetchErr && fetchedId) {
+            donoId = fetchedId;
+            console.log(`[HoraHub] dono_id encontrado via email: ${donoId}`);
+          } else {
+            console.warn('[HoraHub] Não encontrou dono_id pelo email:', fetchErr?.message);
+          }
         } catch (e) {
-          console.warn('[Encaixe] RPC reset_user_password não executou, tentando envio via Auth...', e);
+          console.warn('[HoraHub] Erro ao buscar dono_id via helper RPC:', e);
         }
       }
 
-      if (userEmail) {
-        const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
-          redirectTo: `${window.location.origin}/login`
-        });
-        if (error) throw error;
-        return true;
+      if (!donoId) {
+        throw new Error(
+          `Não foi possível identificar o usuário responsável pela empresa "${empNome}". ` +
+          `O campo dono_id está vazio e não há email cadastrado para busca alternativa.`
+        );
+      }
+
+      // Chamar a RPC principal que retorna JSON estruturado
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('reset_user_password', {
+        target_dono_id: donoId,
+        new_password: '@Mudar.123'
+      });
+
+      if (rpcError) {
+        console.error('[HoraHub] Erro na RPC reset_user_password:', rpcError);
+        throw new Error(`Falha ao redefinir senha: ${rpcError.message}`);
+      }
+
+      // A nova RPC retorna JSON: { success: boolean, error?: string, message?: string }
+      if (rpcResult && typeof rpcResult === 'object') {
+        if (!rpcResult.success) {
+          throw new Error(rpcResult.error || 'A redefinição de senha falhou sem mensagem de erro.');
+        }
+        console.log('[HoraHub] Senha redefinida com sucesso:', rpcResult.message);
       }
 
       return true;
