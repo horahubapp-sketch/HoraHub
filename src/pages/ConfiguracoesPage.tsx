@@ -175,7 +175,7 @@ export default function ConfiguracoesPage() {
     setErroMsg(null);
 
     try {
-      const payload = {
+      const payload: Record<string, any> = {
         nome,
         email,
         slug,
@@ -184,8 +184,10 @@ export default function ConfiguracoesPage() {
         cor_secundaria: corSecundaria,
         logo_url: logoUrl,
         regra_sem_preferencia: regraSemPreferencia,
-        profissional_indicado_padrao_id: profissionalIndicadoId || null
       };
+      // profissional_indicado_padrao_id só é salvo se a coluna existir no banco
+      // (não existe no schema atual do PRD — omitir para evitar erro de schema cache)
+
 
       await dbAdapter.empresas.saveConfig(tenantId!, payload);
       setInitialSlug(slug);
