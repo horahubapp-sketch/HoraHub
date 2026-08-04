@@ -254,25 +254,21 @@ export const dbAdapter = {
         );
       }
 
-      // Chamar a RPC principal que retorna JSON estruturado
-      const { data: rpcResult, error: rpcError } = await supabase.rpc('reset_user_password', {
-        target_dono_id: donoId,
-        new_password: '@Mudar.123'
+      // Invoca a Edge Function que tem acesso à API Admin do Supabase
+      const { data: response, error: invokeError } = await supabase.functions.invoke('admin-reset-password', {
+        body: { target_dono_id: donoId, new_password: '@Mudar.123' }
       });
 
-      if (rpcError) {
-        console.error('[HoraHub] Erro na RPC reset_user_password:', rpcError);
-        throw new Error(`Falha ao redefinir senha: ${rpcError.message}`);
+      if (invokeError) {
+        console.error('[HoraHub] Erro ao invocar Edge Function:', invokeError);
+        throw new Error(`Falha ao redefinir senha: ${invokeError.message}`);
       }
 
-      // A nova RPC retorna JSON: { success: boolean, error?: string, message?: string }
-      if (rpcResult && typeof rpcResult === 'object') {
-        if (!rpcResult.success) {
-          throw new Error(rpcResult.error || 'A redefinição de senha falhou sem mensagem de erro.');
-        }
-        console.log('[HoraHub] Senha redefinida com sucesso:', rpcResult.message);
+      if (response && response.error) {
+        throw new Error(response.error);
       }
 
+      console.log('[HoraHub] Senha redefinida com sucesso via Edge Function:', response?.message);
       return true;
     },
 
