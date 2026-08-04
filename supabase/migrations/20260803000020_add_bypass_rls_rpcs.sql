@@ -53,11 +53,6 @@ BEGIN
     cor_secundaria                = COALESCE(p_payload->>'cor_secundaria', cor_secundaria),
     logo_url                      = CASE WHEN p_payload ? 'logo_url' THEN p_payload->>'logo_url' ELSE logo_url END,
     regra_sem_preferencia         = COALESCE(p_payload->>'regra_sem_preferencia', regra_sem_preferencia),
-    profissional_indicado_padrao_id = CASE 
-      WHEN p_payload ? 'profissional_indicado_padrao_id' AND (p_payload->>'profissional_indicado_padrao_id') IS NOT NULL
-      THEN (p_payload->>'profissional_indicado_padrao_id')::UUID 
-      ELSE profissional_indicado_padrao_id 
-    END,
     plano_status                  = COALESCE(p_payload->>'plano_status', plano_status),
     plano_nome                    = COALESCE(p_payload->>'plano_nome', plano_nome),
     valor_mensalidade             = CASE WHEN p_payload ? 'valor_mensalidade' THEN (p_payload->>'valor_mensalidade')::NUMERIC ELSE valor_mensalidade END,
