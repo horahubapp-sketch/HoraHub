@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: adminEmp } = await supabase
           .from('empresas')
           .select('id, nome, email, slug, cor_primaria, cor_secundaria, logo_url, plano_status')
-          .or(`id.eq.e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7,dono_id.eq.${userId},slug.eq.encaixe-teste`)
+          .or(`id.eq.e1a3bc08-cb86-4e55-926c-d2c6c06a3eb7,slug.eq.encaixe-teste`)
           .limit(1)
           .maybeSingle();
 
