@@ -23,25 +23,18 @@
     <!-- Script de registro do Service Worker -->
     <script>
       if ('serviceWorker' in navigator) {
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.pathname.includes('/superadmin')) {
-          // Em ambiente local ou no Superadmin, desregistra o Service Worker e limpa o cache
-          navigator.serviceWorker.getRegistrations().then(registrations => {
-            for (let registration of registrations) {
-              registration.unregister();
-            }
-          });
-          if ('caches' in window) {
-            caches.keys().then(names => {
-              for (let name of names) {
-                caches.delete(name);
-              }
-            });
+        // Desativa temporariamente o Service Worker PWA e limpa todo o cache
+        // para garantir que atualizações do frontend entrem no ar imediatamente
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          for (let registration of registrations) {
+            registration.unregister();
           }
-        } else {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-              .then(reg => console.log('[Encaixe PWA] Service Worker registrado com sucesso:', reg.scope))
-              .catch(err => console.error('[Encaixe PWA] Erro ao registrar Service Worker:', err));
+        });
+        if ('caches' in window) {
+          caches.keys().then(names => {
+            for (let name of names) {
+              caches.delete(name);
+            }
           });
         }
       }
