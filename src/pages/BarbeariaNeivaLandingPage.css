@@ -1,11 +1,11 @@
 /* ==========================================================================
-   LANDING PAGE BARBEARIA NEIVA - PRD HORA HUB (/homeneiva)
+   ESTILOS BARBEARIA NEIVA - ATUALIZADO COM LOGO E FOTOS OFICIAIS
+   ESCOPADO SOB .neiva-page-root PARA O HORA HUB
    ========================================================================== */
 
 .neiva-page-root {
-  /* Cores Principais - Extraídas do Logotipo Oficial */
-  --bg-primary: #0D0C0D;          /* Preto Ônix / Grafite Escuro */
-  --bg-surface: #171517;          /* Card Background */
+  --bg-primary: #0D0C0D;          /* Preto Ônix / Grafite Quente Escuro */
+  --bg-surface: #171517;          /* Card Background (Grafite Marrom Escuro) */
   --bg-surface-hover: #232023;    /* Card Hover */
   --bg-glass: rgba(23, 21, 23, 0.85);
 
@@ -78,7 +78,15 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Botões */
+.neiva-page-root .text-accent {
+  color: var(--color-primary);
+}
+
+.neiva-page-root .text-muted {
+  color: var(--text-muted);
+}
+
+/* Botões Reutilizáveis */
 .neiva-page-root .btn {
   display: inline-flex;
   align-items: center;
@@ -134,7 +142,7 @@
   box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
 }
 
-/* Cards Glass */
+/* Cards com Glassmorphism */
 .neiva-page-root .card-glass {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -185,7 +193,7 @@
   font-weight: 500;
 }
 
-/* Header */
+/* Header & Logo Oficial */
 .neiva-page-root .site-header {
   position: sticky;
   top: 0;
@@ -282,7 +290,7 @@
   background-color: var(--text-main);
 }
 
-/* Hero Section */
+/* Hero Section com Imagem do Local Oficial */
 .neiva-page-root .hero-section {
   position: relative;
   min-height: 90vh;
@@ -319,13 +327,6 @@
   margin-bottom: 1.2rem;
 }
 
-.neiva-page-root .badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--color-primary);
-}
-
 .neiva-page-root .hero-logo-wrapper {
   margin-bottom: 1.5rem;
 }
@@ -334,6 +335,13 @@
   max-width: 280px;
   height: auto;
   filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.6));
+}
+
+.neiva-page-root .badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
 }
 
 .neiva-page-root .hero-title {
@@ -363,7 +371,7 @@
   justify-content: center;
   align-items: center;
   gap: 2.5rem;
-  background: var(--bg-glass);
+  background: rgba(36, 33, 30, 0.75);
   padding: 1.5rem 2.5rem;
   border-radius: 16px;
   border: 1px solid var(--border-subtle);
@@ -423,63 +431,7 @@
   font-size: 1.05rem;
 }
 
-/* História do Fundador */
-.neiva-page-root .story-wrapper {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 3.5rem;
-  align-items: center;
-  margin-bottom: 4rem;
-  padding: 3.5rem;
-  border: 1px solid var(--border-glow);
-  background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(26, 23, 26, 0.95) 100%);
-  border-radius: 20px;
-  box-shadow: var(--shadow-md);
-}
-
-.neiva-page-root .story-content h2 {
-  font-size: 1.8rem;
-  margin-bottom: 1.2rem;
-  line-height: 1.3;
-}
-
-.neiva-page-root .story-content p {
-  color: var(--text-muted);
-  font-size: 1rem;
-  line-height: 1.7;
-  margin-bottom: 1rem;
-}
-
-.neiva-page-root .story-highlight {
-  border-left: 3px solid var(--color-primary);
-  padding-left: 1.2rem;
-  margin: 1.5rem 0;
-  font-style: italic;
-  color: var(--text-main) !important;
-}
-
-.neiva-page-root .story-img-wrapper {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-md);
-}
-
-.neiva-page-root .story-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  max-height: 420px;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s ease;
-}
-
-.neiva-page-root .story-img-wrapper:hover img {
-  transform: scale(1.05);
-}
-
-/* Fotos Reais */
+/* Fotos Reais do Espaço Físico */
 .neiva-page-root .real-photos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -517,170 +469,6 @@
 .neiva-page-root .photo-info p {
   color: var(--text-muted);
   font-size: 0.95rem;
-}
-
-/* Serviços */
-.neiva-page-root .services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
-}
-
-.neiva-page-root .service-card {
-  overflow: hidden;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.neiva-page-root .service-img-wrapper {
-  position: relative;
-  height: 220px;
-  overflow: hidden;
-}
-
-.neiva-page-root .service-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.neiva-page-root .service-card:hover .service-img-wrapper img {
-  transform: scale(1.08);
-}
-
-.neiva-page-root .service-details {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.neiva-page-root .service-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 1rem;
-}
-
-.neiva-page-root .service-header h3 {
-  font-size: 1.2rem;
-}
-
-.neiva-page-root .service-price {
-  font-family: var(--font-heading);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--color-primary);
-}
-
-.neiva-page-root .service-details p {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  margin-bottom: 1.5rem;
-  flex: 1;
-}
-
-.neiva-page-root .btn-service-link {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.neiva-page-root .featured-service {
-  border-color: var(--color-primary);
-}
-
-.neiva-page-root .service-badge {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: var(--gold-gradient);
-  color: var(--text-dark);
-  padding: 0.3rem 0.9rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  z-index: 5;
-}
-
-/* Simulador */
-.neiva-page-root .simulator-card {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
-  padding: 3rem;
-  border: 1px solid var(--border-glow);
-  background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(35, 32, 35, 0.95) 100%);
-}
-
-.neiva-page-root .simulator-controls {
-  margin-top: 1.5rem;
-}
-
-.neiva-page-root .sim-select {
-  width: 100%;
-  padding: 0.9rem 1.2rem;
-  border-radius: 12px;
-  background: var(--bg-primary);
-  color: var(--text-main);
-  border: 1px solid var(--border-subtle);
-  font-size: 1rem;
-  outline: none;
-  cursor: pointer;
-}
-
-.neiva-page-root .simulator-result {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-
-.neiva-page-root .sim-box {
-  background: rgba(13, 12, 13, 0.7);
-  padding: 1.2rem 1.8rem;
-  border-radius: 12px;
-  border: 1px solid var(--border-subtle);
-}
-
-.neiva-page-root .sim-box.highlight {
-  border-color: var(--color-primary);
-  background: rgba(197, 160, 89, 0.1);
-}
-
-.neiva-page-root .sim-label {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 0.3rem;
-}
-
-.neiva-page-root .sim-val {
-  font-family: var(--font-heading);
-  font-size: 1.8rem;
-  font-weight: 700;
-  display: block;
-}
-
-.neiva-page-root .val-avulso {
-  color: #E57373;
-  text-decoration: line-through;
-}
-
-.neiva-page-root .val-vip {
-  color: var(--color-primary);
-}
-
-.neiva-page-root .sim-savings {
-  display: block;
-  margin-top: 0.4rem;
-  font-size: 0.9rem;
-  color: #81C784;
-  font-weight: 600;
 }
 
 /* Planos */
@@ -761,7 +549,7 @@
   width: 100%;
 }
 
-/* Galeria */
+/* Galeria de Fotos Reais */
 .neiva-page-root .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -802,62 +590,7 @@
   opacity: 1;
 }
 
-/* FAQ */
-.neiva-page-root .faq-accordion {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.neiva-page-root .faq-item {
-  padding: 0;
-  overflow: hidden;
-}
-
-.neiva-page-root .faq-question {
-  width: 100%;
-  padding: 1.4rem 1.8rem;
-  background: none;
-  border: none;
-  color: var(--text-main);
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  font-weight: 600;
-  text-align: left;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-}
-
-.neiva-page-root .faq-icon {
-  font-size: 1.5rem;
-  color: var(--color-primary);
-  transition: transform 0.3s ease;
-}
-
-.neiva-page-root .faq-item.active .faq-icon {
-  transform: rotate(45deg);
-}
-
-.neiva-page-root .faq-answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0, 1, 0, 1), padding 0.3s ease;
-  padding: 0 1.8rem;
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.neiva-page-root .faq-item.active .faq-answer {
-  max-height: 300px;
-  padding: 0 1.8rem 1.4rem;
-}
-
-/* Contato */
+/* Localização & Map Box */
 .neiva-page-root .contact-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -865,11 +598,17 @@
   padding: 3.5rem;
 }
 
+.neiva-page-root .contact-info h2 {
+  font-size: 2.2rem;
+  margin: 0.5rem 0 1rem;
+}
+
 .neiva-page-root .info-list {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   margin: 2rem 0;
+  padding: 0;
 }
 
 .neiva-page-root .info-item {
@@ -879,25 +618,171 @@
 }
 
 .neiva-page-root .info-icon {
-  font-size: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  background: rgba(197, 160, 89, 0.08);
+  border: 1px solid rgba(197, 160, 89, 0.22);
+  border-radius: 50%;
+  color: var(--color-primary);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
 }
 
-.neiva-page-root .map-placeholder {
-  background: rgba(13, 12, 13, 0.7);
-  border: 1px solid var(--border-subtle);
+.neiva-page-root .info-item:hover .info-icon {
+  background: var(--gold-gradient);
+  color: var(--text-dark);
+  border-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.neiva-page-root .info-svg-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.neiva-page-root .info-svg-icon-inline {
+  vertical-align: middle;
+  margin-right: 0.4rem;
+}
+
+/* Card de Imagem da Fachada na Direita */
+.neiva-page-root .map-image-card {
+  padding: 0 !important;
+  overflow: hidden;
   border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  height: 100%;
+  min-height: 480px;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-normal);
+}
+
+.neiva-page-root .map-image-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-glow);
+}
+
+.neiva-page-root .map-image-fachada {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Footer */
+.neiva-page-root .site-footer {
+  background-color: #080708;
+  padding: 4rem 0 2rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.neiva-page-root .footer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.neiva-page-root .footer-logo {
+  max-width: 160px;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+.neiva-page-root .footer-copy {
+  color: #666;
+  font-size: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 2rem;
+  width: 100%;
+}
+
+/* Botão Flutuante do WhatsApp */
+.neiva-page-root .floating-whatsapp {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background-color: var(--whatsapp-color);
+  color: #fff;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 2.5rem;
+  box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+  z-index: 999;
+  transition: all 0.3s ease;
 }
 
-.neiva-page-root .map-logo {
-  max-width: 140px;
+.neiva-page-root .floating-whatsapp:hover {
+  transform: scale(1.1);
+}
+
+/* História do Fundador */
+.neiva-page-root .story-wrapper {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 3.5rem;
+  align-items: center;
+  margin-bottom: 4rem;
+  padding: 3.5rem;
+  border: 1px solid var(--border-glow);
+  background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(26, 23, 26, 0.95) 100%);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.neiva-page-root .story-content h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.3;
+}
+
+.neiva-page-root .story-content p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.7;
   margin-bottom: 1rem;
 }
 
+.neiva-page-root .story-highlight {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 1.2rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--text-main) !important;
+}
+
+.neiva-page-root .story-img-wrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+}
+
+.neiva-page-root .story-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.neiva-page-root .story-img-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+/* Horários de Funcionamento & Redes */
 .neiva-page-root .hours-box {
   margin-top: 1.5rem;
   padding: 1.2rem 1.5rem;
@@ -920,7 +805,6 @@
   font-size: 0.9rem;
   color: var(--text-muted);
   padding: 0;
-  margin: 0;
 }
 
 .neiva-page-root .hours-list li {
@@ -934,7 +818,7 @@
   border-bottom: none;
 }
 
-/* Ícones Sociais no Estilo da Marca */
+/* Ícones Sociais Elegantes no Estilo da Marca */
 .neiva-page-root .social-icons-wrapper {
   display: flex;
   align-items: center;
@@ -990,60 +874,9 @@
   box-shadow: 0 8px 25px rgba(253, 29, 29, 0.45);
 }
 
-/* Footer */
-.neiva-page-root .site-footer {
-  background-color: #080708;
-  padding: 4rem 0 2rem;
-  border-top: 1px solid var(--border-subtle);
-}
-
-.neiva-page-root .footer-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  text-align: center;
-}
-
-.neiva-page-root .footer-logo {
-  max-width: 160px;
-  height: auto;
-  margin-bottom: 0.5rem;
-}
-
-.neiva-page-root .footer-copy {
-  color: #666;
-  font-size: 0.8rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 2rem;
-  width: 100%;
-}
-
-/* Botão Flutuante WhatsApp */
-.neiva-page-root .floating-whatsapp {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  background-color: var(--whatsapp-color);
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
-  z-index: 999;
-  transition: all 0.3s ease;
-}
-
-.neiva-page-root .floating-whatsapp:hover {
-  transform: scale(1.1);
-}
-
 /* Ocultar elementos do Drawer Mobile no Desktop por padrão */
 .neiva-page-root .mobile-drawer-overlay {
-  display: none !important;
+  display: none;
 }
 
 .neiva-page-root .mobile-toggle-btn {
@@ -1072,6 +905,132 @@
 .neiva-page-root .hamburger-icon {
   font-size: 1.1rem;
   line-height: 1;
+}
+
+/* Barra de Transição Lema */
+.neiva-page-root .brand-lema-bar {
+  background: linear-gradient(90deg, rgba(197, 160, 89, 0.02) 0%, rgba(197, 160, 89, 0.08) 50%, rgba(197, 160, 89, 0.02) 100%);
+  border-top: 1px solid rgba(197, 160, 89, 0.15);
+  border-bottom: 1px solid rgba(197, 160, 89, 0.15);
+  padding: 2rem 0;
+  text-align: center;
+  width: 100%;
+}
+
+.neiva-page-root .lema-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.neiva-page-root .lema-item {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: 0.18em;
+}
+
+.neiva-page-root .lema-divider {
+  color: rgba(197, 160, 89, 0.35);
+  font-size: 1.35rem;
+  font-weight: 300;
+}
+
+/* Avaliações dos Clientes (Depoimentos) */
+.neiva-page-root .testimonials-section {
+  background-color: var(--bg-primary);
+}
+
+.neiva-page-root .testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.neiva-page-root .testimonial-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem !important;
+  min-height: 250px;
+  border: 1px solid var(--border-subtle);
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.neiva-page-root .testimonial-card:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow);
+}
+
+.neiva-page-root .testimonial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.2rem;
+}
+
+.neiva-page-root .client-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.neiva-page-root .client-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gold-gradient);
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: var(--font-heading);
+}
+
+.neiva-page-root .client-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.neiva-page-root .client-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.neiva-page-root .rating-stars {
+  color: #FFD700;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.neiva-page-root .testimonial-text {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  font-style: italic;
+  flex: 1;
+}
+
+.neiva-page-root .testimonial-services {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(197, 160, 89, 0.1);
+  padding-top: 0.8rem;
+}
+
+.neiva-page-root .testimonial-services strong {
+  color: var(--color-primary);
 }
 
 /* Responsividade Mobile */
@@ -1105,12 +1064,12 @@
     height: 100vh;
     background: rgba(13, 12, 13, 0.98);
     backdrop-filter: blur(25px);
-    display: none !important;
+    display: none;
     flex-direction: column;
     padding: 1.8rem 1.8rem 3rem;
     overflow-y: auto;
     z-index: 2000;
-    animation: fadeInDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: neivaFadeInDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   .neiva-page-root .mobile-drawer-overlay.mobile-active {
@@ -1248,18 +1207,22 @@
   }
 
   .neiva-page-root .real-photos-grid,
-  .neiva-page-root .services-grid,
   .neiva-page-root .plans-grid,
-  .neiva-page-root .gallery-grid {
+  .neiva-page-root .gallery-grid,
+  .neiva-page-root .testimonials-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
 
-  .neiva-page-root .simulator-card,
   .neiva-page-root .contact-wrapper {
     grid-template-columns: 1fr;
     padding: 1.5rem;
     gap: 2rem;
+  }
+
+  .neiva-page-root .map-image-card {
+    height: 320px;
+    min-height: auto;
   }
 
   .neiva-page-root .section-title {
@@ -1267,7 +1230,7 @@
   }
 }
 
-@keyframes fadeInDown {
+@keyframes neivaFadeInDown {
   from {
     opacity: 0;
     transform: translateY(-15px);
